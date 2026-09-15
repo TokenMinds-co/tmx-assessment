@@ -24,9 +24,10 @@ Environment variables, how config is loaded and checked, and ports.
 
 | Variable | Required | Default | Purpose | Doc |
 | --- | --- | --- | --- | --- |
-| `NODE_ENV` | No | `development` | `development`, `production` or `test`. `production` turns on `Secure` cookies and requires `RESEND_API_KEY`. `test` turns off rate limits. | |
-| `PORT` | No | `4000` | HTTP port | |
+| `NODE_ENV` | No | `development` | `development`, `production` or `test`. `production` turns on `Secure` cookies, requires `RESEND_API_KEY` and turns off the API docs. `test` turns off rate limits. | |
+| `PORT` | No | `4000` | HTTP port. The startup log prints it. | [operations.md](operations.md) |
 | `FRONTEND_URL` | Yes | | The frontend's origin, such as `http://localhost:3000`. Used for CORS, the Origin check and links in emails. | [api-conventions.md](api-conventions.md) |
+| `CORS_ORIGINS` | No | Not set | Extra origins CORS allows, comma-separated, such as a staging frontend. `FRONTEND_URL` is always allowed. | [api-conventions.md](api-conventions.md) |
 | `DATABASE_URL` | Yes | | Postgres connection string (Prisma Postgres) | [database.md](database.md) |
 | `SESSION_TTL_DAYS` | No | `7` | Days without use before a session ends (1 to 30) | [authentication.md](authentication.md) |
 | `COOKIE_DOMAIN` | No | Not set | Cookie domain. Set a parent domain only if the frontend is on a sibling subdomain. | [authentication.md](authentication.md) |

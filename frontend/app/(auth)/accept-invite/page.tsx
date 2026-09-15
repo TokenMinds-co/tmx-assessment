@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AcceptInviteForm } from "@/components/auth/accept-invite-form";
-import { InvalidLink } from "@/components/auth/invalid-link";
+import { InvalidLink } from "@/components/shared/invalid-link";
+import { AcceptInviteForm } from "./_components/accept-invite-form";
 
 export const metadata: Metadata = { title: "Set up your account" };
 

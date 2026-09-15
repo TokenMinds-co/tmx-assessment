@@ -43,6 +43,27 @@ Most tasks need more than one skill:
 - `lib/sample-data.ts` holds invented data for screens built before the API. A screen that renders it shows a "Sample data" badge ([docs/dashboard.md](docs/dashboard.md)).
 - Not set up yet: TanStack Query (not in `package.json`). Check before relying on it.
 
+## Where components go
+
+Place a component by where it's used:
+
+| The component is | Put it in | Import it with |
+| --- | --- | --- |
+| Used by one page only | A `_components/` folder next to that page's `page.tsx`, for example `app/(auth)/login/_components/login-form.tsx` | A relative path from the page: `./_components/login-form` |
+| Used by more than one page | `components/shared/`, for example `components/shared/auth-card.tsx` | `@/components/shared/auth-card` |
+| A shadcn/ui component | `components/ui/`, added with `pnpm dlx shadcn@latest add <name>` | `@/components/ui/button` |
+
+- **A `_components/` folder belongs to the `page.tsx` beside it.** `app/(app)/_components/` holds the dashboard's cards, not parts of the `(app)` layout.
+- **The app shell is shared.** A layout renders on every page below it, so its components go in `components/shared/`: the sidebar and topbar of `app/(app)/layout.tsx`, and the logo of `app/(auth)/layout.tsx`. So does `page-header`, which [docs/design-system.md](docs/design-system.md#app-shell) makes the header of every app page.
+- **A part goes where its parent is.** A component used only inside another component sits in the same folder. `user-menu` is used only by `topbar`, so both are in `components/shared/`.
+- **When a second page needs a component from a `_components/` folder,** move it to `components/shared/` and update the imports. Never import from another page's `_components/`.
+- **Helpers, types and constants** sit next to the components that use them, like `components/shared/nav-items.ts`. When those components are in different folders, put the file in `lib/`, like `lib/validation.ts` and `lib/dashboard-types.ts`. Code in `components/` and `lib/` never imports from `app/`.
+- **`components/ui/` is for shadcn/ui only.** Customize those components in place and record the change in [docs/design-system.md](docs/design-system.md). Build your own components in `components/shared/` or a `_components/` folder.
+- **Keep it flat.** No subfolders in `components/shared/` or `_components/`, and no `index.ts` barrel files (see `bundle-barrel-imports` in `vercel-react-best-practices`). File names are kebab-case.
+- The leading underscore makes `_components/` a Next.js private folder, which routing ignores. See "Private folders" in `node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md`.
+
+Why each rule was chosen is in [docs/project-structure.md](docs/project-structure.md).
+
 ## Precedence
 
 When sources disagree, the higher one wins:

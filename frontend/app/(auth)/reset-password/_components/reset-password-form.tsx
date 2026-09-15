@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { AuthCard } from "@/components/auth/auth-card";
-import { NewPasswordFields } from "@/components/auth/new-password-fields";
-import { newPasswordErrors, type NewPasswordErrors } from "@/components/auth/validation";
+import { AuthCard } from "@/components/shared/auth-card";
+import { NewPasswordFields } from "@/components/shared/new-password-fields";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
+import { newPasswordErrors, type NewPasswordErrors } from "@/lib/validation";
 
 /**
  * Sets a new password from an emailed reset link. UI only for now: the token

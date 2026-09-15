@@ -55,16 +55,13 @@ frontend/
 │   ├── layout.tsx          # Root layout: fonts, metadata, tooltip provider
 │   ├── globals.css         # Tailwind and the TMX theme tokens
 │   ├── icon.png            # Favicon (the TMX mark)
-│   ├── (auth)/             # Sign-in pages: login, forgot-password, reset-password
+│   ├── (auth)/             # Sign-in pages: login, forgot-password, reset-password, accept-invite
 │   └── (app)/              # Staff app shell and its pages (dashboard at /)
 ├── components/
-│   ├── ui/                 # shadcn/ui components, customized to TMX
-│   ├── brand/              # TMX HR logo
-│   ├── layout/             # Sidebar, topbar, account menu, page header, nav items
-│   ├── auth/               # Sign-in card and forms
-│   └── dashboard/          # Dashboard cards and their data types
+│   ├── shared/             # Used by more than one page: app shell, logo, sign-in card, password fields
+│   └── ui/                 # shadcn/ui components, customized to TMX
 ├── hooks/                  # Shared hooks (from shadcn)
-├── lib/                    # cn(), formatting helpers, sample data
+├── lib/                    # cn(), formatting, form validation, dashboard types, sample data
 ├── public/brand/           # TMX wordmark and mark
 ├── docs/                   # Area docs and CHANGELOG.md
 ├── components.json         # shadcn/ui settings
@@ -74,11 +71,14 @@ frontend/
 └── .agents/skills/         # Agent skills (see AGENTS.md)
 ```
 
+A component that only one page uses sits in a `_components/` folder next to that page's `page.tsx`, for example `app/(auth)/login/_components/`. The rules are in [AGENTS.md](AGENTS.md#where-components-go) and the reasons in [project-structure.md](docs/project-structure.md).
+
 ## Docs
 
 | Area | Doc | Status |
 | --- | --- | --- |
 | Routing | [routing.md](docs/routing.md) | In progress |
+| Project structure | [project-structure.md](docs/project-structure.md) | Done |
 | Authentication | [authentication.md](docs/authentication.md) | In progress (screens only) |
 | Configuration | [configuration.md](docs/configuration.md) | In progress |
 | API client | [api-client.md](docs/api-client.md) | Not started |

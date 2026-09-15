@@ -10,7 +10,8 @@ How staff sign in, how the API keeps them signed in and protects routes, and wha
 
 - **Staff sign in with email and password.** The backend is built and covered by e2e tests. The frontend isn't wired to it yet.
 - **Code:** [src/auth/](../src/auth/). The controller is [auth.controller.ts](../src/auth/auth.controller.ts); sessions live in [sessions.service.ts](../src/auth/sessions.service.ts), sign-in and passwords in [auth.service.ts](../src/auth/auth.service.ts), invitations in [invitations.service.ts](../src/auth/invitations.service.ts), and the guards in [guards/](../src/auth/guards/).
-- **Every route needs a session** unless it's marked `@Public()`. The public routes today are `GET /api`, sign-in, sign-out, forgot and reset password, and accepting an invitation.
+- **Every route needs a session** unless it's marked `@Public()`. The public routes today are `GET /api`, the [health checks](operations.md#health-checks), sign-in, sign-out, forgot and reset password, and accepting an invitation.
+- **To try the endpoints in a browser,** use the [API docs](api-conventions.md#api-docs) at `/api/docs`.
 - **No user management API yet.** There's no endpoint to list staff, change a role or deactivate someone. Until there is, do it in the database (`pnpm db:studio`).
 - **Candidate links:** not started. See [Proposed approach](#proposed-approach-candidate-links).
 

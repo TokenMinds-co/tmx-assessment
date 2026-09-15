@@ -4,7 +4,7 @@
 
 ## Scope
 
-The route map, layouts and route groups, and which routes are for staff and which for candidates. Who can open which route is in [authentication.md](authentication.md).
+The route map, layouts and route groups, and which routes are for staff and which for candidates. Who can open which route is in [authentication.md](authentication.md), and where a page's components go is in [project-structure.md](project-structure.md).
 
 ## Current state
 
@@ -20,7 +20,7 @@ Two route groups, each with its own layout:
 
 - **`(app)`** ([layout](<../app/(app)/layout.tsx>)) is the staff app shell: sidebar, topbar and page. It reads the `sidebar_state` cookie, so its pages render on each request.
 - **`(auth)`** ([layout](<../app/(auth)/layout.tsx>)) is the TMX HR logo above one centered card.
-- **Navigation** comes from [components/layout/nav-items.ts](../components/layout/nav-items.ts). Candidates, Jobs, Assessments and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
+- **Navigation** comes from [components/shared/nav-items.ts](../components/shared/nav-items.ts). Candidates, Jobs, Assessments and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
 - **No route is protected yet.** Every page opens without signing in; see [authentication.md](authentication.md).
 - **Metadata:** page titles use the template `%s · TMX HR`, and every page is `noindex, nofollow` ([app/layout.tsx](../app/layout.tsx)).
 
@@ -68,5 +68,6 @@ When one of these ships, remove `soon` from its row in `nav-items.ts`.
 - Next.js 16 project structure docs: `node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md`. Next.js 16 has breaking changes, so check these docs before using an API (see [AGENTS.md](../AGENTS.md)).
 - [authentication.md](authentication.md)
 - [dashboard.md](dashboard.md)
+- [project-structure.md](project-structure.md)
 - [recruitment-pipeline.md](recruitment-pipeline.md)
 - [assessments.md](assessments.md)

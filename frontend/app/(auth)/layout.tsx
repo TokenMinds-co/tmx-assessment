@@ -1,4 +1,4 @@
-import { TmxHrLogo } from "@/components/brand/tmx-hr-logo";
+import { TmxHrLogo } from "@/components/shared/tmx-hr-logo";
 
 /** The sign-in pages: the TMX HR logo above one centered card on the canvas. */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { InfoIcon } from "lucide-react";
-import { AssessmentCard } from "@/components/dashboard/assessment-card";
-import { PipelineCard } from "@/components/dashboard/pipeline-card";
-import { RecentResultsCard } from "@/components/dashboard/recent-results-card";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import {
   SAMPLE_ASSESSMENTS,
   SAMPLE_PIPELINE,
   SAMPLE_RECENT_RESULTS,
 } from "@/lib/sample-data";
+import { AssessmentCard } from "./_components/assessment-card";
+import { PipelineCard } from "./_components/pipeline-card";
+import { RecentResultsCard } from "./_components/recent-results-card";
 
 export const metadata: Metadata = { title: "Dashboard" };
 

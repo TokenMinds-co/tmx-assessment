@@ -1,4 +1,3 @@
-import type { Pipeline } from "@/components/dashboard/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Pipeline } from "@/lib/dashboard-types";
 import { initials, percentOf } from "@/lib/format";
 import { cn } from "@/lib/utils";
 

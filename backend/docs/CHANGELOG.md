@@ -17,11 +17,18 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 - Unit tests for config, passwords, tokens and email templates; e2e tests for every auth flow against the local database. See [testing](testing.md).
 - A "Decisions" section in the area docs, recording what was decided, why, and whether the team asked for it.
 - Project docs: [README](../README.md) and area docs for [API conventions](api-conventions.md), [authentication](authentication.md), [configuration](configuration.md), [database](database.md), [email](email.md), [recruitment pipeline](recruitment-pipeline.md), [assessments](assessments.md), [question generation](question-generation.md) and [testing](testing.md).
+- API docs: Swagger UI at `/api/docs` and the OpenAPI document at `/api/docs/json`, served outside production. See [API conventions](api-conventions.md#api-docs).
+- Health checks at `/api/health/live` and `/api/health/ready`, built with `@nestjs/terminus`. See [operations](operations.md).
+- A startup log with the port, the environment, the API, health and docs URLs, and the CORS origins.
+- `CORS_ORIGINS`, for extra origins CORS allows. See [configuration](configuration.md).
+- Area doc: [operations](operations.md).
 
 ### Changed
 
 - The default port is now 4000 instead of 3000, so the backend and the frontend dev server can run side by side.
-- The scaffold's `GET /` is now `GET /api`, and it's public.
+- The scaffold's `GET /` is now `GET /api`, and it's public. It's hidden from the API docs.
+- CORS now lists its allowed methods and headers, and lets browsers cache preflight answers for 10 minutes.
+- The Origin check also allows the API's own origin, so the docs page can send requests.
 
 ## [0.0.1] - 2026-09-15
 

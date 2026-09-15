@@ -1,6 +1,6 @@
-import { PasswordInput } from "@/components/auth/password-input";
-import { MIN_PASSWORD_LENGTH, type NewPasswordErrors } from "@/components/auth/validation";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { MIN_PASSWORD_LENGTH, type NewPasswordErrors } from "@/lib/validation";
 
 /**
  * The password and confirmation fields of a form that sets a new password.

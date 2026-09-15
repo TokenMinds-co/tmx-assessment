@@ -8,7 +8,7 @@ import type {
   AssessmentSummary,
   Pipeline,
   RecentResult,
-} from "@/components/dashboard/types";
+} from "@/lib/dashboard-types";
 
 export interface SampleUser {
   name: string;

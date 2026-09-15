@@ -1,14 +1,28 @@
+import { ApiProperty } from '@nestjs/swagger';
 import type { User } from '../../generated/prisma/client';
-import type { UserRole, UserStatus } from '../../generated/prisma/enums';
+import { UserRole, UserStatus } from '../../generated/prisma/enums';
 
 /** A user as the API returns it. Never includes the password hash. */
 export class UserResponseDto {
+  @ApiProperty({ format: 'uuid' })
   id!: string;
+
+  @ApiProperty({ format: 'email', example: 'ada@tokenminds.co' })
   email!: string;
+
+  @ApiProperty({ example: 'Ada Lovelace' })
   name!: string;
+
+  @ApiProperty({ enum: UserRole, enumName: 'UserRole' })
   role!: UserRole;
+
+  @ApiProperty({ enum: UserStatus, enumName: 'UserStatus' })
   status!: UserStatus;
+
+  @ApiProperty({ type: String, format: 'date-time', nullable: true })
   lastLoginAt!: Date | null;
+
+  @ApiProperty({ type: String, format: 'date-time' })
   createdAt!: Date;
 
   static from(user: User): UserResponseDto {
@@ -24,12 +38,19 @@ export class UserResponseDto {
   }
 }
 
-export interface UserEnvelope {
-  user: UserResponseDto;
+export class UserEnvelopeDto {
+  @ApiProperty({ type: UserResponseDto })
+  user!: UserResponseDto;
 }
 
-export interface InvitationResponse {
-  user: UserResponseDto;
-  /** When the emailed link stops working. */
-  expiresAt: Date;
+export class InvitationResponseDto {
+  @ApiProperty({ type: UserResponseDto })
+  user!: UserResponseDto;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: 'When the emailed link stops working.',
+  })
+  expiresAt!: Date;
 }

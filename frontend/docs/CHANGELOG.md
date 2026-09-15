@@ -8,6 +8,7 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Added
 
+- [project-structure.md](project-structure.md), and a "Where components go" section in `AGENTS.md` with the placement rules.
 - TMX design system on shadcn/ui (style `radix-vega`, Radix primitives, lucide icons). The TMX Visibility colors, Inter, type scale, radii, shadows and gradients are mapped onto shadcn's tokens, and Button, Input, Card, Badge, Alert, Dropdown menu, Table and Sidebar are customized to match. See [design-system.md](design-system.md).
 - TMX HR logo and favicon, built from the TMX brand artwork.
 - App shell: a gradient sidebar that collapses and becomes a sheet on phones, and a topbar with a breadcrumb and an account menu. See [design-system.md](design-system.md#app-shell).
@@ -20,6 +21,7 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Changed
 
+- Components are placed by where they're used: a page's own components in a `_components/` folder next to it, components used by more than one page in `components/shared/`, and shadcn/ui in `components/ui/`. This replaces `components/auth/`, `brand/`, `layout/` and `dashboard/`. The form validation moved to `lib/validation.ts` and the dashboard types to `lib/dashboard-types.ts`. See [project-structure.md](project-structure.md).
 - The UI font is Inter instead of Geist. Geist Mono stays for code.
 - ESLint skips `.agents/`, the vendored agent skill scripts.
 

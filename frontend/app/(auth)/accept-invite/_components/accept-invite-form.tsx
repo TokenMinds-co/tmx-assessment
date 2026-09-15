@@ -2,12 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AuthCard } from "@/components/auth/auth-card";
-import { NewPasswordFields } from "@/components/auth/new-password-fields";
-import { newPasswordErrors, type NewPasswordErrors } from "@/components/auth/validation";
+import { AuthCard } from "@/components/shared/auth-card";
+import { NewPasswordFields } from "@/components/shared/new-password-fields";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { newPasswordErrors, type NewPasswordErrors } from "@/lib/validation";
 
 /**
  * Finishes an invitation: the new staff member sets a password and, if they

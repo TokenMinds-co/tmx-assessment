@@ -11,7 +11,7 @@ The UI component library, design tokens, theming, typography, icons, brand asset
 - **shadcn/ui is set up** ([components.json](../components.json)): style `radix-vega`, Radix primitives, lucide icons. Components live in [components/ui/](../components/ui/), with kebab-case file names as the shadcn CLI writes them.
 - **The TMX theme** from TMX Visibility (`tmx-visibility-lite`) is in [app/globals.css](../app/globals.css): colors, fonts, type scale, radii, shadows and gradients, mapped onto shadcn's semantic tokens.
 - **Brand assets** are in [public/brand/](../public/brand/). The favicon is [app/icon.png](../app/icon.png), plus [app/apple-icon.png](../app/apple-icon.png).
-- **Shared UI built on top:** the TMX HR logo ([components/brand/tmx-hr-logo.tsx](../components/brand/tmx-hr-logo.tsx)), the app shell ([components/layout/](../components/layout/)) and the sign-in card ([components/auth/auth-card.tsx](../components/auth/auth-card.tsx)).
+- **Shared UI built on top** is in [components/shared/](../components/shared/): the TMX HR logo, the app shell and the sign-in card. Where components go is in [project-structure.md](project-structure.md).
 - **Light theme only.**
 
 ## Requirements
@@ -109,7 +109,7 @@ Two more contrast fixes live in components. Inputs use the `rule-2` border inste
 
 ### Brand and logo
 
-- **TMX HR lockup** ([components/brand/tmx-hr-logo.tsx](../components/brand/tmx-hr-logo.tsx)), used on the sign-in pages: the TMX wordmark artwork, then "HR" set in Inter at the same cap height, in the logo's ink color. The wordmark ([public/brand/tmx-wordmark.png](../public/brand/tmx-wordmark.png)) is cropped from the TMX Visibility logo, so the artwork is the brand's own and only "HR" is type.
+- **TMX HR lockup** ([components/shared/tmx-hr-logo.tsx](../components/shared/tmx-hr-logo.tsx)), used on the sign-in pages: the TMX wordmark artwork, then "HR" set in Inter at the same cap height, in the logo's ink color. The wordmark ([public/brand/tmx-wordmark.png](../public/brand/tmx-wordmark.png)) is cropped from the TMX Visibility logo, so the artwork is the brand's own and only "HR" is type.
 - **Mark** ([public/brand/tmx-mark.png](../public/brand/tmx-mark.png)): the white TMX tile, shown at 36px in the sidebar next to "TMX HR".
 - **Favicon:** the TMX mark, copied from the reference. The Next.js `favicon.ico` is gone.
 
@@ -117,10 +117,10 @@ Two more contrast fixes live in components. Inputs use the `rule-2` border inste
 
 Built from shadcn's `Sidebar` in [app/(app)/layout.tsx](<../app/(app)/layout.tsx>):
 
-- **Sidebar rail** ([components/layout/app-sidebar.tsx](../components/layout/app-sidebar.tsx)): the violet gradient, 270px wide or 68px collapsed. The Collapse button and Ctrl/⌘+B toggle it. The choice is kept in the `sidebar_state` cookie, which the layout reads so the first paint has the right width. Under 768px ([hooks/use-mobile.ts](../hooks/use-mobile.ts)) the rail becomes a 276px sheet, opened from the topbar's menu button and closed when a link is picked. The sheet has no footer: its version line would sit on the gradient's lightest end at about 4:1 contrast.
-- **Navigation** comes from one list, [components/layout/nav-items.ts](../components/layout/nav-items.ts). Every row sits under a group heading. When the rail is collapsed, headings turn into hairlines and labels into tooltips. Rows marked `soon` are dimmed, carry a "Soon" badge, and are neither links nor tab stops.
-- **Topbar** ([components/layout/topbar.tsx](../components/layout/topbar.tsx)): 77px tall (60px on phones), white, with a breadcrumb ("TMX HR › page") and the account menu.
-- **Pages** render inside `<main>` on the page background with `p-4 md:p-6`, and open with [PageHeader](../components/layout/page-header.tsx).
+- **Sidebar rail** ([components/shared/app-sidebar.tsx](../components/shared/app-sidebar.tsx)): the violet gradient, 270px wide or 68px collapsed. The Collapse button and Ctrl/⌘+B toggle it. The choice is kept in the `sidebar_state` cookie, which the layout reads so the first paint has the right width. Under 768px ([hooks/use-mobile.ts](../hooks/use-mobile.ts)) the rail becomes a 276px sheet, opened from the topbar's menu button and closed when a link is picked. The sheet has no footer: its version line would sit on the gradient's lightest end at about 4:1 contrast.
+- **Navigation** comes from one list, [components/shared/nav-items.ts](../components/shared/nav-items.ts). Every row sits under a group heading. When the rail is collapsed, headings turn into hairlines and labels into tooltips. Rows marked `soon` are dimmed, carry a "Soon" badge, and are neither links nor tab stops.
+- **Topbar** ([components/shared/topbar.tsx](../components/shared/topbar.tsx)): 77px tall (60px on phones), white, with a breadcrumb ("TMX HR › page") and the account menu.
+- **Pages** render inside `<main>` on the page background with `p-4 md:p-6`, and open with [PageHeader](../components/shared/page-header.tsx).
 - **Sign-in pages** use their own layout: the logo above one centered card ([app/(auth)/layout.tsx](<../app/(auth)/layout.tsx>)).
 
 Two differences from the reference shell: the whole page scrolls (the rail is fixed and the topbar sticky) instead of only `<main>`, and the rail doesn't force itself collapsed below 1280px. The reference did that to fit its editor's chat column, which TMX HR doesn't have.

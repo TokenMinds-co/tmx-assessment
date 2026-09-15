@@ -9,9 +9,9 @@ Unit and end-to-end tests: tools, file layout, commands and conventions.
 ## Current state
 
 - **Jest 30 with ts-jest.**
-- **Unit tests** are `*.spec.ts` files next to the code in `src/`. Their config is the `jest` block in [package.json](../package.json). They cover config checks, password hashing, tokens and email templates.
-- **E2E tests** are `*.e2e-spec.ts` files in `test/` and use Supertest. Their config is [test/jest-e2e.json](../test/jest-e2e.json). [auth.e2e-spec.ts](../test/auth.e2e-spec.ts) covers every auth flow: sign-in and cookie flags, identical errors for unknown emails and wrong passwords, validation, bearer tokens, sign-out, the Origin check, invitations and roles, password reset, password change and deactivated accounts.
-- On 2026-09-15: 17 unit tests and 19 e2e tests, all passing.
+- **Unit tests** are `*.spec.ts` files next to the code in `src/`. Their config is the `jest` block in [package.json](../package.json). They cover config checks, the Origin check, password hashing, tokens and email templates.
+- **E2E tests** are `*.e2e-spec.ts` files in `test/` and use Supertest. Their config is [test/jest-e2e.json](../test/jest-e2e.json). [auth.e2e-spec.ts](../test/auth.e2e-spec.ts) covers every auth flow: sign-in and cookie flags, identical errors for unknown emails and wrong passwords, validation, bearer tokens, sign-out, the Origin check, invitations and roles, password reset, password change and deactivated accounts. [app.e2e-spec.ts](../test/app.e2e-spec.ts) covers the health checks, the API docs and CORS.
+- On 2026-09-15: 24 unit tests and 26 e2e tests, all passing.
 - Coverage reports go to `coverage/`, which git ignores.
 - There's no CI yet.
 

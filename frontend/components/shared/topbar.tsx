@@ -2,8 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { MenuIcon } from "lucide-react";
-import { NAV_ITEMS, isNavItemActive } from "@/components/layout/nav-items";
-import { UserMenu } from "@/components/layout/user-menu";
+import { NAV_ITEMS, isNavItemActive } from "@/components/shared/nav-items";
+import { UserMenu } from "@/components/shared/user-menu";
 import {
   Breadcrumb,
   BreadcrumbItem,

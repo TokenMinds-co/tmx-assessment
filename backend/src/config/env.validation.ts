@@ -48,6 +48,13 @@ export class EnvironmentVariables {
   })
   FRONTEND_URL!: string;
 
+  /** Extra origins CORS allows, comma-separated. FRONTEND_URL is always allowed. */
+  @IsOptional()
+  @Matches(/^https?:\/\/[^\s,]+(\s*,\s*https?:\/\/[^\s,]+)*$/, {
+    message: 'CORS_ORIGINS must be a comma-separated list of http(s) origins',
+  })
+  CORS_ORIGINS?: string;
+
   @IsInt()
   @Min(1)
   @Max(30)

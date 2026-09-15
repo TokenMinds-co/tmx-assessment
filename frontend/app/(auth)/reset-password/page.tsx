@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { InvalidLink } from "@/components/auth/invalid-link";
-import { ResetPasswordForm } from "@/components/auth/reset-password-form";
+import { InvalidLink } from "@/components/shared/invalid-link";
+import { ResetPasswordForm } from "./_components/reset-password-form";
 
 export const metadata: Metadata = { title: "Choose a new password" };
 

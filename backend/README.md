@@ -2,13 +2,14 @@
 
 REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-> **Status: authentication is built.** Staff sign in with email and password, and admins invite staff by email. The frontend isn't wired to the API yet. Next are the recruitment pipeline and assessments.
+> **Status: authentication is built.** Staff sign in with email and password, and admins invite staff by email. The API has interactive docs and health checks. The frontend isn't wired to the API yet. Next are the recruitment pipeline and assessments.
 
 ## Stack
 
 - NestJS 11 on Express, TypeScript 5
 - PostgreSQL on Prisma Postgres, through Prisma ORM 7. See [database.md](docs/database.md).
 - Resend for email. See [email.md](docs/email.md).
+- Swagger (`@nestjs/swagger`) for the API docs, Terminus for health checks
 - Jest 30 and Supertest for tests
 - ESLint 9 and Prettier (single quotes, trailing commas)
 - pnpm
@@ -25,8 +26,17 @@ pnpm install        # also generates Prisma Client
 cp .env.example .env
 pnpm db:start       # starts local Prisma Postgres; put the URL it prints in .env as DATABASE_URL
 pnpm db:migrate     # creates the tables
-pnpm start:dev      # http://localhost:4000/api
+pnpm start:dev
 ```
+
+The startup log prints where everything is:
+
+| What | URL |
+| --- | --- |
+| API | http://localhost:4000/api |
+| API docs (Swagger UI) | http://localhost:4000/api/docs |
+| OpenAPI document | http://localhost:4000/api/docs/json |
+| Health check | http://localhost:4000/api/health/ready |
 
 All settings live in `.env`; see [configuration.md](docs/configuration.md). While `RESEND_API_KEY` is empty, emails are printed in the terminal instead of sent.
 
@@ -38,7 +48,7 @@ Accounts are invite-only, so the first admin comes from the command line:
 pnpm auth:invite-admin --email you@tokenminds.co --name "Your Name"
 ```
 
-It prints the invitation link. Until the frontend has its `/accept-invite` page, accept the invitation with the token from that link:
+It prints the invitation link. Until the frontend has its `/accept-invite` page, accept the invitation with the token from that link, either in the API docs (`POST /api/auth/invitations/accept`) or with curl:
 
 ```bash
 curl -X POST http://localhost:4000/api/auth/invitations/accept \
@@ -77,14 +87,15 @@ backend/
 │   └── migrations/         # One folder per migration, committed
 ├── prisma.config.ts        # Prisma CLI config
 ├── src/
-│   ├── main.ts             # Bootstrap: creates the app, listens on PORT
-│   ├── app.setup.ts        # HTTP setup, shared with the e2e tests
+│   ├── main.ts             # Bootstrap: creates the app, listens on PORT, logs the URLs
+│   ├── app.setup.ts        # HTTP setup (CORS, validation, docs), shared with the e2e tests
 │   ├── app.module.ts       # Root module: config, rate limits, feature modules
 │   ├── auth/               # Sign-in, sessions, passwords, invitations, guards
+│   ├── health/             # Liveness and readiness checks
 │   ├── mail/               # Email templates and transports (Resend)
 │   ├── prisma/             # PrismaService
 │   ├── config/             # Environment variable checks
-│   ├── common/             # Shared middleware
+│   ├── common/             # Shared middleware and the API docs setup
 │   ├── cli/                # Command-line scripts
 │   └── generated/          # Prisma Client (generated, gitignored)
 ├── test/                   # E2E tests and their helpers
@@ -92,7 +103,7 @@ backend/
 └── .agents/skills/         # Agent skills for NestJS and Prisma
 ```
 
-New code goes into feature modules, one per domain (for example `src/candidates/` or `src/assessments/`), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes).
+New code goes into feature modules, one per domain (for example `src/candidates/` or `src/assessments/`), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes). Document every endpoint for Swagger; see [api-conventions.md](docs/api-conventions.md#api-docs).
 
 ## Docs
 
@@ -103,6 +114,7 @@ New code goes into feature modules, one per domain (for example `src/candidates/
 | Configuration | [configuration.md](docs/configuration.md) | In progress |
 | Database | [database.md](docs/database.md) | In progress |
 | Email | [email.md](docs/email.md) | In progress |
+| Operations | [operations.md](docs/operations.md) | In progress |
 | Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
 | Assessments | [assessments.md](docs/assessments.md) | Not started |
 | Question generation | [question-generation.md](docs/question-generation.md) | Not started |

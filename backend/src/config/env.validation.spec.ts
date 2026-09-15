@@ -47,4 +47,18 @@ describe('validateEnv', () => {
       validateEnv({ ...production, RESEND_API_KEY: 're_123' }).RESEND_API_KEY,
     ).toBe('re_123');
   });
+
+  it('accepts a comma-separated CORS_ORIGINS list', () => {
+    const origins = 'https://hr.tokenminds.co, http://localhost:3001';
+
+    expect(
+      validateEnv({ ...required, CORS_ORIGINS: origins }).CORS_ORIGINS,
+    ).toBe(origins);
+  });
+
+  it('rejects CORS_ORIGINS entries that are not http(s) URLs', () => {
+    expect(() =>
+      validateEnv({ ...required, CORS_ORIGINS: 'hr.tokenminds.co' }),
+    ).toThrow(/CORS_ORIGINS/);
+  });
 });

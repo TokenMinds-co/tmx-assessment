@@ -1,5 +1,4 @@
 import { TriangleAlertIcon } from "lucide-react";
-import type { AssessmentSummary } from "@/components/dashboard/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -11,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { AssessmentSummary } from "@/lib/dashboard-types";
 import { percentOf } from "@/lib/format";
 import { cn } from "@/lib/utils";
 

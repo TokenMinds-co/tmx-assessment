@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PanelLeftCloseIcon, PanelLeftOpenIcon, XIcon } from "lucide-react";
 import mark from "@/public/brand/tmx-mark.png";
-import { NAV_GROUPS, isNavItemActive, type NavItem } from "@/components/layout/nav-items";
+import { NAV_GROUPS, isNavItemActive, type NavItem } from "@/components/shared/nav-items";
 import {
   Sidebar,
   SidebarContent,

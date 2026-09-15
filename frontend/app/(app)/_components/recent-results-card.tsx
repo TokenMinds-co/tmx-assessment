@@ -1,6 +1,6 @@
-import type { RecentResult } from "@/components/dashboard/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { RecentResult } from "@/lib/dashboard-types";
 import { formatShortDate, initials } from "@/lib/format";
 
 /** The candidates who most recently finished their tests, newest first. */

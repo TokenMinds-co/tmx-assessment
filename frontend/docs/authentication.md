@@ -13,13 +13,13 @@ The sign-in screens, how the browser holds the session, protecting staff pages a
 
 | Route | File | Backend endpoint | What it does today |
 | --- | --- | --- | --- |
-| `/login` | [login-form.tsx](../components/auth/login-form.tsx) | `POST /api/auth/login` | Checks both fields are filled in and the email looks valid, then goes to the dashboard. Nothing is checked against an account. |
-| `/forgot-password` | [forgot-password-form.tsx](../components/auth/forgot-password-form.tsx) | `POST /api/auth/password/forgot` | Checks the email, then shows "Check your inbox". No email is sent. |
-| `/reset-password?token=…` | [reset-password-form.tsx](../components/auth/reset-password-form.tsx) | `POST /api/auth/password/reset` | Checks the new password (12 to 128 characters) and its confirmation, then shows "Password updated". |
-| `/accept-invite?token=…` | [accept-invite-form.tsx](../components/auth/accept-invite-form.tsx) | `POST /api/auth/invitations/accept` | Same password checks, plus an optional name, then goes to the dashboard, because the backend signs the new user straight in. |
+| `/login` | [login-form.tsx](<../app/(auth)/login/_components/login-form.tsx>) | `POST /api/auth/login` | Checks both fields are filled in and the email looks valid, then goes to the dashboard. Nothing is checked against an account. |
+| `/forgot-password` | [forgot-password-form.tsx](<../app/(auth)/forgot-password/_components/forgot-password-form.tsx>) | `POST /api/auth/password/forgot` | Checks the email, then shows "Check your inbox". No email is sent. |
+| `/reset-password?token=…` | [reset-password-form.tsx](<../app/(auth)/reset-password/_components/reset-password-form.tsx>) | `POST /api/auth/password/reset` | Checks the new password (12 to 128 characters) and its confirmation, then shows "Password updated". |
+| `/accept-invite?token=…` | [accept-invite-form.tsx](<../app/(auth)/accept-invite/_components/accept-invite-form.tsx>) | `POST /api/auth/invitations/accept` | Same password checks, plus an optional name, then goes to the dashboard, because the backend signs the new user straight in. |
 
-- **Without a token,** `/reset-password` and `/accept-invite` show [invalid-link.tsx](../components/auth/invalid-link.tsx). Any token shows the form, so `?token=preview` works for a look.
-- **Shared pieces:** [auth-card.tsx](../components/auth/auth-card.tsx) (the card), [password-input.tsx](../components/auth/password-input.tsx) (the show/hide toggle), [new-password-fields.tsx](../components/auth/new-password-fields.tsx) (password plus confirmation) and [validation.ts](../components/auth/validation.ts) (the email check and the password length).
+- **Without a token,** `/reset-password` and `/accept-invite` show [invalid-link.tsx](../components/shared/invalid-link.tsx). Any token shows the form, so `?token=preview` works for a look.
+- **Shared pieces:** [auth-card.tsx](../components/shared/auth-card.tsx) (the card), [password-input.tsx](../components/shared/password-input.tsx) (the show/hide toggle), [new-password-fields.tsx](../components/shared/new-password-fields.tsx) (password plus confirmation) and [validation.ts](../lib/validation.ts) (the email check and the password length).
 - **No session and no protected routes.** Every page opens without signing in. The account menu shows a sample user, and "Sign out" just links to `/login`.
 
 ## Requirements
@@ -42,7 +42,7 @@ The backend's [Wiring the frontend](../../backend/docs/authentication.md#wiring-
 1. **`handleSubmit` in each form:** call the endpoint in the table above. Show field messages under their fields, and anything else (`Invalid email or password.`, `This account has been deactivated.`, rate limits) in an `Alert variant="destructive"` above the fields.
 2. **Reset and invitation links:** when the backend answers `This link is invalid or has expired.`, show `InvalidLink` instead of the form.
 3. **Protect the `(app)` routes:** add `proxy.ts` to send visitors without a `tmx_hr_session` cookie to `/login`, and confirm the session with `GET /api/auth/me` in the data layer, since a cookie can outlive its session.
-4. **Account menu:** replace `SAMPLE_USER` in [user-menu.tsx](../components/layout/user-menu.tsx) with the user from `GET /api/auth/me`, and make "Sign out" call `POST /api/auth/logout`.
+4. **Account menu:** replace `SAMPLE_USER` in [user-menu.tsx](../components/shared/user-menu.tsx) with the user from `GET /api/auth/me`, and make "Sign out" call `POST /api/auth/logout`.
 
 ## Proposed approach
 

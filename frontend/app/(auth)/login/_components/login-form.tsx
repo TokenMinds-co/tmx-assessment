@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PasswordInput } from "@/components/auth/password-input";
-import { emailError } from "@/components/auth/validation";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { emailError } from "@/lib/validation";
 
 interface LoginErrors {
   email?: string;

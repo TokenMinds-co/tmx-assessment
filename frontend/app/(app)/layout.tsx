@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { Topbar } from "@/components/layout/topbar";
+import { AppSidebar } from "@/components/shared/app-sidebar";
+import { Topbar } from "@/components/shared/topbar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 /** The staff app shell: sidebar rail, topbar, and the page on the canvas. */

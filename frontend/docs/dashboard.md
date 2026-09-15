@@ -9,7 +9,7 @@ The staff home page at `/`: what someone running the pipeline sees first. The pi
 ## Current state
 
 - **The page** is [app/(app)/page.tsx](<../app/(app)/page.tsx>), inside the app shell.
-- **Three cards** in [components/dashboard/](../components/dashboard/): Pipeline, Assessments and Recent results.
+- **Three cards** in [app/(app)/_components/](<../app/(app)/_components/>), the page's own components: Pipeline, Assessments and Recent results.
 - **Sample data only.** The numbers come from [lib/sample-data.ts](../lib/sample-data.ts), and the page header shows a "Sample data" badge. Nothing calls the API.
 
 ## Requirements
@@ -22,15 +22,15 @@ Agreed with the user on 2026-09-15:
 
 ## How it works
 
-- **Pipeline card** ([pipeline-card.tsx](../components/dashboard/pipeline-card.tsx)): one cell per stage, in pipeline order, showing the candidate count, its share of the pipeline, a bar and the stage owner. All bars share one scale (the largest stage), so their lengths compare across cells. Below the cells, a table breaks the same counts down by open role, which also serves as the text version of the bars. When there are more stages than fit, the row of cells scrolls sideways.
-- **Assessments card** ([assessment-card.tsx](../components/dashboard/assessment-card.tsx)): one stacked bar of the candidates who were sent tests, split into not started, in progress and completed. A legend carries every number, and each segment has a hover tooltip. Invitations that expired are counted separately, with a warning icon. A table lists each test's time limit, completed attempts and average score as a 0–100 meter.
-- **Recent results card** ([recent-results-card.tsx](../components/dashboard/recent-results-card.tsx)): the latest candidates to finish their tests, with their role, number of tests, average score and date.
-- **Stages, owners and roles are data.** The cards render whatever arrays they get, in the shapes defined in [components/dashboard/types.ts](../components/dashboard/types.ts). No component hardcodes a stage or status name.
+- **Pipeline card** ([pipeline-card.tsx](<../app/(app)/_components/pipeline-card.tsx>)): one cell per stage, in pipeline order, showing the candidate count, its share of the pipeline, a bar and the stage owner. All bars share one scale (the largest stage), so their lengths compare across cells. Below the cells, a table breaks the same counts down by open role, which also serves as the text version of the bars. When there are more stages than fit, the row of cells scrolls sideways.
+- **Assessments card** ([assessment-card.tsx](<../app/(app)/_components/assessment-card.tsx>)): one stacked bar of the candidates who were sent tests, split into not started, in progress and completed. A legend carries every number, and each segment has a hover tooltip. Invitations that expired are counted separately, with a warning icon. A table lists each test's time limit, completed attempts and average score as a 0–100 meter.
+- **Recent results card** ([recent-results-card.tsx](<../app/(app)/_components/recent-results-card.tsx>)): the latest candidates to finish their tests, with their role, number of tests, average score and date.
+- **Stages, owners and roles are data.** The cards render whatever arrays they get, in the shapes defined in [lib/dashboard-types.ts](../lib/dashboard-types.ts). No component hardcodes a stage or status name.
 - Chart colors and mark rules are in [design-system.md](design-system.md#charts).
 
 ### Replacing the sample data
 
-1. Add the API queries (see [data-fetching.md](data-fetching.md) and [query-keys.md](query-keys.md)) and map the responses to the types in `components/dashboard/types.ts`.
+1. Add the API queries (see [data-fetching.md](data-fetching.md) and [query-keys.md](query-keys.md)) and map the responses to the types in `lib/dashboard-types.ts`.
 2. Pass the real data into the cards from [app/(app)/page.tsx](<../app/(app)/page.tsx>), and remove the "Sample data" badge.
 3. Replace `SAMPLE_USER` in the account menu with the signed-in user (see [authentication.md](authentication.md)).
 4. Delete [lib/sample-data.ts](../lib/sample-data.ts).

@@ -1,4 +1,3 @@
-import { IsOptional } from 'class-validator';
 import { IsEmailToken, IsNewPassword, IsPersonName } from './validators';
 
 export class AcceptInvitationDto {
@@ -9,7 +8,6 @@ export class AcceptInvitationDto {
   password!: string;
 
   /** Lets the new staff member correct the name the admin typed. */
-  @IsOptional()
-  @IsPersonName()
+  @IsPersonName({ required: false })
   name?: string;
 }

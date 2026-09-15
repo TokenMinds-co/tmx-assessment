@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { TriangleAlertIcon } from "lucide-react";
-import { AuthCard } from "@/components/auth/auth-card";
+import { AuthCard } from "@/components/shared/auth-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
