@@ -1,26 +1,27 @@
 # Authentication
 
-**Status:** In progress (screens only) · **Last updated:** 2026-09-15
+**Status:** In progress (staff sign-in done) · **Last updated:** 2026-09-15
 
 ## Scope
 
-The sign-in screens, how the browser holds the session, protecting staff pages and server-side data access, and how candidate links open tests. The API side (endpoints, sessions, roles and password rules) is in the backend's [authentication.md](../../backend/docs/authentication.md).
+The sign-in screens, how the browser holds the session, protecting staff pages and server-side data access, and how candidate links open tests. The API side (endpoints, sessions, roles and password rules) is in the backend's [authentication.md](../../backend/docs/authentication.md). How the frontend calls the API is in [api-client.md](api-client.md).
 
 ## Current state
 
-- **The backend's staff auth is built:** email and password, invite-only accounts and server-side sessions. See the backend doc. **The frontend isn't wired to it yet.**
-- **The screens exist, as UI only:**
+- **Staff sign-in is wired to the backend,** end to end: signing in and out, forgot and reset password, and accepting an invitation. Every staff page needs a live session. Checked in a browser against a local backend on 2026-09-15.
+- **Candidate links:** not started. See [Proposed approach](#proposed-approach-candidate-links).
+- **Not built yet:** screens for changing your password and for inviting staff. The backend has both endpoints.
 
-| Route | File | Backend endpoint | What it does today |
+| Screen | File | Backend endpoint | What it does |
 | --- | --- | --- | --- |
-| `/login` | [login-form.tsx](<../app/(auth)/login/_components/login-form.tsx>) | `POST /api/auth/login` | Checks both fields are filled in and the email looks valid, then goes to the dashboard. Nothing is checked against an account. |
-| `/forgot-password` | [forgot-password-form.tsx](<../app/(auth)/forgot-password/_components/forgot-password-form.tsx>) | `POST /api/auth/password/forgot` | Checks the email, then shows "Check your inbox". No email is sent. |
-| `/reset-password?token=…` | [reset-password-form.tsx](<../app/(auth)/reset-password/_components/reset-password-form.tsx>) | `POST /api/auth/password/reset` | Checks the new password (12 to 128 characters) and its confirmation, then shows "Password updated". |
-| `/accept-invite?token=…` | [accept-invite-form.tsx](<../app/(auth)/accept-invite/_components/accept-invite-form.tsx>) | `POST /api/auth/invitations/accept` | Same password checks, plus an optional name, then goes to the dashboard, because the backend signs the new user straight in. |
+| `/login` | [login-form.tsx](<../app/(auth)/login/_components/login-form.tsx>) | `POST /api/auth/login` | Signs in, then opens the page in `?next=` or the dashboard. A signed-in visitor skips the form. |
+| `/forgot-password` | [forgot-password-form.tsx](<../app/(auth)/forgot-password/_components/forgot-password-form.tsx>) | `POST /api/auth/password/forgot` | Asks for a reset email, then shows "Check your inbox", whether or not the account exists. |
+| `/reset-password?token=…` | [reset-password-form.tsx](<../app/(auth)/reset-password/_components/reset-password-form.tsx>) | `POST /api/auth/password/reset` | Sets the new password, then shows "Password updated" and a link to sign in. |
+| `/accept-invite?token=…` | [accept-invite-form.tsx](<../app/(auth)/accept-invite/_components/accept-invite-form.tsx>) | `POST /api/auth/invitations/accept` | Sets the password and, if given, a new name, then opens the dashboard: the API signs the new user in. |
+| Account menu | [user-menu.tsx](../components/shared/user-menu.tsx) | `POST /api/auth/logout` | Shows the signed-in user's name and email, and signs out. |
 
-- **Without a token,** `/reset-password` and `/accept-invite` show [invalid-link.tsx](../components/shared/invalid-link.tsx). Any token shows the form, so `?token=preview` works for a look.
-- **Shared pieces:** [auth-card.tsx](../components/shared/auth-card.tsx) (the card), [password-input.tsx](../components/shared/password-input.tsx) (the show/hide toggle), [new-password-fields.tsx](../components/shared/new-password-fields.tsx) (password plus confirmation) and [validation.ts](../lib/validation.ts) (the email check and the password length).
-- **No session and no protected routes.** Every page opens without signing in. The account menu shows a sample user, and "Sign out" just links to `/login`.
+- **Code:** [lib/api/auth.ts](../lib/api/auth.ts) holds the endpoint calls and the `User` type. [lib/session.ts](../lib/session.ts) is the server-side session check, [proxy.ts](../proxy.ts) the redirect for signed-out visitors, and [lib/sign-in-redirect.ts](../lib/sign-in-redirect.ts) builds and checks the `?next=` link.
+- **Shared pieces:** [auth-card.tsx](../components/shared/auth-card.tsx) (the card), [password-input.tsx](../components/shared/password-input.tsx) (the show/hide toggle), [new-password-fields.tsx](../components/shared/new-password-fields.tsx) (password plus confirmation), [form-error.tsx](../components/shared/form-error.tsx) (the API's message above the fields), [submit-button.tsx](../components/shared/submit-button.tsx) (the busy state), [invalid-link.tsx](../components/shared/invalid-link.tsx) and [validation.ts](../lib/validation.ts) (the email check and the password length).
 
 ## Requirements
 
@@ -30,27 +31,40 @@ The sign-in screens, how the browser holds the session, protecting staff pages a
 
 ## How it works
 
-- **The forms check only what the backend would reject on sight:** an empty or malformed email, a password outside 12 to 128 characters, or a confirmation that doesn't match. The message appears under the field. The backend stays the authority and returns its own messages; see the error table in its doc.
+### Signing in and out
+
+- **The browser calls `/api/auth/*` on the frontend's own origin,** and Next.js forwards the request to the backend (see [api-client.md](api-client.md)). So the API's `tmx_hr_session` cookie is set on the frontend's origin, httpOnly and `SameSite=Lax`. Page scripts can't read it.
+- **After signing in,** the form opens the page in `?next=` if it's on this site, and otherwise the dashboard. `pathAfterSignIn()` drops any value that resolves to another origin, such as `//evil.example`, so a crafted link can't send someone elsewhere after they sign in.
+- **Signing out** calls `POST /api/auth/logout`, then loads `/login` as a full page. That drops everything the session left in the browser's memory, including the router cache that Back would restore. If the call fails, the menu stays open and says so.
+- **Accepting an invitation** signs the new user in, and they land on the dashboard.
+- **A password reset** ends every session, including this browser's, and the user signs in again with the new password.
+
+### Protecting staff pages
+
+Two layers, following the Next.js 16 authentication guide:
+
+1. **[proxy.ts](../proxy.ts)** runs before every page. If there's no `tmx_hr_session` cookie, it redirects to `/login?next=<the page>`, or plain `/login` for the dashboard. It lets through the four sign-in pages, `/api/*` (where the backend answers 401 itself), Next.js's own files, and files with an extension. It only reads the cookie and never calls the API, because it runs on every request, prefetches included.
+2. **[lib/session.ts](../lib/session.ts)** asks the API. `getCurrentUser()` sends the cookie's token to `GET /api/auth/me` as a bearer token, with a 10-second timeout. It returns the user, or null on a 401, and React's `cache()` keeps it to one call per request. `requireUser()` redirects to `/login` when there's no user. The [(app) layout](<../app/(app)/layout.tsx>) calls it, so an ended session never renders the shell. The layout passes only the name and email to the account menu.
+
+- **A cookie doesn't mean a session.** It can outlive one: sessions end after 7 idle days, and a reset signs everyone out. With such a cookie, proxy.ts lets the request through, the layout's check fails, and the user lands on `/login`. The sign-in page asks the API too, so there's no redirect loop.
+- **A signed-in visitor skips `/login`.** The page asks the API, then redirects to `?next=` or the dashboard. If the API can't be reached, it shows the form anyway.
+- **Layouts don't re-render on client-side navigation.** A server component, server action or route handler that loads or changes staff data must call `requireUser()` itself, not rely on the layout. The dashboard only shows sample data, so it doesn't call it yet.
+- **If the API is down,** staff pages show Next.js's default error page ("This page couldn’t load"), and signing in says "Something went wrong on our side. Try again in a moment."
+
+### Forms
+
+- **The forms first check what the backend would reject on sight:** an empty or malformed email, a password outside 12 to 128 characters, or a confirmation that doesn't match. The message appears under the field, and nothing is sent.
+- **The API's answer appears in an alert above the fields,** such as `Invalid email or password.` or `This account has been deactivated.` The API's validation messages don't name a field, so they go there too. Messages the API doesn't word for people, such as its rate-limit message, are replaced (see [api-client.md](api-client.md#errors)).
+- **A reset or invitation link that the API turns down** as unknown, used or expired (`This link is invalid or has expired.`) swaps the form for the same "doesn't work" card as a link with no token: [invalid-reset-link.tsx](<../app/(auth)/reset-password/_components/invalid-reset-link.tsx>) and [invalid-invite-link.tsx](<../app/(auth)/accept-invite/_components/invalid-invite-link.tsx>).
+- **While a request runs,** the submit button is disabled and shows a spinner and a label such as "Signing in…". After signing in or accepting an invitation, it stays busy until the next page has loaded.
 - **Forgot password never reveals who has an account.** The confirmation reads the same either way, matching the backend, which always answers `202`.
-- **The token rides in a hidden field** on the reset and invitation forms, ready to send with the new password.
 - **The sign-in page says "No account? Ask an admin to invite you."** There's no sign-up page, because accounts are invite-only.
 
-### Wiring the screens to the backend
+### Trying it locally
 
-The backend's [Wiring the frontend](../../backend/docs/authentication.md#wiring-the-frontend) section covers cookies, `credentials: 'include'` and the production proxy. On this side:
-
-1. **`handleSubmit` in each form:** call the endpoint in the table above. Show field messages under their fields, and anything else (`Invalid email or password.`, `This account has been deactivated.`, rate limits) in an `Alert variant="destructive"` above the fields.
-2. **Reset and invitation links:** when the backend answers `This link is invalid or has expired.`, show `InvalidLink` instead of the form.
-3. **Protect the `(app)` routes:** add `proxy.ts` to send visitors without a `tmx_hr_session` cookie to `/login`, and confirm the session with `GET /api/auth/me` in the data layer, since a cookie can outlive its session.
-4. **Account menu:** replace `SAMPLE_USER` in [user-menu.tsx](../components/shared/user-menu.tsx) with the user from `GET /api/auth/me`, and make "Sign out" call `POST /api/auth/logout`.
-
-## Proposed approach
-
-For the parts not built yet, following the Next.js 16 authentication guide:
-
-- **Check auth close to the data.** A small data access layer (for example `verifySession()`) runs in server components, server actions and route handlers before they load or change data. See [`server-auth-actions`](../.agents/skills/vercel-react-best-practices/rules/server-auth-actions.md).
-- **Use `proxy.ts` only for quick redirects.** Next.js 16 renamed Middleware to Proxy. It runs on every route, including prefetches, so it should only read the cookie and never call the API or the database.
-- **Candidate pages** authenticate with the token in the link, which the backend verifies.
+1. Start the backend and the frontend, with `API_URL` in the frontend's `.env` set to the backend's address (see the [root README](../../README.md#quick-start)).
+2. In `backend/`, invite yourself: `pnpm auth:invite-admin --email you@tokenminds.co --name "Your Name"`. It prints the link. While the backend's `RESEND_API_KEY` is empty, emails, including reset links, are printed in the backend's terminal instead of sent.
+3. Open the link, choose a password, and you land on the dashboard, signed in.
 
 ## Decisions
 
@@ -62,20 +76,33 @@ For the parts not built yet, following the Next.js 16 authentication guide:
 | Sign-up page | None | Accounts are invite-only | Build default (backend) |
 | Which screens | Sign in, forgot password, reset password and accept invitation | The backend's emails link to the reset and invitation pages | Build default |
 | Password length in the forms | 12 to 128 characters | Matches the backend's only password rule | Build default (backend) |
-| Where the session lives | An httpOnly `tmx_hr_session` cookie set by the API | Page scripts can't read it | Build default (backend) |
+| Where the session lives | An httpOnly `tmx_hr_session` cookie set by the API, on the frontend's origin through the `/api` rewrite | Page scripts can't read it, and proxy.ts can | Build default (backend) |
 | Show/hide password toggle | On every password field | Fewer typos in long passwords | Build default |
 | Field checks | In the browser, with the message under the field (`noValidate`, so no browser bubbles) | Shows the designed error states, and the backend still checks everything | Build default |
-| Until the API is wired | A valid sign-in or invitation goes to the dashboard, and "Sign out" links to `/login` | The screens can be clicked through end to end in the meantime | Build default |
+| Protecting staff pages | proxy.ts redirects when there's no cookie, and the (app) layout confirms the session with `GET /api/auth/me` | The Next.js 16 guide: proxy for quick, optimistic redirects, and the real check close to the data. A cookie can outlive its session. | Build default |
+| How server code sends the session | The cookie's token as `Authorization: Bearer` | The backend accepts it, and it forwards only the session, not the browser's other cookies | Build default |
+| Where sign-in lands | The page in `?next=` when it's on this site, otherwise the dashboard | Someone sent to sign in from a link ends up where the link pointed. Off-site values are ignored, so the parameter can't be used as an open redirect. | Build default |
+| Signed-in visitors on `/login` | Sent on to `?next=` or the dashboard, once the API confirms the session | The backend's rule: never redirect on the cookie alone | Build default |
+| Where the API's errors show | In an alert above the fields; the browser's own checks stay under each field | The API's validation messages don't say which field they're about | Build default |
+| A rejected reset or invitation link | The same "doesn't work" card as a missing token, matched on the API's exact message | The backend has no error codes yet (an open decision in its [api-conventions.md](../../backend/docs/api-conventions.md)). If the wording changes, the message shows in the alert instead. | Build default |
+| Busy state | The submit button is disabled, with a spinner, until the next page loads | Stops double submits and shows that something is happening | Build default |
+| Signing out | A full page load to `/login` after the API call | Clears the router cache, so Back can't show staff pages from the ended session | Build default |
+| Session check timeout | 10 seconds | A hung API shouldn't hang every page | Build default |
+
+## Proposed approach: candidate links
+
+Not built yet:
+
+- **Candidate pages** authenticate with the token in the link, which the backend verifies. They're public, so proxy.ts must let them through (see [routing.md](routing.md)).
 
 ## Open decisions
 
-- Where sign-in lands: always the dashboard, or back on the page that sent the user to `/login`.
 - Screens the backend supports that the UI doesn't have yet: changing your password, and inviting staff (for admins).
+- An error page for when the API can't be reached, instead of Next.js's default one.
+- What browser-side calls do on a 401, once staff screens fetch data in the browser. Probably send the user to `/login?next=…`.
 
 ## References
 
 - Next.js 16 docs: `node_modules/next/dist/docs/01-app/02-guides/authentication.md` and `node_modules/next/dist/docs/01-app/01-getting-started/16-proxy.md`
-- [routing.md](routing.md)
-- [api-client.md](api-client.md)
-- [design-system.md](design-system.md)
+- [api-client.md](api-client.md), [routing.md](routing.md), [configuration.md](configuration.md), [design-system.md](design-system.md)
 - Backend: [authentication.md](../../backend/docs/authentication.md), [api-conventions.md](../../backend/docs/api-conventions.md)

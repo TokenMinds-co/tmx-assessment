@@ -8,7 +8,7 @@ How staff sign in, how the API keeps them signed in and protects routes, and wha
 
 ## Current state
 
-- **Staff sign in with email and password.** The backend is built and covered by e2e tests. The frontend isn't wired to it yet.
+- **Staff sign in with email and password.** The backend is built and covered by e2e tests, and the frontend is wired to it (see [How the frontend connects](#how-the-frontend-connects)).
 - **Code:** [src/auth/](../src/auth/). The controller is [auth.controller.ts](../src/auth/auth.controller.ts); sessions live in [sessions.service.ts](../src/auth/sessions.service.ts), sign-in and passwords in [auth.service.ts](../src/auth/auth.service.ts), invitations in [invitations.service.ts](../src/auth/invitations.service.ts), and the guards in [guards/](../src/auth/guards/).
 - **Every route needs a session** unless it's marked `@Public()`. The public routes today are `GET /api`, the [health checks](operations.md#health-checks), sign-in, sign-out, forgot and reset password, and accepting an invitation.
 - **To try the endpoints in a browser,** use the [API docs](api-conventions.md#api-docs) at `/api/docs`.
@@ -108,15 +108,16 @@ create(@CurrentUser() user: AuthUser, @Body() dto: CreateJobDto) {
 - **Rate limits** use `@nestjs/throttler`, tracked per IP in memory: 100 requests a minute on every route, and the tighter limits in the endpoint table. Behind a load balancer, set `TRUST_PROXY` so the real client IP is used (see [configuration.md](configuration.md)).
 - **CSRF:** the `SameSite=Lax` cookie, JSON-only bodies and an Origin check on writes. See [api-conventions.md](api-conventions.md).
 
-### Wiring the frontend
+### How the frontend connects
 
-What the frontend needs, for when we connect the two apps:
+The frontend uses every endpoint above except changing a password and inviting staff, which have no screens yet. Its side is in the frontend's [authentication.md](../../frontend/docs/authentication.md) and [api-client.md](../../frontend/docs/api-client.md).
 
-- **Pages the emails link to:** `/accept-invite?token=…` and `/reset-password?token=…`. The paths are set in [frontend-links.ts](../src/auth/frontend-links.ts). The frontend also needs `/login` and a forgot-password form.
-- **Browser calls** need `credentials: 'include'`. Locally, the cookie from `localhost:4000` is also sent to `localhost:3000`, because cookies ignore the port.
-- **In production,** serve the API on the frontend's origin (a Next.js rewrite from `/api/*` to the backend). The cookie is then first-party and `proxy.ts` can read it. If the API has to live on its own subdomain instead, set `COOKIE_DOMAIN` to the shared parent domain.
-- **Server components and route handlers** forward the browser's cookie in a `Cookie` header, or send the token as a bearer token.
-- **Having a cookie doesn't mean being signed in.** It can outlive an idle session. `proxy.ts` can use it to send signed-out users to `/login`, but shouldn't send anyone away from `/login` on the cookie alone; check `GET /api/auth/me`. On a 401, go to `/login`.
+- **The pages the emails link to** are `/accept-invite?token=…` and `/reset-password?token=…`, set in [frontend-links.ts](../src/auth/frontend-links.ts). Keep the two apps in step.
+- **The frontend serves the API on its own origin,** in development too: a Next.js rewrite forwards `/api/*` to the backend (the frontend's `API_URL`). Browser calls are same-origin, and the session cookie is first-party on the frontend's origin, where its `proxy.ts` can read it. Leave `COOKIE_DOMAIN` empty. The frontend doesn't need CORS; the allowlist still guards any other browser caller.
+- **`FRONTEND_URL` must be the frontend's public origin.** The browser's `Origin` header passes through the rewrite, so with any other value the Origin check turns every sign-in down with `403 Cross-origin request blocked.`
+- **Server components send the token as `Authorization: Bearer`,** read from the cookie, to `GET /api/auth/me`.
+- **A cookie doesn't mean a session.** The frontend's `proxy.ts` only sends visitors without the cookie to `/login`. Staff pages confirm the session with `GET /api/auth/me`, and the sign-in page skips its form only when that call succeeds.
+- **Rate limits behind the rewrite.** The API sees the Next.js server as the client: Next.js doesn't add `X-Forwarded-For` when it forwards a rewrite, though it passes on one it receives. Locally, every browser shares one bucket. In production, put a proxy or load balancer that sets `X-Forwarded-For` in front of the frontend, and set `TRUST_PROXY=1` here, so the Next.js server is the one trusted hop.
 
 ## Decisions
 
@@ -150,6 +151,7 @@ Not built yet. Unchanged from the original plan:
 - How long a candidate link stays valid, and whether it can be reopened after the candidate starts.
 - A user management API: list staff, change roles, deactivate. Today that's done in the database.
 - Rate-limit storage once the API runs as more than one instance (for example Redis), since the in-memory limits are per instance.
+- Real client IPs for rate limits behind the frontend's rewrite, once hosting is chosen (see [How the frontend connects](#how-the-frontend-connects)).
 - Whether to add Google Workspace sign-in or two-factor authentication later.
 - Whether staff can see and end their own active sessions.
 

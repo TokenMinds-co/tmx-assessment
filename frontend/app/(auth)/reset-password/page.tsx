@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InvalidLink } from "@/components/shared/invalid-link";
+import { InvalidResetLink } from "./_components/invalid-reset-link";
 import { ResetPasswordForm } from "./_components/reset-password-form";
 
 export const metadata: Metadata = { title: "Choose a new password" };
@@ -8,17 +8,7 @@ export const metadata: Metadata = { title: "Choose a new password" };
 export default async function ResetPasswordPage({ searchParams }: PageProps<"/reset-password">) {
   const { token } = await searchParams;
 
-  if (typeof token !== "string" || !token) {
-    return (
-      <InvalidLink
-        title="This reset link doesn’t work"
-        action={{ href: "/forgot-password", label: "Request a new link" }}
-      >
-        It may have expired or already been used. Ask for a new one, then open the most recent
-        email.
-      </InvalidLink>
-    );
-  }
+  if (typeof token !== "string" || !token) return <InvalidResetLink />;
 
   return <ResetPasswordForm token={token} />;
 }

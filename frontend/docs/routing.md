@@ -12,7 +12,7 @@ Two route groups, each with its own layout:
 
 | Route | Group | Page | Notes |
 | --- | --- | --- | --- |
-| `/` | `(app)` | Dashboard | [app/(app)/page.tsx](<../app/(app)/page.tsx>). Shows sample data; see [dashboard.md](dashboard.md). |
+| `/` | `(app)` | Dashboard | [app/(app)/page.tsx](<../app/(app)/page.tsx>). Signed-in staff only. Shows sample data; see [dashboard.md](dashboard.md). |
 | `/login` | `(auth)` | Sign in | See [authentication.md](authentication.md). |
 | `/forgot-password` | `(auth)` | Ask for a reset link | |
 | `/reset-password?token=…` | `(auth)` | Choose a new password | Linked from the reset email. Without a token it shows the "This reset link doesn't work" state. |
@@ -21,7 +21,8 @@ Two route groups, each with its own layout:
 - **`(app)`** ([layout](<../app/(app)/layout.tsx>)) is the staff app shell: sidebar, topbar and page. It reads the `sidebar_state` cookie, so its pages render on each request.
 - **`(auth)`** ([layout](<../app/(auth)/layout.tsx>)) is the TMX HR logo above one centered card.
 - **Navigation** comes from [components/shared/nav-items.ts](../components/shared/nav-items.ts). Candidates, Jobs, Assessments and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
-- **No route is protected yet.** Every page opens without signing in; see [authentication.md](authentication.md).
+- **Staff pages need a session.** [proxy.ts](../proxy.ts) sends signed-out visitors to `/login?next=…`, and the `(app)` layout confirms the session with the API. The four `(auth)` pages are public. See [authentication.md](authentication.md).
+- **`/api/*` belongs to the backend.** A rewrite in [next.config.ts](../next.config.ts) forwards it, so no page or route handler can live there. See [api-client.md](api-client.md).
 - **Metadata:** page titles use the template `%s · TMX HR`, and every page is `noindex, nofollow` ([app/layout.tsx](../app/layout.tsx)).
 
 ## Requirements
@@ -32,7 +33,7 @@ Two route groups, each with its own layout:
 
 ## Proposed approach
 
-- **Candidate pages** get a third route group, `app/(candidate)/`, with a minimal layout without distractions, for taking tests.
+- **Candidate pages** get a third route group, `app/(candidate)/`, with a minimal layout without distractions, for taking tests. Candidates don't sign in, so proxy.ts has to let these pages through. Its `PUBLIC_PATHS` only matches exact paths today.
 - Draft route map for what's still to build:
 
 | Route | Who | Purpose |
@@ -57,6 +58,8 @@ When one of these ships, remove `soon` from its row in `nav-items.ts`.
 | Planned pages in the nav | Listed with a "Soon" badge, not linked | Shows the shape of the app without leading to 404s | Build default |
 | Search engines | `noindex, nofollow` on every page | It's an internal tool | Build default |
 | Page titles | "Page · TMX HR" | The reference app's pattern | Build default |
+| Which pages need a session | Every page except `/login`, `/forgot-password`, `/reset-password` and `/accept-invite` | Staff pages hold candidates' personal data, so a new page is protected unless someone adds it to the list | Build default |
+| `/api/*` | Reserved for the rewrite to the backend | The browser talks to one origin (see [api-client.md](api-client.md)) | Build default |
 
 ## Open decisions
 

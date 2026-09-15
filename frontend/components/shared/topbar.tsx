@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import type { User } from "@/lib/api/auth";
 
 /** The white bar above every staff page: breadcrumb on the left, account menu on the right. */
-export function Topbar() {
+export function Topbar({ user }: { user: Pick<User, "name" | "email"> }) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
   const title = NAV_ITEMS.find((item) => isNavItemActive(item, pathname))?.label ?? "TMX HR";
@@ -43,7 +44,7 @@ export function Topbar() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <UserMenu />
+      <UserMenu user={user} />
     </header>
   );
 }

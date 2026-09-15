@@ -2,7 +2,7 @@
 
 REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-> **Status: authentication is built.** Staff sign in with email and password, and admins invite staff by email. The API has interactive docs and health checks. The frontend isn't wired to the API yet. Next are the recruitment pipeline and assessments.
+> **Status: authentication is built.** Staff sign in with email and password, and admins invite staff by email. The API has interactive docs and health checks. The frontend's sign-in screens are wired to it. Next are the recruitment pipeline and assessments.
 
 ## Stack
 
@@ -48,15 +48,7 @@ Accounts are invite-only, so the first admin comes from the command line:
 pnpm auth:invite-admin --email you@tokenminds.co --name "Your Name"
 ```
 
-It prints the invitation link. Until the frontend has its `/accept-invite` page, accept the invitation with the token from that link, either in the API docs (`POST /api/auth/invitations/accept`) or with curl:
-
-```bash
-curl -X POST http://localhost:4000/api/auth/invitations/accept \
-  -H 'content-type: application/json' \
-  -d '{"token":"<token from the link>","password":"<at least 12 characters>"}'
-```
-
-After that, sign in with `POST /api/auth/login`. Every endpoint is listed in [authentication.md](docs/authentication.md#endpoints).
+It prints the invitation link, and while `RESEND_API_KEY` is empty it prints the email too. With the frontend running, open the link, choose a password, and you're signed in. After that, sign in at http://localhost:3000/login. Every endpoint is listed in [authentication.md](docs/authentication.md#endpoints).
 
 ## Scripts
 

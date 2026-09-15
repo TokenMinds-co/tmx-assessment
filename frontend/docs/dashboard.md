@@ -31,10 +31,11 @@ Agreed with the user on 2026-09-15:
 ### Replacing the sample data
 
 1. Add the API queries (see [data-fetching.md](data-fetching.md) and [query-keys.md](query-keys.md)) and map the responses to the types in `lib/dashboard-types.ts`.
-2. Pass the real data into the cards from [app/(app)/page.tsx](<../app/(app)/page.tsx>), and remove the "Sample data" badge.
-3. Replace `SAMPLE_USER` in the account menu with the signed-in user (see [authentication.md](authentication.md)).
-4. Delete [lib/sample-data.ts](../lib/sample-data.ts).
-5. Add loading, empty (no open roles, no tests sent) and error states.
+2. Pass the real data into the cards from [app/(app)/page.tsx](<../app/(app)/page.tsx>), and remove the "Sample data" badge. The page must call `requireUser()` before it loads anything, since the layout's check doesn't re-run on client-side navigation (see [authentication.md](authentication.md#protecting-staff-pages)).
+3. Delete [lib/sample-data.ts](../lib/sample-data.ts).
+4. Add loading, empty (no open roles, no tests sent) and error states.
+
+The account menu already shows the signed-in user.
 
 ## Decisions
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { InvalidLink } from "@/components/shared/invalid-link";
 import { AcceptInviteForm } from "./_components/accept-invite-form";
+import { InvalidInviteLink } from "./_components/invalid-invite-link";
 
 export const metadata: Metadata = { title: "Set up your account" };
 
@@ -8,13 +8,7 @@ export const metadata: Metadata = { title: "Set up your account" };
 export default async function AcceptInvitePage({ searchParams }: PageProps<"/accept-invite">) {
   const { token } = await searchParams;
 
-  if (typeof token !== "string" || !token) {
-    return (
-      <InvalidLink title="This invitation link doesn’t work">
-        It may have expired or already been used. Ask an admin to send you a new invitation.
-      </InvalidLink>
-    );
-  }
+  if (typeof token !== "string" || !token) return <InvalidInviteLink />;
 
   return <AcceptInviteForm token={token} />;
 }

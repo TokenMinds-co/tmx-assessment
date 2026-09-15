@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 
 /**
  * For an emailed link (a password reset or an invitation) that arrives without
- * a token. Once the forms are wired, also for one the backend rejects as
- * unknown, used or expired.
+ * a token, or that the API turns down as unknown, used or expired.
  */
 export function InvalidLink({
   title,

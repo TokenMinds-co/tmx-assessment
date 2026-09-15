@@ -29,6 +29,7 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 - The scaffold's `GET /` is now `GET /api`, and it's public. It's hidden from the API docs.
 - CORS now lists its allowed methods and headers, and lets browsers cache preflight answers for 10 minutes.
 - The Origin check also allows the API's own origin, so the docs page can send requests.
+- Docs: the frontend is wired to the auth endpoints, so the first admin now accepts the invitation in the browser. [Authentication](authentication.md#how-the-frontend-connects) describes how the frontend connects, including `FRONTEND_URL` and rate limits behind its `/api` rewrite.
 
 ## [0.0.1] - 2026-09-15
 

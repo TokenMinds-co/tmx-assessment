@@ -10,17 +10,6 @@ import type {
   RecentResult,
 } from "@/lib/dashboard-types";
 
-export interface SampleUser {
-  name: string;
-  email: string;
-}
-
-/** Who the account menu shows while there is no session. */
-export const SAMPLE_USER: SampleUser = {
-  name: "Sam Taylor",
-  email: "sam.taylor@example.com",
-};
-
 export const SAMPLE_PIPELINE: Pipeline = {
   stages: [
     { id: "applied", name: "Applied", owner: "Nadia Putri" },

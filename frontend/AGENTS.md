@@ -41,6 +41,8 @@ Most tasks need more than one skill:
 - Inter (UI) and Geist Mono, loaded with `next/font` in `app/layout.tsx`.
 - shadcn/ui is set up (`components.json`): style `radix-vega` on Radix primitives, `lucide-react` icons, components in `components/ui/`. Several components are customized to the TMX theme. [docs/design-system.md](docs/design-system.md) lists the tokens and every change; read it before editing a component or adding a color.
 - `lib/sample-data.ts` holds invented data for screens built before the API. A screen that renders it shows a "Sample data" badge ([docs/dashboard.md](docs/dashboard.md)).
+- The browser calls the backend at `/api/*` on this app's own origin, and `next.config.ts` rewrites it to `API_URL`. Call it with `apiFetch` from `lib/api/client.ts`, with one module per domain in `lib/api/` ([docs/api-client.md](docs/api-client.md)). Server code that loads or changes staff data calls `requireUser()` from `lib/session.ts` first ([docs/authentication.md](docs/authentication.md)).
+- Next.js 16 renamed Middleware to Proxy. `proxy.ts` at the root sends signed-out visitors to `/login`.
 - Not set up yet: TanStack Query (not in `package.json`). Check before relying on it.
 
 ## Where components go

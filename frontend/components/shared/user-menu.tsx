@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { ChevronDownIcon, LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -12,18 +12,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
+import { signOut, type User } from "@/lib/api/auth";
 import { initials } from "@/lib/format";
-import { SAMPLE_USER } from "@/lib/sample-data";
 
-/**
- * Account menu in the topbar. Shows the sample user until sessions exist, and
- * "Sign out" only links back to /login for now (docs/authentication.md).
- */
-export function UserMenu() {
-  const user = SAMPLE_USER;
+/** Account menu in the topbar: who is signed in, and "Sign out". */
+export function UserMenu({ user }: { user: Pick<User, "name" | "email"> }) {
+  const [signOutState, setSignOutState] = useState<"idle" | "pending" | "failed">("idle");
+  const pending = signOutState === "pending";
+
+  async function handleSignOut(event: Event) {
+    // Keep the menu open, so the spinner or the error has somewhere to show.
+    event.preventDefault();
+    if (pending) return;
+
+    setSignOutState("pending");
+    try {
+      await signOut();
+    } catch {
+      setSignOutState("failed");
+      return;
+    }
+    // A full page load, not router.replace(): it drops everything this session
+    // left in memory, including the router cache that Back would restore. The
+    // state stays "pending" until the page is gone.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.assign("/login");
+  }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      // A failure message shouldn't greet the next opening of the menu.
+      onOpenChange={() => setSignOutState((state) => (state === "failed" ? "idle" : state))}
+    >
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -50,12 +71,15 @@ export function UserMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild variant="destructive">
-            <Link href="/login">
-              <LogOutIcon />
-              Sign out
-            </Link>
+          <DropdownMenuItem variant="destructive" onSelect={handleSignOut}>
+            {pending ? <Spinner /> : <LogOutIcon />}
+            {pending ? "Signing out…" : "Sign out"}
           </DropdownMenuItem>
+          {signOutState === "failed" ? (
+            <p role="alert" className="max-w-55 px-2.5 pt-1 pb-2 text-xs text-destructive">
+              Couldn’t sign out. Check your connection and try again.
+            </p>
+          ) : null}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -16,17 +16,20 @@ app/
 │   │   ├── page.tsx
 │   │   └── _components/                # login-form
 │   ├── forgot-password/_components/    # forgot-password-form
-│   ├── reset-password/_components/     # reset-password-form
-│   └── accept-invite/_components/      # accept-invite-form
+│   ├── reset-password/_components/     # reset-password-form, invalid-reset-link
+│   └── accept-invite/_components/      # accept-invite-form, invalid-invite-link
 └── (app)/
-    ├── layout.tsx                      # App shell
+    ├── layout.tsx                      # App shell; confirms the session
     ├── page.tsx                        # Dashboard
     └── _components/                    # The dashboard's cards
 components/
 ├── shared/    # Used by more than one page: the app shell (sidebar, topbar, account menu, nav items, page header),
-│              # the logo, the sign-in card, the invalid-link state and the password fields
+│              # the logo, the sign-in card, the invalid-link state, the password fields, the form error and the submit button
 └── ui/        # shadcn/ui
-lib/           # Used across folders: form validation, dashboard types, formatting, sample data, cn()
+lib/           # Used across folders: form validation, dashboard types, formatting, sample data, cn(),
+│              # the server-side session check (session.ts) and the ?next= link (sign-in-redirect.ts)
+└── api/       # The API client, one file per domain (see api-client.md)
+proxy.ts       # Sends signed-out visitors to /login (see authentication.md)
 ```
 
 ## Requirements
@@ -59,6 +62,8 @@ The placement rules, with examples, are in [AGENTS.md](../AGENTS.md#where-compon
 | Helpers, types and constants | Next to the components that use them, or in `lib/` when those are in different folders. `lib/` and `components/` never import from `app/`. | The form validation serves four pages, and `lib/sample-data.ts` uses the dashboard types | Build default |
 | Importing a page's own components | A relative path (`./_components/login-form`). Everything else uses `@/`. | Shorter than `@/app/(auth)/login/_components/…`, and shows the file belongs to the page | Build default |
 | Subfolders and barrel files | Neither: `components/shared/` and each `_components/` are flat, with no `index.ts` | Ten shared files don't need grouping yet, and `vercel-react-best-practices` says to import directly ([`bundle-barrel-imports`](../.agents/skills/vercel-react-best-practices/rules/bundle-barrel-imports.md)) | Build default |
+| API client | `lib/api/`, one file per domain. It's the one subfolder in `lib/`. | The API layer gains a file per domain, as [api-client.md](api-client.md) proposed | Build default |
+| Server-only code | Files that must never reach the browser, such as `lib/session.ts`, start with `import "server-only"` | A client component that imports one fails the build instead of shipping server code | Build default |
 
 ## Open decisions
 

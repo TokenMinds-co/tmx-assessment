@@ -2,7 +2,7 @@
 
 Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4 and shadcn/ui. For what the product does and why, see the [root README](../README.md).
 
-> **Status: UI only.** The TMX design system, the app shell, the staff sign-in screens and the dashboard are built, but nothing talks to the backend yet. The forms don't sign anyone in, and the dashboard shows labelled sample data.
+> **Status: staff sign-in works.** The sign-in screens are wired to the backend: staff sign in and out, reset a forgotten password and accept an invitation, and every staff page needs a live session. The dashboard still shows labelled sample data.
 
 ## Stack
 
@@ -18,15 +18,19 @@ Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4
 
 - Node.js 20.9 or newer (Next.js 16 requires `>= 20.9.0`)
 - pnpm 11 (pinned in `packageManager` in `package.json`)
+- The backend, running (see its [README](../backend/README.md))
 
 ## Getting started
 
 ```bash
 pnpm install
+cp .env.example .env   # API_URL: where the backend runs
 pnpm dev
 ```
 
-The app runs at http://localhost:3000. The backend also defaults to port 3000, so start it on a different `PORT` (see [configuration.md](docs/configuration.md)).
+The app runs at http://localhost:3000. It forwards `/api/*` to the backend at `API_URL`, which defaults to http://localhost:4000, the backend's default port. If your backend runs on another port, set `API_URL` in `.env` and restart `pnpm dev`. Every variable is described in [configuration.md](docs/configuration.md).
+
+To create the first account, see [Create the first admin](../backend/README.md#create-the-first-admin) in the backend README.
 
 Pages to look at:
 
@@ -34,16 +38,16 @@ Pages to look at:
 | --- | --- |
 | http://localhost:3000/login | Sign in |
 | http://localhost:3000/forgot-password | Ask for a reset link |
-| http://localhost:3000/reset-password?token=preview | Choose a new password (any token shows the form) |
-| http://localhost:3000/accept-invite?token=preview | Set up an invited account (any token shows the form) |
-| http://localhost:3000/ | Dashboard |
+| http://localhost:3000/reset-password?token=preview | Choose a new password. Any token shows the form; the API checks it when you submit. |
+| http://localhost:3000/accept-invite?token=preview | Set up an invited account. Any token shows the form; the API checks it when you submit. |
+| http://localhost:3000/ | Dashboard, for signed-in staff |
 
 ## Scripts
 
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Start the dev server |
-| `pnpm build` | Build for production |
+| `pnpm build` | Build for production. Needs `API_URL`. |
 | `pnpm start` | Serve the production build |
 | `pnpm lint` | Run ESLint |
 
@@ -56,14 +60,18 @@ frontend/
 │   ├── globals.css         # Tailwind and the TMX theme tokens
 │   ├── icon.png            # Favicon (the TMX mark)
 │   ├── (auth)/             # Sign-in pages: login, forgot-password, reset-password, accept-invite
-│   └── (app)/              # Staff app shell and its pages (dashboard at /)
+│   └── (app)/              # Staff app shell and its pages (dashboard at /), for signed-in staff
 ├── components/
-│   ├── shared/             # Used by more than one page: app shell, logo, sign-in card, password fields
+│   ├── shared/             # Used by more than one page: app shell, logo, sign-in card, form parts
 │   └── ui/                 # shadcn/ui components, customized to TMX
 ├── hooks/                  # Shared hooks (from shadcn)
-├── lib/                    # cn(), formatting, form validation, dashboard types, sample data
+├── lib/
+│   ├── api/                # The API client: apiFetch() and one file per domain
+│   └── …                   # Session check, sign-in redirect, form validation, formatting, dashboard types, sample data, cn()
+├── proxy.ts                # Sends signed-out visitors to /login
 ├── public/brand/           # TMX wordmark and mark
 ├── docs/                   # Area docs and CHANGELOG.md
+├── .env.example            # Environment variables; copy it to .env
 ├── components.json         # shadcn/ui settings
 ├── PRODUCT.md              # Product context for the impeccable design skill
 ├── AGENTS.md               # Instructions for coding agents
@@ -79,9 +87,9 @@ A component that only one page uses sits in a `_components/` folder next to that
 | --- | --- | --- |
 | Routing | [routing.md](docs/routing.md) | In progress |
 | Project structure | [project-structure.md](docs/project-structure.md) | Done |
-| Authentication | [authentication.md](docs/authentication.md) | In progress (screens only) |
+| Authentication | [authentication.md](docs/authentication.md) | In progress (staff sign-in done, candidate links not started) |
 | Configuration | [configuration.md](docs/configuration.md) | In progress |
-| API client | [api-client.md](docs/api-client.md) | Not started |
+| API client | [api-client.md](docs/api-client.md) | In progress |
 | Data fetching | [data-fetching.md](docs/data-fetching.md) | Not started |
 | Query keys | [query-keys.md](docs/query-keys.md) | Not started |
 | Design system | [design-system.md](docs/design-system.md) | In progress |

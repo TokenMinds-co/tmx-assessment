@@ -29,6 +29,8 @@ Agreed with the user on 2026-09-15:
 - Add components with `pnpm dlx shadcn@latest add <name>`. They land in `components/ui/` and are ours to edit.
 - **Icons** come from `lucide-react`, the library named in `components.json`.
 - **Class merging** uses `cn` from [lib/utils.ts](../lib/utils.ts), which re-exports shadcn's `cn` package (a drop-in for clsx plus tailwind-merge).
+- **Busy buttons** pair shadcn's `Spinner` ([spinner.tsx](../components/ui/spinner.tsx), unchanged from shadcn) with `data-icon="inline-start"` and `disabled`, as shadcn's rules ask. The sign-in forms share this as [submit-button.tsx](../components/shared/submit-button.tsx).
+- **Form errors:** the browser's own checks sit under each field in `FieldError`. A failure from the API sits above the fields in a destructive `Alert` ([form-error.tsx](../components/shared/form-error.tsx)).
 - **Customized so far,** to match the reference app:
 
 | Component | Change |

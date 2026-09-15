@@ -65,10 +65,11 @@ pnpm start:dev
 # Terminal 2: frontend
 cd frontend
 pnpm install
+cp .env.example .env   # API_URL must match the backend's PORT
 pnpm dev          # http://localhost:3000
 ```
 
-The backend runs on port 4000 and the frontend on 3000. To create the first staff account, see [Create the first admin](backend/README.md#create-the-first-admin).
+The backend runs on port 4000 and the frontend on 3000. The frontend forwards `/api/*` to the backend, so the browser only ever talks to http://localhost:3000. To create the first staff account, see [Create the first admin](backend/README.md#create-the-first-admin).
 
 ## Documentation
 
