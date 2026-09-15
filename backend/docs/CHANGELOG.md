@@ -8,7 +8,20 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ### Added
 
-- Project docs: [README](../README.md) and area docs for [API conventions](api-conventions.md), [authentication](authentication.md), [configuration](configuration.md), [database](database.md), [recruitment pipeline](recruitment-pipeline.md), [assessments](assessments.md), [question generation](question-generation.md) and [testing](testing.md).
+- Staff authentication: email and password sign-in, server-side sessions in an httpOnly cookie, invite-only accounts with `ADMIN` and `MEMBER` roles, password change, and forgot and reset password. Every route needs a session unless it's marked `@Public()`. See [authentication](authentication.md).
+- `pnpm auth:invite-admin` to invite the first admin from the command line.
+- Email through Resend, printed to the terminal in development when no API key is set. See [email](email.md).
+- PostgreSQL through Prisma ORM 7 on Prisma Postgres, a local database with `prisma dev`, and the first migration (`users`, `sessions`, `auth_tokens`). See [database](database.md).
+- Checked environment config with `@nestjs/config`, and `.env.example`. See [configuration](configuration.md).
+- API conventions: the `/api` prefix, JSON-only bodies, global validation, CORS for the frontend, an Origin check against CSRF, and rate limits. See [API conventions](api-conventions.md).
+- Unit tests for config, passwords, tokens and email templates; e2e tests for every auth flow against the local database. See [testing](testing.md).
+- A "Decisions" section in the area docs, recording what was decided, why, and whether the team asked for it.
+- Project docs: [README](../README.md) and area docs for [API conventions](api-conventions.md), [authentication](authentication.md), [configuration](configuration.md), [database](database.md), [email](email.md), [recruitment pipeline](recruitment-pipeline.md), [assessments](assessments.md), [question generation](question-generation.md) and [testing](testing.md).
+
+### Changed
+
+- The default port is now 4000 instead of 3000, so the backend and the frontend dev server can run side by side.
+- The scaffold's `GET /` is now `GET /api`, and it's public.
 
 ## [0.0.1] - 2026-09-15
 

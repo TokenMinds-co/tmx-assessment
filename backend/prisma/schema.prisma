@@ -1,0 +1,93 @@
+// Prisma schema for the TMX HR backend. See docs/database.md for conventions.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A staff member's permission level. Recruitment stage ownership is stored separately, as data.
+enum UserRole {
+  ADMIN
+  MEMBER
+
+  @@map("user_role")
+}
+
+enum UserStatus {
+  /// Invited by an admin, but hasn't set a password yet.
+  INVITED
+  ACTIVE
+  /// Can't sign in. Existing sessions stop working immediately.
+  DEACTIVATED
+
+  @@map("user_status")
+}
+
+enum AuthTokenType {
+  INVITATION
+  PASSWORD_RESET
+
+  @@map("auth_token_type")
+}
+
+/// A staff member who signs in with email and password. Candidates don't get accounts.
+model User {
+  id                String     @id @default(uuid(7)) @db.Uuid
+  /// Stored trimmed and lowercased.
+  email             String     @unique
+  name              String
+  /// Argon2id hash. Null until the user accepts their invitation.
+  passwordHash      String?    @map("password_hash")
+  role              UserRole   @default(MEMBER)
+  status            UserStatus @default(INVITED)
+  invitedById       String?    @map("invited_by_id") @db.Uuid
+  passwordChangedAt DateTime?  @map("password_changed_at") @db.Timestamptz(3)
+  lastLoginAt       DateTime?  @map("last_login_at") @db.Timestamptz(3)
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  invitedBy    User?       @relation("UserInvitations", fields: [invitedById], references: [id], onDelete: SetNull)
+  invitedUsers User[]      @relation("UserInvitations")
+  sessions     Session[]
+  authTokens   AuthToken[]
+
+  @@map("users")
+}
+
+/// A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored.
+model Session {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  tokenHash  String   @unique @map("token_hash")
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+  lastUsedAt DateTime @default(now()) @map("last_used_at") @db.Timestamptz(3)
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+/// A single-use token sent by email (invitation or password reset). Only its SHA-256 hash is stored.
+model AuthToken {
+  id        String        @id @default(uuid(7)) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  type      AuthTokenType
+  tokenHash String        @unique @map("token_hash")
+  expiresAt DateTime      @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime?     @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@map("auth_tokens")
+}

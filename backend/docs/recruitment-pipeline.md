@@ -21,7 +21,7 @@ Not started. Today this lives in monday.com, and stages are updated by hand.
 ## Proposed approach
 
 - **Feature modules** for jobs, candidates and the pipeline. See [`arch-feature-modules`](../.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md).
-- **Draft entities:** `Job`, `Candidate`, `Application` (a candidate applying to a job, with its current stage and status), `Stage`, `Status`, `StageChange` (the move history), `CallReport` and `StaffMember`.
+- **Draft entities:** `Job`, `Candidate`, `Application` (a candidate applying to a job, with its current stage and status), `Stage`, `Status`, `StageChange` (the move history) and `CallReport`. Staff members, including stage owners, are the existing `User` model (see [authentication.md](authentication.md)).
 - **Emit an event on stage change,** such as `application.stage_changed`. Other modules, for example assessments, can react to it without depending on the pipeline module. See [`arch-use-events`](../.agents/skills/nestjs-best-practices/rules/arch-use-events.md).
 
 ## Open decisions

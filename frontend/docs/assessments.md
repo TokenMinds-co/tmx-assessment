@@ -10,6 +10,8 @@ The screens candidates use to take tests, and the staff screens for the test lib
 
 Not started. Waiting on the five test specs from Robbie.
 
+The dashboard already previews assessment progress and average scores with sample data; see [dashboard.md](dashboard.md).
+
 ## Requirements
 
 - Five tests: motivation, communication, attention to detail, critical thinking and English.
@@ -39,6 +41,7 @@ Not started. Waiting on the five test specs from Robbie.
 ## References
 
 - [routing.md](routing.md)
+- [dashboard.md](dashboard.md)
 - [recruitment-pipeline.md](recruitment-pipeline.md)
 - [data-fetching.md](data-fetching.md)
 - Backend: [assessments.md](../../backend/docs/assessments.md)

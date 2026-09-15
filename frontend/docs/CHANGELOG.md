@@ -8,7 +8,24 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Added
 
-- Project docs: [README](../README.md) and area docs for [routing](routing.md), [authentication](authentication.md), [configuration](configuration.md), [API client](api-client.md), [data fetching](data-fetching.md), [query keys](query-keys.md), [design system](design-system.md), [recruitment pipeline](recruitment-pipeline.md) and [assessments](assessments.md).
+- TMX design system on shadcn/ui (style `radix-vega`, Radix primitives, lucide icons). The TMX Visibility colors, Inter, type scale, radii, shadows and gradients are mapped onto shadcn's tokens, and Button, Input, Card, Badge, Alert, Dropdown menu, Table and Sidebar are customized to match. See [design-system.md](design-system.md).
+- TMX HR logo and favicon, built from the TMX brand artwork.
+- App shell: a gradient sidebar that collapses and becomes a sheet on phones, and a topbar with a breadcrumb and an account menu. See [design-system.md](design-system.md#app-shell).
+- Staff sign-in screens, UI only: `/login`, `/forgot-password`, `/reset-password` and `/accept-invite`, with the backend's 12 to 128 character password rule. See [authentication.md](authentication.md).
+- A "Decisions" section in the area docs, recording each decision, why, and whether the team asked for it.
+- Dashboard at `/` with the pipeline by stage and assessment progress, showing labelled sample data. See [dashboard.md](dashboard.md).
+- `PRODUCT.md`, the product context for the `impeccable` design skill.
+- `NEXT_PUBLIC_APP_VERSION`, set in `next.config.ts` from `package.json`. See [configuration.md](configuration.md).
+- Project docs: [README](../README.md) and area docs for [routing](routing.md), [authentication](authentication.md), [configuration](configuration.md), [API client](api-client.md), [data fetching](data-fetching.md), [query keys](query-keys.md), [design system](design-system.md), [dashboard](dashboard.md), [recruitment pipeline](recruitment-pipeline.md) and [assessments](assessments.md).
+
+### Changed
+
+- The UI font is Inter instead of Geist. Geist Mono stays for code.
+- ESLint skips `.agents/`, the vendored agent skill scripts.
+
+### Removed
+
+- The `create-next-app` starter page, its SVGs and `favicon.ico`.
 
 ## [0.1.0] - 2026-09-15
 

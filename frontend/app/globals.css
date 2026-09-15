@@ -1,26 +1,191 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/*
+ * `dark:` only applies under a `.dark` ancestor, and the app never sets one:
+ * TMX HR is light only for now (docs/design-system.md). Without this line
+ * Tailwind keys `dark:` to the OS setting, and the shadcn components' dark
+ * styles would switch on while every token below stayed light.
+ */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens. The values come from the TMX Visibility reference app
+ * (tmx-visibility-lite), renamed to shadcn/ui's semantic roles so every
+ * component picks them up. docs/design-system.md maps each one back to its
+ * reference name and lists the few that were darkened to pass WCAG AA.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --radius: 0.625rem;
+
+  /* Surfaces and text */
+  --background: #f7f5fa;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --secondary: #f4f0f9;
+  --secondary-foreground: #111827;
+  --muted: #f4f0f9;
+  --muted-foreground: #636a78;
+  --accent: #f4f0f9;
+  --accent-foreground: #111827;
+  --border: #e9e3ef;
+  --border-strong: #d9cfe6;
+  --input: #d9cfe6;
+  --ring: #8b5cf6;
+
+  /* Brand */
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --primary-soft: #f5f0ff;
+  --brand-ink: #1e0452;
+  --gradient-sidebar: linear-gradient(180deg, #2b073f 0%, #33074e 15%, #46096f 50%, #8919b4 78%, #d62dfd 100%);
+  --gradient-cta: linear-gradient(90deg, #2d0642 0%, #4a0a75 55%, #cd2af4 100%);
+
+  /* Status. Each text color clears 4.5:1 on white and on its own soft fill. */
+  --destructive: #cf2424;
+  --destructive-soft: #fef3f2;
+  --success: #15803d;
+  --success-soft: #f1fdf4;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --info: #2563eb;
+  --info-soft: #eff6ff;
+
+  /* Charts, checked with the dataviz palette validator on the white card surface */
+  --chart-1: #7c3aed;
+  --chart-progress-1: #ae99f9;
+  --chart-progress-2: #8a59f5;
+  --chart-progress-3: #651dcb;
+
+  /* Sidebar rail, drawn on --gradient-sidebar */
+  --sidebar: #2b073f;
+  --sidebar-foreground: #b8a7c6;
+  --sidebar-muted: #a092b1;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #2b073f;
+  --sidebar-accent: rgb(255 255 255 / 14%);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 15%);
+  --sidebar-ring: #c4b5fd;
 }
 
 @theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-brand-ink: var(--brand-ink);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-progress-1: var(--chart-progress-1);
+  --color-chart-progress-2: var(--chart-progress-2);
+  --color-chart-progress-3: var(--chart-progress-3);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* 6 / 8 / 10 / 14px from the 10px base, plus the reference's 12px buttons */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-button: calc(var(--radius) * 1.2);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * The reference app's type scale (a 1.25 major third), so `text-xl` is 1.5rem
+ * here, not Tailwind's 1.25rem. Line heights keep Tailwind's ratios.
+ */
+@theme {
+  --text-md: 1.125rem;
+  --text-md--line-height: calc(1.75 / 1.125);
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+
+  --shadow-card: 0 1px 2px rgb(17 24 39 / 4%), 0 8px 24px rgb(43 7 63 / 6%);
+  --shadow-cta: 0 8px 20px rgb(124 58 237 / 30%);
+}
+
+@utility bg-sidebar-gradient {
+  background-image: var(--gradient-sidebar);
+}
+
+@utility bg-cta-gradient {
+  background-image: var(--gradient-cta);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  html {
+    @apply font-sans;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Links that aren't styled as buttons get the brand focus ring too. */
+  a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 20%, transparent);
+  }
+  input,
+  textarea {
+    caret-color: var(--primary);
+  }
 }

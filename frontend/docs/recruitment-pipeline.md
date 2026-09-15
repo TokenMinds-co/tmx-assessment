@@ -8,7 +8,7 @@ Staff screens for jobs, candidates and stages: the pipeline board and list, the 
 
 ## Current state
 
-Not started.
+Not started. The dashboard already previews candidates per stage and per open role with sample data; see [dashboard.md](dashboard.md). Its stages, owners and roles are passed in as data, as the requirements below ask.
 
 ## Requirements
 
@@ -32,6 +32,7 @@ Not started.
 ## References
 
 - [routing.md](routing.md)
+- [dashboard.md](dashboard.md)
 - [query-keys.md](query-keys.md)
 - [assessments.md](assessments.md)
 - Backend: [recruitment-pipeline.md](../../backend/docs/recruitment-pipeline.md)
