@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TMX HR: Frontend
 
-## Getting Started
+Web app for TMX HR, built with Next.js 16 (App Router), React 19 and Tailwind CSS 4. For what the product does and why, see the [root README](../README.md).
 
-First, run the development server:
+> **Status: fresh scaffold.** [`app/page.tsx`](app/page.tsx) is still the `create-next-app` starter page. There's no component library, data fetching or auth yet.
+
+## Stack
+
+- Next.js 16.3 (App Router), React 19.2, TypeScript 5
+- Tailwind CSS 4, configured in [`app/globals.css`](app/globals.css). There's no `tailwind.config.*` file.
+- Geist and Geist Mono, loaded with `next/font`
+- ESLint 9 with `eslint-config-next`
+- pnpm 11
+- **Planned, not installed:** shadcn/ui ([design-system.md](docs/design-system.md)) and TanStack Query ([data-fetching.md](docs/data-fetching.md))
+
+## Requirements
+
+- Node.js 20.9 or newer (Next.js 16 requires `>= 20.9.0`)
+- pnpm 11 (pinned in `packageManager` in `package.json`)
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs at http://localhost:3000. The backend also defaults to port 3000, so start it on a different `PORT` (see [configuration.md](docs/configuration.md)).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | Start the dev server |
+| `pnpm build` | Build for production |
+| `pnpm start` | Serve the production build |
+| `pnpm lint` | Run ESLint |
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```text
+frontend/
+├── app/
+│   ├── layout.tsx      # Root layout: fonts, metadata (still the defaults)
+│   ├── page.tsx        # Starter page
+│   └── globals.css     # Tailwind import and theme tokens
+├── public/             # Static files (starter SVGs)
+├── docs/               # Area docs and CHANGELOG.md
+├── AGENTS.md           # Instructions for coding agents
+├── CLAUDE.md           # Claude Code additions to AGENTS.md
+└── .agents/skills/     # Agent skills (see AGENTS.md)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docs
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Area | Doc | Status |
+| --- | --- | --- |
+| Routing | [routing.md](docs/routing.md) | Scaffold only |
+| Authentication | [authentication.md](docs/authentication.md) | Not started |
+| Configuration | [configuration.md](docs/configuration.md) | Scaffold only |
+| API client | [api-client.md](docs/api-client.md) | Not started |
+| Data fetching | [data-fetching.md](docs/data-fetching.md) | Not started |
+| Query keys | [query-keys.md](docs/query-keys.md) | Not started |
+| Design system | [design-system.md](docs/design-system.md) | Scaffold only |
+| Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
+| Assessments | [assessments.md](docs/assessments.md) | Not started |
 
-## Deploy on Vercel
+Changes are logged in [CHANGELOG.md](docs/CHANGELOG.md). To add or update a doc, follow the [doc rules in the root README](../README.md#documentation).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Working with coding agents
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[AGENTS.md](AGENTS.md) tells coding agents which skills in `.agents/skills/` to load for each kind of task, and how to settle conflicts between them. Next.js 16 has breaking changes from older versions, so check `node_modules/next/dist/docs/` before using a Next.js API.

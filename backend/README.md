@@ -1,98 +1,78 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# TMX HR: Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> **Status: fresh scaffold.** The only endpoint is `GET /`, which returns `Hello World!`. There is no database, auth or feature module yet.
 
-## Description
+## Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- NestJS 11 on Express, TypeScript 5
+- Jest 30 and Supertest for tests
+- ESLint 9 and Prettier (single quotes, trailing commas)
+- pnpm
+- **Planned, not installed:** PostgreSQL with Prisma. See [database.md](docs/database.md).
 
-## Project setup
+## Requirements
+
+- Node.js 20 or newer (NestJS 11 requires `>= 20`)
+- pnpm
+
+## Getting started
 
 ```bash
-$ pnpm install
+pnpm install
+PORT=4000 pnpm start:dev
 ```
 
-## Compile and run the project
+[`src/main.ts`](src/main.ts) listens on `PORT`, or 3000 if it isn't set. The frontend dev server also uses 3000, so set `PORT` when you run both. See [configuration.md](docs/configuration.md).
 
-```bash
-# development
-$ pnpm run start
+## Scripts
 
-# watch mode
-$ pnpm run start:dev
+| Command | What it does |
+| --- | --- |
+| `pnpm start:dev` | Run in watch mode |
+| `pnpm start:debug` | Run in watch mode with the debugger attached |
+| `pnpm build` | Compile to `dist/` |
+| `pnpm start:prod` | Run the compiled app from `dist/main` |
+| `pnpm lint` | Run ESLint and fix what it can |
+| `pnpm format` | Run Prettier on `src/` and `test/` |
+| `pnpm test` | Unit tests |
+| `pnpm test:e2e` | End-to-end tests |
+| `pnpm test:cov` | Unit tests with a coverage report |
 
-# production mode
-$ pnpm run start:prod
+## Project structure
+
+```text
+backend/
+├── src/
+│   ├── main.ts             # Bootstrap: creates the app, listens on PORT
+│   ├── app.module.ts       # Root module
+│   ├── app.controller.ts   # GET / (scaffold sample)
+│   └── app.service.ts
+├── test/
+│   ├── app.e2e-spec.ts     # E2E test for GET /
+│   └── jest-e2e.json
+├── docs/                   # Area docs and CHANGELOG.md
+└── .agents/skills/         # Agent skills for NestJS and Prisma
 ```
 
-## Run tests
+New code goes into feature modules, one per domain (for example `src/candidates/` or `src/assessments/`), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule.
 
-```bash
-# unit tests
-$ pnpm run test
+## Docs
 
-# e2e tests
-$ pnpm run test:e2e
+| Area | Doc | Status |
+| --- | --- | --- |
+| API conventions | [api-conventions.md](docs/api-conventions.md) | Not started |
+| Authentication | [authentication.md](docs/authentication.md) | Not started |
+| Configuration | [configuration.md](docs/configuration.md) | Scaffold only |
+| Database | [database.md](docs/database.md) | Not started |
+| Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
+| Assessments | [assessments.md](docs/assessments.md) | Not started |
+| Question generation | [question-generation.md](docs/question-generation.md) | Not started |
+| Testing | [testing.md](docs/testing.md) | Scaffold only |
 
-# test coverage
-$ pnpm run test:cov
-```
+Changes are logged in [CHANGELOG.md](docs/CHANGELOG.md). To add or update a doc, follow the [doc rules in the root README](../README.md#documentation).
 
-## Deployment
+## Agent skills
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+`.agents/skills/` holds agent skills for NestJS and Prisma, pinned in `skills-lock.json`. The area docs link to the rules that apply. Don't edit these files by hand; the skills installer manages them.
