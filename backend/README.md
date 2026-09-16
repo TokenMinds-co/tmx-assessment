@@ -2,29 +2,55 @@
 
 REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-> **Status: fresh scaffold.** The only endpoint is `GET /`, which returns `Hello World!`. There is no database, auth or feature module yet.
+> **Status: authentication and assessments are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Four tests are prefilled from the team's workbooks. The API has interactive docs and health checks, and the frontend is wired to it. It deploys to the TokenMinds VPS as a Docker container through GitHub Actions. Next is the recruitment pipeline.
 
 ## Stack
 
 - NestJS 11 on Express, TypeScript 5
+- PostgreSQL on Prisma Postgres, through Prisma ORM 7. See [database.md](docs/database.md).
+- Resend for email. See [email.md](docs/email.md).
+- Swagger (`@nestjs/swagger`) for the API docs, Terminus for health checks
+- Docker, built and deployed by GitHub Actions. See [operations.md](docs/operations.md#deployment).
 - Jest 30 and Supertest for tests
 - ESLint 9 and Prettier (single quotes, trailing commas)
 - pnpm
-- **Planned, not installed:** PostgreSQL with Prisma. See [database.md](docs/database.md).
 
 ## Requirements
 
-- Node.js 20 or newer (NestJS 11 requires `>= 20`)
+- Node.js 20.19 or newer (Prisma 7 needs 20.19, NestJS 11 needs 20)
 - pnpm
 
 ## Getting started
 
 ```bash
-pnpm install
-PORT=4000 pnpm start:dev
+pnpm install        # also generates Prisma Client
+cp .env.example .env
+pnpm db:start       # starts local Prisma Postgres; put the URL it prints in .env as DATABASE_URL
+pnpm db:migrate     # creates the tables
+pnpm db:seed        # optional: loads the prefilled tests and their audio
+pnpm start:dev
 ```
 
-[`src/main.ts`](src/main.ts) listens on `PORT`, or 3000 if it isn't set. The frontend dev server also uses 3000, so set `PORT` when you run both. See [configuration.md](docs/configuration.md).
+The startup log prints where everything is:
+
+| What | URL |
+| --- | --- |
+| API | http://localhost:4000/api |
+| API docs (Swagger UI) | http://localhost:4000/api/docs |
+| OpenAPI document | http://localhost:4000/api/docs/json |
+| Health check | http://localhost:4000/api/health/ready |
+
+All settings live in `.env`; see [configuration.md](docs/configuration.md). While `RESEND_API_KEY` is empty, emails are printed in the terminal instead of sent. Uploaded files, such as question audio, go to `STORAGE_DIR` (default `./storage`).
+
+### Create the first admin
+
+Accounts are invite-only, so the first admin comes from the command line:
+
+```bash
+pnpm auth:invite-admin --email you@tokenminds.co --name "Your Name"
+```
+
+It prints the invitation link, and while `RESEND_API_KEY` is empty it prints the email too. With the frontend running, open the link, choose a password, and you're signed in. After that, sign in at http://localhost:3000/login. Every endpoint is listed in [authentication.md](docs/authentication.md#endpoints).
 
 ## Scripts
 
@@ -37,39 +63,74 @@ PORT=4000 pnpm start:dev
 | `pnpm lint` | Run ESLint and fix what it can |
 | `pnpm format` | Run Prettier on `src/` and `test/` |
 | `pnpm test` | Unit tests |
-| `pnpm test:e2e` | End-to-end tests |
+| `pnpm test:e2e` | End-to-end tests. They need the database running. |
 | `pnpm test:cov` | Unit tests with a coverage report |
+| `pnpm db:start` / `pnpm db:stop` | Start or stop the local Prisma Postgres instance |
+| `pnpm db:migrate` | Create and apply a migration in development |
+| `pnpm db:deploy` | Apply pending migrations in a deployed environment |
+| `pnpm db:generate` | Regenerate Prisma Client after a schema change |
+| `pnpm db:studio` | Browse and edit data in Prisma Studio |
+| `pnpm db:seed` | Load the prefilled tests and their audio from `seed/`. Tests that exist are skipped; `--force` rewrites them. See [database.md](docs/database.md#seed-data). |
+| `pnpm auth:invite-admin` | Invite an admin by email (`--email`, `--name`) |
 
 ## Project structure
 
 ```text
 backend/
+├── prisma/
+│   ├── schema.prisma       # Database schema
+│   └── migrations/         # One folder per migration, committed
+├── prisma.config.ts        # Prisma CLI config
+├── seed/
+│   ├── assessments/        # The prefilled tests, in the canonical JSON format
+│   └── media/              # Their audio clips
 ├── src/
-│   ├── main.ts             # Bootstrap: creates the app, listens on PORT
-│   ├── app.module.ts       # Root module
-│   ├── app.controller.ts   # GET / (scaffold sample)
-│   └── app.service.ts
-├── test/
-│   ├── app.e2e-spec.ts     # E2E test for GET /
-│   └── jest-e2e.json
+│   ├── main.ts             # Bootstrap: creates the app, listens on PORT, logs the URLs
+│   ├── app.setup.ts        # HTTP setup (CORS, validation, docs), shared with the e2e tests
+│   ├── app.module.ts       # Root module: config, rate limits, feature modules
+│   ├── auth/               # Sign-in, sessions, passwords, invitations, guards
+│   ├── assessments/        # Tests, questions, sending, the candidate API and scoring
+│   ├── candidates/         # Candidates, for sending tests
+│   ├── media/              # Uploading and serving question audio and images
+│   ├── storage/            # Where uploaded files are kept (local disk)
+│   ├── health/             # Liveness and readiness checks
+│   ├── mail/               # Email templates and transports (Resend)
+│   ├── prisma/             # PrismaService
+│   ├── config/             # Environment variable checks
+│   ├── common/             # Shared middleware, tokens, email links, CSV, downloads and the API docs setup
+│   ├── cli/                # Command-line scripts: invite an admin, seed the tests
+│   └── generated/          # Prisma Client (generated, gitignored)
+├── storage/                # Uploaded files (STORAGE_DIR), gitignored
+├── test/                   # E2E tests and their helpers
 ├── docs/                   # Area docs and CHANGELOG.md
+├── Dockerfile              # The production image; CI builds it from this folder
+├── docker-compose-production.yml  # Runs the image on the VPS, on its Postgres network
+├── docker-compose.yml      # The same stack, built from this folder, for checking the image
 └── .agents/skills/         # Agent skills for NestJS and Prisma
 ```
 
-New code goes into feature modules, one per domain (for example `src/candidates/` or `src/assessments/`), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule.
+The pipeline itself is [.github/workflows/backend.yml](../.github/workflows/backend.yml) at the repository root.
+
+New code goes into feature modules, one per domain (like `src/assessments/`, or `src/jobs/` next), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes). Document every endpoint for Swagger; see [api-conventions.md](docs/api-conventions.md#api-docs).
+
+## Deployment
+
+Every push to `main` that touches `backend/` builds the Docker image, pushes it to GitHub Container Registry and deploys it to the VPS; pull requests get a build and lint check. The server setup, the GitHub secrets, and how to run the first-admin and seed commands in the container are in [operations.md](docs/operations.md#deployment).
 
 ## Docs
 
 | Area | Doc | Status |
 | --- | --- | --- |
-| API conventions | [api-conventions.md](docs/api-conventions.md) | Not started |
-| Authentication | [authentication.md](docs/authentication.md) | Not started |
-| Configuration | [configuration.md](docs/configuration.md) | Scaffold only |
-| Database | [database.md](docs/database.md) | Not started |
+| API conventions | [api-conventions.md](docs/api-conventions.md) | In progress |
+| Authentication | [authentication.md](docs/authentication.md) | In progress |
+| Configuration | [configuration.md](docs/configuration.md) | In progress |
+| Database | [database.md](docs/database.md) | In progress |
+| Email | [email.md](docs/email.md) | In progress |
+| Operations | [operations.md](docs/operations.md) | In progress |
 | Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
-| Assessments | [assessments.md](docs/assessments.md) | Not started |
+| Assessments | [assessments.md](docs/assessments.md) | In progress |
 | Question generation | [question-generation.md](docs/question-generation.md) | Not started |
-| Testing | [testing.md](docs/testing.md) | Scaffold only |
+| Testing | [testing.md](docs/testing.md) | In progress |
 
 Changes are logged in [CHANGELOG.md](docs/CHANGELOG.md). To add or update a doc, follow the [doc rules in the root README](../README.md#documentation).
 

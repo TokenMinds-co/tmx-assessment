@@ -1,0 +1,407 @@
+// Prisma schema for the TMX HR backend. See docs/database.md for conventions.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A staff member's permission level. Recruitment stage ownership is stored separately, as data.
+enum UserRole {
+  ADMIN
+  MEMBER
+
+  @@map("user_role")
+}
+
+enum UserStatus {
+  /// Invited by an admin, but hasn't set a password yet.
+  INVITED
+  ACTIVE
+  /// Can't sign in. Existing sessions stop working immediately.
+  DEACTIVATED
+
+  @@map("user_status")
+}
+
+enum AuthTokenType {
+  INVITATION
+  PASSWORD_RESET
+
+  @@map("auth_token_type")
+}
+
+/// A staff member who signs in with email and password. Candidates don't get accounts.
+model User {
+  id                String     @id @default(uuid(7)) @db.Uuid
+  /// Stored trimmed and lowercased.
+  email             String     @unique
+  name              String
+  /// Argon2id hash. Null until the user accepts their invitation.
+  passwordHash      String?    @map("password_hash")
+  role              UserRole   @default(MEMBER)
+  status            UserStatus @default(INVITED)
+  invitedById       String?    @map("invited_by_id") @db.Uuid
+  passwordChangedAt DateTime?  @map("password_changed_at") @db.Timestamptz(3)
+  lastLoginAt       DateTime?  @map("last_login_at") @db.Timestamptz(3)
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  invitedBy                 User?                  @relation("UserInvitations", fields: [invitedById], references: [id], onDelete: SetNull)
+  invitedUsers              User[]                 @relation("UserInvitations")
+  sessions                  Session[]
+  authTokens                AuthToken[]
+  createdAssessments        Assessment[]           @relation("AssessmentCreator")
+  sentAssessmentInvitations AssessmentInvitation[] @relation("AssessmentInvitationSender")
+  uploadedMedia             MediaAsset[]           @relation("MediaUploader")
+
+  @@map("users")
+}
+
+/// A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored.
+model Session {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  tokenHash  String   @unique @map("token_hash")
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+  lastUsedAt DateTime @default(now()) @map("last_used_at") @db.Timestamptz(3)
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+/// A single-use token sent by email (invitation or password reset). Only its SHA-256 hash is stored.
+model AuthToken {
+  id        String        @id @default(uuid(7)) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  type      AuthTokenType
+  tokenHash String        @unique @map("token_hash")
+  expiresAt DateTime      @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime?     @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@map("auth_tokens")
+}
+
+// --- Assessments -------------------------------------------------------------
+// Test templates, candidates, the links sent to them, attempts and answers.
+// See docs/assessments.md.
+
+enum AssessmentStatus {
+  /// Being written. Can't be sent.
+  DRAFT
+  /// Ready to send to candidates.
+  PUBLISHED
+  /// Hidden from the send dialog. Tests already sent keep working.
+  ARCHIVED
+
+  @@map("assessment_status")
+}
+
+/// How an attempt is scored.
+enum ScoringMethod {
+  /// One point per question answered with its correct option.
+  CORRECT_ANSWER
+  /// How close each answer is to the employer's role profile (the motivation test).
+  ALIGNMENT
+
+  @@map("scoring_method")
+}
+
+enum QuestionType {
+  /// Pick one option; one option is correct.
+  SINGLE_CHOICE
+  /// True or False; one of them is correct.
+  TRUE_FALSE
+  /// A numbered scale such as 1 to 5, scored by alignment.
+  RATING_SCALE
+  /// An ordered set of worded choices, scored by alignment (same, next to it, or other).
+  CHOICE_SCALE
+
+  @@map("question_type")
+}
+
+/// The order questions are shown in. It's fixed for each attempt when the attempt starts.
+enum QuestionOrder {
+  FIXED
+  SHUFFLE_WITHIN_SECTION
+  SHUFFLE_ALL
+
+  @@map("question_order")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+
+  @@map("difficulty")
+}
+
+enum AttemptStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  /// The time limit ran out. The answers given by then are scored.
+  EXPIRED
+
+  @@map("attempt_status")
+}
+
+/// A test template: its settings, sections, questions and score bands.
+model Assessment {
+  id                  String           @id @default(uuid(7)) @db.Uuid
+  /// Stable name used by imports and the seed, such as "critical-thinking".
+  slug                String           @unique
+  name                String
+  tagline             String?
+  /// The staff-facing overview.
+  description         String?
+  level               String?
+  relevantFor         String?          @map("relevant_for")
+  /// Shown to candidates before they start.
+  instructions        String?
+  durationMinutes     Int              @map("duration_minutes")
+  scoringMethod       ScoringMethod    @default(CORRECT_ANSWER) @map("scoring_method")
+  status              AssessmentStatus @default(DRAFT)
+  questionOrder       QuestionOrder    @default(FIXED) @map("question_order")
+  shuffleOptions      Boolean          @default(false) @map("shuffle_options")
+  allowBackNavigation Boolean          @default(true) @map("allow_back_navigation")
+  /// How many times each audio clip can be replayed after the first play.
+  audioReplays        Int              @default(1) @map("audio_replays")
+  createdById         String?          @map("created_by_id") @db.Uuid
+  createdAt           DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  createdBy User?               @relation("AssessmentCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  sections  AssessmentSection[]
+  questions Question[]
+  bands     ScoreBand[]
+  attempts  AssessmentAttempt[]
+
+  @@map("assessments")
+}
+
+/// A skill area (skills tests) or a dimension (motivation). Candidates never see it.
+model AssessmentSection {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  assessmentId String   @map("assessment_id") @db.Uuid
+  name         String
+  description  String?
+  order        Int
+  /// ALIGNMENT tests: this section's share of the overall score. Weights are normalised, so they needn't add up to 1.
+  weight       Float?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  questions  Question[]
+
+  @@index([assessmentId, order])
+  @@map("assessment_sections")
+}
+
+model Question {
+  id                   String       @id @default(uuid(7)) @db.Uuid
+  assessmentId         String       @map("assessment_id") @db.Uuid
+  sectionId            String?      @map("section_id") @db.Uuid
+  order                Int
+  /// A short reference such as "Q5", from the source workbook. Staff only.
+  ref                  String?
+  type                 QuestionType @default(SINGLE_CHOICE)
+  /// How to approach the question, shown above it, such as the rules for a syllogism.
+  instruction          String?
+  /// A passage, message or scenario the question is about.
+  context              String?
+  stem                 String
+  mediaId              String?      @map("media_id") @db.Uuid
+  /// A file named by an import that hasn't been uploaded yet.
+  mediaFileName        String?      @map("media_file_name")
+  /// ALIGNMENT tests: the question as the employer answers it for the role.
+  employerPrompt       String?      @map("employer_prompt")
+  /// ALIGNMENT tests: the employer's answer (an option value) that candidates are compared with.
+  defaultEmployerValue Int?         @map("default_employer_value")
+  difficulty           Difficulty?
+  /// Why the key is right and what the other options test. Staff only.
+  rationale            String?
+  /// What the audio clip says. Staff only.
+  transcript           String?
+  /// Overrides the test's option shuffling. Null follows the test.
+  shuffleOptions       Boolean?     @map("shuffle_options")
+  /// Keeps the last option in place when the others are shuffled, such as "None of these".
+  keepLastOptionFixed  Boolean      @default(false) @map("keep_last_option_fixed")
+  createdAt            DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  assessment Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  section    AssessmentSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  media      MediaAsset?        @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  options    QuestionOption[]
+
+  @@index([assessmentId, order])
+  @@index([sectionId])
+  @@index([mediaId])
+  @@map("questions")
+}
+
+model QuestionOption {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  questionId   String   @map("question_id") @db.Uuid
+  order        Int
+  /// "A", "B"... for choices; "1", "2"... for scales.
+  label        String
+  /// What the candidate reads. Can be empty for the middle points of a scale.
+  text         String
+  /// ALIGNMENT tests: what the employer reads, when it differs.
+  employerText String?  @map("employer_text")
+  /// The position on the scale, for RATING_SCALE and CHOICE_SCALE.
+  value        Int?
+  isCorrect    Boolean  @default(false) @map("is_correct")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId, order])
+  @@map("question_options")
+}
+
+/// A named score range. An attempt gets the band with the highest minScore at or below its score.
+model ScoreBand {
+  id                String   @id @default(uuid(7)) @db.Uuid
+  assessmentId      String   @map("assessment_id") @db.Uuid
+  order             Int
+  /// From 0 to 1.
+  minScore          Float    @map("min_score")
+  label             String
+  interpretation    String?
+  recommendedAction String?  @map("recommended_action")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId, order])
+  @@map("score_bands")
+}
+
+/// An uploaded file, such as question audio. The bytes are in STORAGE_DIR under `key`.
+model MediaAsset {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  key          String   @unique
+  mimeType     String   @map("mime_type")
+  sizeBytes    Int      @map("size_bytes")
+  originalName String   @map("original_name")
+  uploadedById String?  @map("uploaded_by_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  uploadedBy User?      @relation("MediaUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  questions  Question[]
+
+  @@index([originalName])
+  @@map("media_assets")
+}
+
+/// Someone who is sent assessments. Candidates don't sign in; they use the link they're emailed.
+model Candidate {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  /// Stored trimmed and lowercased.
+  email     String   @unique
+  name      String
+  phone     String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  invitations AssessmentInvitation[]
+
+  @@map("candidates")
+}
+
+/// One emailed link that gives a candidate access to one or more assessments.
+model AssessmentInvitation {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  candidateId  String    @map("candidate_id") @db.Uuid
+  /// SHA-256 of the token in the link. The token itself is never stored.
+  tokenHash    String    @unique @map("token_hash")
+  /// After this, tests that haven't started can't be started.
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(3)
+  /// When the email last went out. Null when sending failed.
+  sentAt       DateTime? @map("sent_at") @db.Timestamptz(3)
+  sentById     String?   @map("sent_by_id") @db.Uuid
+  /// A note from the sender, shown in the email and on the start page.
+  message      String?
+  lastOpenedAt DateTime? @map("last_opened_at") @db.Timestamptz(3)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  candidate Candidate           @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  sentBy    User?               @relation("AssessmentInvitationSender", fields: [sentById], references: [id], onDelete: SetNull)
+  attempts  AssessmentAttempt[]
+
+  @@index([candidateId])
+  @@index([createdAt])
+  @@map("assessment_invitations")
+}
+
+/// One assessment within an invitation, frozen at the version that was sent.
+model AssessmentAttempt {
+  id               String        @id @default(uuid(7)) @db.Uuid
+  invitationId     String        @map("invitation_id") @db.Uuid
+  assessmentId     String        @map("assessment_id") @db.Uuid
+  /// Position on the candidate's start page.
+  order            Int
+  /// The whole test as it was when sent, keys included. Scoring reads only this.
+  snapshot         Json
+  status           AttemptStatus @default(NOT_STARTED)
+  startedAt        DateTime?     @map("started_at") @db.Timestamptz(3)
+  deadlineAt       DateTime?     @map("deadline_at") @db.Timestamptz(3)
+  /// When the candidate submitted, or when the attempt closed because time ran out.
+  finishedAt       DateTime?     @map("finished_at") @db.Timestamptz(3)
+  /// The question and option order for this attempt, fixed when it starts.
+  layout           Json?
+  /// From 0 to 1.
+  score            Float?
+  bandLabel        String?       @map("band_label")
+  correctCount     Int?          @map("correct_count")
+  questionCount    Int?          @map("question_count")
+  sectionScores    Json?         @map("section_scores")
+  flags            Json?
+  timeTakenSeconds Int?          @map("time_taken_seconds")
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  invitation AssessmentInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  assessment Assessment           @relation(fields: [assessmentId], references: [id], onDelete: Restrict)
+  answers    AttemptAnswer[]
+
+  @@unique([invitationId, assessmentId])
+  @@index([assessmentId, status])
+  @@map("assessment_attempts")
+}
+
+/// A candidate's answer. The question and option ids point into the attempt's snapshot, so they have no foreign keys.
+model AttemptAnswer {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  attemptId  String   @map("attempt_id") @db.Uuid
+  questionId String   @map("question_id") @db.Uuid
+  optionId   String   @map("option_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  attempt AssessmentAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@map("attempt_answers")
+}

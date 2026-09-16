@@ -1,0 +1,718 @@
+{
+  "format": "tmx-hr.assessment/1",
+  "slug": "motivation",
+  "name": "Motivation",
+  "tagline": "Job preferences questionnaire",
+  "description": "Rooted in Hackman & Oldham's Job Characteristics Model, this job preferences test measures the extent to which candidates' expectations align with your job offer, based on a customised survey that you and the candidate both complete.\n\nWhile skill level is important for success, job preferences and motivation can play an even bigger role. Skills can be taught, but preferences and motivators are relatively stable over time, so it is crucial to evaluate not only whether candidates have the right skills but whether what motivates them aligns with what the role offers.\n\nOldham and Hackman proposed that the job itself – rather than an employee's personality – has the greatest influence on motivation. Employees are most motivated when they experience their work as meaningful, feel responsible for its outcomes, and know the results of their work. A set of moderators can increase or decrease an individual's motivation.\n\nThis questionnaire profiles the key job characteristics, moderators, extrinsic factors and job activities known to affect motivation. The employer answers a role-profile version; candidates answer a parallel version about what they seek in a job, including the activities they most enjoy. Candidate answers are mapped against the role profile to produce an alignment score per dimension and overall.\n\nRating items: alignment = 1 − |employer − candidate| ÷ 4 (identical = 100%, opposite ends = 0%). Choice items: same option = 100%, adjacent = 50%, otherwise 0%. Dimension score = mean of its items. Overall = weighted mean of dimensions (weights editable in the calculator).",
+  "level": "Entry level (suitable for all roles and seniorities)",
+  "relevantFor": "All job roles. Helps determine how well a candidate's preferences align with the job, its benefits and key elements of the workplace. A strong match is associated with better performance and longer retention.",
+  "instructions": "There are no right or wrong answers. For each question, pick what's true for you, not what you think we'd like to hear. Most people finish in 6 to 8 minutes, and you have up to 15.",
+  "durationMinutes": 15,
+  "scoringMethod": "ALIGNMENT",
+  "questionOrder": "SHUFFLE_WITHIN_SECTION",
+  "shuffleOptions": false,
+  "allowBackNavigation": true,
+  "audioReplays": 1,
+  "sections": [
+    {
+      "key": "core-job-characteristics",
+      "name": "Core job characteristics",
+      "description": "The intrinsic design of the job (variety, whole tasks, impact, autonomy, visible results) matches what the candidate finds meaningful.\n\nInterview probe: \"Describe a piece of work you found genuinely satisfying. What made it satisfying?\" – listen for variety / ownership / impact / independence / results.",
+      "weight": 0.35
+    },
+    {
+      "key": "motivation-moderators",
+      "name": "Motivation moderators",
+      "description": "Candidate's appetite for growth, feedback and interaction matches how the role and team actually operate.\n\nInterview probe: \"How do you like to receive feedback, and how often?\" / \"When did you last learn something new at work, and how did that come about?\"",
+      "weight": 0.15
+    },
+    {
+      "key": "extrinsic-workplace-factors",
+      "name": "Extrinsic & workplace factors",
+      "description": "Compensation, security, flexibility, location, progression and recognition meet the candidate's stated priorities.\n\nInterview probe: Be transparent: \"This role is on-site five days a week / has no formal promotion path in year one – how does that sit with you?\"",
+      "weight": 0.3
+    },
+    {
+      "key": "work-activities",
+      "name": "Work activities",
+      "description": "The candidate enjoys the actual day-to-day activities, pace and team setting of the job.\n\nInterview probe: \"Walk me through your ideal working day – what would you spend most of it doing?\" and compare with the real job.",
+      "weight": 0.2
+    }
+  ],
+  "bands": [
+    {
+      "minScore": 0.85,
+      "label": "Strong fit",
+      "interpretation": "What the role offers closely matches what the candidate is looking for across intrinsic and extrinsic factors. Lowest early-attrition risk; candidate likely to report the work as meaningful.",
+      "recommendedAction": "Progress. Confirm any single flagged item in interview; otherwise no further motivation screening needed."
+    },
+    {
+      "minScore": 0.7,
+      "label": "Good fit",
+      "interpretation": "Broad alignment with one or two moderate gaps. Good, provided expectations are set honestly before the offer.",
+      "recommendedAction": "Progress. Discuss flagged items openly in the interview and set expectations (e.g. limited remote work, flat structure)."
+    },
+    {
+      "minScore": 0.55,
+      "label": "Partial fit",
+      "interpretation": "Several gaps, or a strong mismatch in one dimension while others align. Elevated risk of disengagement within 6–12 months unless the gap is addressed.",
+      "recommendedAction": "Progress only if the mismatched dimension is not central to the role, or if the role can be adjusted. Probe motivation in depth."
+    },
+    {
+      "minScore": 0.0,
+      "label": "Low fit",
+      "interpretation": "The candidate's motivators differ substantially from what the role provides. High early-attrition risk even if skills are strong.",
+      "recommendedAction": "Generally do not progress for this role; consider other openings that match their profile."
+    }
+  ],
+  "questions": [
+    {
+      "ref": "Q1",
+      "section": "core-job-characteristics",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that a job lets you use many different skills rather than doing the same kind of task?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Skill variety: Variety feeds 'experienced meaningfulness'. Candidate wanting far more variety than the role offers is a boredom/attrition risk; wanting less can mean overwhelm.",
+      "employerPrompt": "To what extent does this role require a variety of different skills and activities in a typical week?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q2",
+      "section": "core-job-characteristics",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you to see a piece of work through from beginning to end, rather than handling one part of it?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Task identity: Task identity → meaningfulness. Assembly-line or hand-off-heavy roles score low here; flag candidates who rate 5.",
+      "employerPrompt": "To what extent does the role involve completing whole pieces of work from start to finish, rather than contributing one step to a larger process?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q3",
+      "section": "core-job-characteristics",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that your work clearly affects other people – customers, colleagues or society?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Task significance: Significance → meaningfulness. Mismatch is most damaging when the candidate rates 5 and the role rates ≤2.",
+      "employerPrompt": "To what extent does the work in this role have a visible impact on customers, colleagues or the wider community?",
+      "employerValue": 4
+    },
+    {
+      "ref": "Q4",
+      "section": "core-job-characteristics",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you to decide for yourself how, when and in what order you do your work?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Autonomy: Autonomy → experienced responsibility. Both directions matter: high-autonomy roles can unsettle candidates who prefer clear direction.",
+      "employerPrompt": "How much freedom does the person in this role have to decide how, when and in what order to do their work?",
+      "employerValue": 2
+    },
+    {
+      "ref": "Q5",
+      "section": "core-job-characteristics",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that you can see for yourself, from the work itself, how well you are doing?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Feedback from the job: Feedback → knowledge of results. Roles with long or invisible outcomes (research, policy) score low; pair with Q7.",
+      "employerPrompt": "To what extent does doing the work itself provide clear information about how well it is going (e.g. targets, dashboards, visible results)?",
+      "employerValue": 4
+    },
+    {
+      "ref": "Q6",
+      "section": "motivation-moderators",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that a job keeps stretching you with new things to learn and challenging problems?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Growth need strength: The strongest JCM moderator. High-GNS candidates respond well to enriched jobs and poorly to static ones; the reverse is also true.",
+      "employerPrompt": "To what extent does this role offer opportunities to learn new things and take on stretching challenges?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q7",
+      "section": "motivation-moderators",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you to receive regular, direct feedback on your performance from your manager or colleagues?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Rarely (annual review only)"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "Continuously (daily/weekly)"
+        }
+      ],
+      "rationale": "Feedback from people: Distinguishes feedback from agents (people) from feedback from the job (Q5). A candidate rating 5 in a hands-off management culture is a common early-exit driver.",
+      "employerPrompt": "How often does the person in this role receive direct feedback on their performance from a manager, colleagues or customers?",
+      "employerValue": 4
+    },
+    {
+      "ref": "Q8",
+      "section": "motivation-moderators",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that your work involves a lot of interaction with other people?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Dealing with others: JCM supplementary dimension. Large gap in either direction predicts dissatisfaction (isolation vs. interruption).",
+      "employerPrompt": "To what extent does the role require close, ongoing interaction with other people (colleagues, clients, partners) to get the work done?",
+      "employerValue": 5
+    },
+    {
+      "ref": "Q9",
+      "section": "extrinsic-workplace-factors",
+      "type": "RATING_SCALE",
+      "stem": "How important is pay (relative to other factors) when you decide whether to accept a job?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Below market"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": "",
+          "employerText": "At market"
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "Well above market"
+        }
+      ],
+      "rationale": "Pay & financial rewards: Extrinsic / context satisfaction. Use to flag candidates likely to leave for a small raise when pay is a top-3 driver and the offer is at or below market.",
+      "employerPrompt": "Relative to similar roles in your market, how competitive is the total compensation (salary, bonus, equity) for this role?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q10",
+      "section": "extrinsic-workplace-factors",
+      "type": "RATING_SCALE",
+      "stem": "How important is long-term stability and predictability in a job to you?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Short-term / uncertain"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "Very stable"
+        }
+      ],
+      "rationale": "Job security & stability: Especially relevant for fixed-term, start-up or project-funded roles.",
+      "employerPrompt": "How stable and predictable is this role (permanent contract, established team, steady funding)?",
+      "employerValue": 4
+    },
+    {
+      "ref": "Q11",
+      "section": "extrinsic-workplace-factors",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you to have flexibility over your working hours?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Fixed hours/shifts"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "Fully flexible"
+        }
+      ],
+      "rationale": "Schedule flexibility: Shift-based and customer-hours roles should answer honestly here; this is one of the most common causes of early attrition.",
+      "employerPrompt": "How much flexibility does the role offer over working hours (start/finish times, compressed weeks, part-time options)?",
+      "employerValue": 2
+    },
+    {
+      "ref": "Q12",
+      "section": "extrinsic-workplace-factors",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you to be able to work remotely?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Fully on-site"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": "",
+          "employerText": "Hybrid"
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "Fully remote"
+        }
+      ],
+      "rationale": "Location / remote work: Direction matters: a candidate wanting remote (5) for an on-site role (1) is a hard mismatch; the reverse is usually manageable.",
+      "employerPrompt": "How much of the work can be done remotely?",
+      "employerValue": 1
+    },
+    {
+      "ref": "Q13",
+      "section": "extrinsic-workplace-factors",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that a job offers a clear route to promotion or greater responsibility?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "No defined path"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "Clear, well-used path"
+        }
+      ],
+      "rationale": "Career advancement: Flag candidates rating 5 for flat-structure or capped roles; set expectations in the interview rather than lose them at month 9.",
+      "employerPrompt": "How clear and realistic is the path to promotion or expanded responsibility from this role within 2–3 years?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q14",
+      "section": "extrinsic-workplace-factors",
+      "type": "RATING_SCALE",
+      "stem": "How important is it to you that good work is noticed and recognised?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Not important",
+          "employerText": "Not at all"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Extremely important",
+          "employerText": "To a very large extent"
+        }
+      ],
+      "rationale": "Recognition: Maps to O*NET work value 'Recognition'. Low-recognition cultures should not over-promise here.",
+      "employerPrompt": "To what extent does the organisation formally and informally recognise good work (awards, public credit, shout-outs, manager praise)?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q15",
+      "section": "work-activities",
+      "type": "RATING_SCALE",
+      "stem": "How much would you enjoy work that involves analysing data, numbers or documents in detail?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Would strongly dislike",
+          "employerText": "Never part of the role"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Would greatly enjoy",
+          "employerText": "A major part of the role"
+        }
+      ],
+      "rationale": "Analytical / detail work: Activity-level fit. Enjoyment items predict sustained effort better than 'can you do it' items.",
+      "employerPrompt": "How much of the role involves working with data, numbers, documents or detailed checking?",
+      "employerValue": 3
+    },
+    {
+      "ref": "Q16",
+      "section": "work-activities",
+      "type": "RATING_SCALE",
+      "stem": "How much would you enjoy work that involves regular direct contact with customers or clients?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Would strongly dislike",
+          "employerText": "Never part of the role"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Would greatly enjoy",
+          "employerText": "A major part of the role"
+        }
+      ],
+      "rationale": "Customer-facing work: Distinct from Q8 (interaction in general) – this is about external, sometimes difficult, contact.",
+      "employerPrompt": "How much of the role involves direct contact with customers or external clients (calls, meetings, support)?",
+      "employerValue": 5
+    },
+    {
+      "ref": "Q17",
+      "section": "work-activities",
+      "type": "RATING_SCALE",
+      "stem": "How much would you enjoy work where you have to come up with ideas or solve problems that have no set procedure?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Would strongly dislike",
+          "employerText": "Never part of the role"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Would greatly enjoy",
+          "employerText": "A major part of the role"
+        }
+      ],
+      "rationale": "Creative / problem-solving work: High score here plus low Q18 = innovator profile; the reverse = operator profile. Neither is 'better' – match the role.",
+      "employerPrompt": "How much of the role involves generating ideas, designing solutions or solving problems without a set procedure?",
+      "employerValue": 2
+    },
+    {
+      "ref": "Q18",
+      "section": "work-activities",
+      "type": "RATING_SCALE",
+      "stem": "How much would you enjoy work that follows clear procedures and repeats well-defined tasks?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Would strongly dislike",
+          "employerText": "Never part of the role"
+        },
+        {
+          "value": 2,
+          "text": ""
+        },
+        {
+          "value": 3,
+          "text": ""
+        },
+        {
+          "value": 4,
+          "text": ""
+        },
+        {
+          "value": 5,
+          "text": "Would greatly enjoy",
+          "employerText": "A major part of the role"
+        }
+      ],
+      "rationale": "Routine / structured work: Honest employer ratings matter most here – roles are often advertised as more varied than they are.",
+      "employerPrompt": "How much of the role involves following established procedures and repeating well-defined tasks accurately?",
+      "employerValue": 4
+    },
+    {
+      "ref": "Q19",
+      "section": "work-activities",
+      "type": "CHOICE_SCALE",
+      "stem": "Which pace of work suits you best?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Steady and predictable",
+          "employerText": "Steady and predictable"
+        },
+        {
+          "value": 2,
+          "text": "A mix of busy and calm periods",
+          "employerText": "Mixed – busy periods and calm periods"
+        },
+        {
+          "value": 3,
+          "text": "Fast-changing, with frequent urgent work",
+          "employerText": "Fast-changing, frequent urgent work"
+        }
+      ],
+      "rationale": "Pace of work: Pace mismatch is a frequent 'the job wasn't what I expected' reason in exit interviews.",
+      "employerPrompt": "Which best describes the pace of this role?",
+      "employerValue": 2
+    },
+    {
+      "ref": "Q20",
+      "section": "work-activities",
+      "type": "CHOICE_SCALE",
+      "stem": "How do you prefer to work?",
+      "options": [
+        {
+          "value": 1,
+          "text": "Mostly on my own",
+          "employerText": "Mostly independent, own tasks"
+        },
+        {
+          "value": 2,
+          "text": "A mix of solo and team work",
+          "employerText": "A mix of solo and team work"
+        },
+        {
+          "value": 3,
+          "text": "Mostly in close collaboration with others",
+          "employerText": "Mostly collaborative, shared deliverables"
+        }
+      ],
+      "rationale": "Team setting: Cross-check with Q8. Consistent answers across Q8/Q16/Q20 indicate reliable self-report.",
+      "employerPrompt": "How is the work in this role organised?",
+      "employerValue": 3
+    }
+  ]
+}

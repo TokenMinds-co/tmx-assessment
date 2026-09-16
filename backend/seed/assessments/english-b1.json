@@ -1,0 +1,450 @@
+{
+  "format": "tmx-hr.assessment/1",
+  "slug": "english-b1",
+  "name": "English B1 (Intermediate)",
+  "tagline": "Everyday workplace English at CEFR level B1",
+  "description": "The English B1 (Intermediate) test evaluates a candidate's English proficiency at the B1 level of the CEFR framework. It helps you hire employees who can communicate in English on subjects commonly encountered at work and in everyday life.\n\nEmployees who can communicate in English at the intermediate level improve a company's internal and external communication by removing language barriers and improving the flow of information among colleagues and to and from customers.\n\nThe test evaluates a candidate's ability to communicate at the B1 level of the Common European Framework of Reference (CEFR) for Languages across four areas: grammar and vocabulary, sentence composition, reading comprehension, and listening comprehension.\n\nCandidates at B1 can handle daily workplace situations with customers, colleagues and other stakeholders. The texts, sentences and audio in this test mimic real-life situations at work and in everyday life. Candidates who score well can understand simple, connected sentences on familiar topics, follow short spoken instructions, and produce grammatically correct sentences about routine matters.",
+  "level": "Intermediate – CEFR B1",
+  "relevantFor": "Customer support agents, sales representatives, office/admin staff, and any employee who needs an intermediate level of English to perform well in their role.",
+  "instructions": "This test has 16 questions and takes 10 minutes: grammar and vocabulary, building sentences, short texts to read, and four short audio clips you can replay once. Pick the best answer for each question.",
+  "durationMinutes": 10,
+  "scoringMethod": "CORRECT_ANSWER",
+  "questionOrder": "SHUFFLE_WITHIN_SECTION",
+  "shuffleOptions": true,
+  "allowBackNavigation": true,
+  "audioReplays": 1,
+  "sections": [
+    {
+      "key": "grammar-vocabulary",
+      "name": "Grammar & vocabulary",
+      "description": "Uses common tenses, modals and everyday work vocabulary with reasonable accuracy."
+    },
+    {
+      "key": "sentence-composition",
+      "name": "Sentence composition",
+      "description": "Builds simple connected sentences with correct word order and linking words."
+    },
+    {
+      "key": "reading-comprehension",
+      "name": "Reading comprehension",
+      "description": "Understands short workplace texts (emails, notices) and identifies main points and stated reasons."
+    },
+    {
+      "key": "listening-comprehension",
+      "name": "Listening comprehension",
+      "description": "Follows short, clear spoken messages about arrangements, numbers and instructions."
+    }
+  ],
+  "bands": [
+    {
+      "minScore": 0.875,
+      "label": "Strong B1 / likely B2",
+      "interpretation": "Handles grammar, reading and listening with few errors; likely above B1. Comfortable in customer-facing English roles.",
+      "recommendedAction": "Progress. Consider the English B2 test if the role needs upper-intermediate fluency."
+    },
+    {
+      "minScore": 0.6875,
+      "label": "Solid B1",
+      "interpretation": "Meets the B1 profile: understands connected sentences on familiar topics and produces correct simple sentences with occasional slips.",
+      "recommendedAction": "Progress. Check sub-scores – a weak listening or reading block may matter for phone vs. email-heavy roles."
+    },
+    {
+      "minScore": 0.5,
+      "label": "Borderline A2/B1",
+      "interpretation": "Understands simple texts and audio but makes frequent grammar errors or misses details in longer items.",
+      "recommendedAction": "Progress only if the role has limited English exposure or training is available; verify with a short live conversation."
+    },
+    {
+      "minScore": 0.0,
+      "label": "Below B1",
+      "interpretation": "Struggles with intermediate-level input; likely A1–A2.",
+      "recommendedAction": "Do not progress for roles requiring intermediate English."
+    }
+  ],
+  "questions": [
+    {
+      "ref": "Q1",
+      "section": "grammar-vocabulary",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "stem": "Maria has worked at the bank _______ 2019.",
+      "options": [
+        {
+          "text": "since",
+          "correct": true
+        },
+        {
+          "text": "for"
+        },
+        {
+          "text": "from"
+        },
+        {
+          "text": "during"
+        }
+      ],
+      "rationale": "Fill in the blank: Present perfect + point in time → 'since'. 'For' needs a duration (for 5 years); 'from' needs 'to/until'; 'during' takes a period noun, not a year."
+    },
+    {
+      "ref": "Q2",
+      "section": "grammar-vocabulary",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "stem": "I _______ this report three times already, and I still can't find the mistake.",
+      "options": [
+        {
+          "text": "am reading"
+        },
+        {
+          "text": "have read",
+          "correct": true
+        },
+        {
+          "text": "read"
+        },
+        {
+          "text": "will read"
+        }
+      ],
+      "rationale": "Fill in the blank: 'Already' + completed repeated action up to now → present perfect. Progressive and future clash with 'already'; simple past is unnatural with 'already... still'."
+    },
+    {
+      "ref": "Q3",
+      "section": "grammar-vocabulary",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "stem": "You _______ wear a helmet in the warehouse. It's a safety rule.",
+      "options": [
+        {
+          "text": "might"
+        },
+        {
+          "text": "can"
+        },
+        {
+          "text": "must",
+          "correct": true
+        },
+        {
+          "text": "would"
+        }
+      ],
+      "rationale": "Fill in the blank: Obligation/rule → 'must'. 'Might/can/would' express possibility, ability or hypothetical, not obligation."
+    },
+    {
+      "ref": "Q4",
+      "section": "grammar-vocabulary",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "stem": "Our team was very _______ last quarter – we finished every project on time.",
+      "options": [
+        {
+          "text": "expensive"
+        },
+        {
+          "text": "patient"
+        },
+        {
+          "text": "careful"
+        },
+        {
+          "text": "productive",
+          "correct": true
+        }
+      ],
+      "rationale": "Fill in the blank (vocabulary): Context (finished every project on time) points to 'productive'. Others are plausible adjectives for a team but do not match the evidence given."
+    },
+    {
+      "ref": "Q5",
+      "section": "sentence-composition",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "stem": "Which sentence is grammatically correct?",
+      "options": [
+        {
+          "text": "Yesterday I have sent the invoice to the client."
+        },
+        {
+          "text": "Yesterday I sent the invoice to the client.",
+          "correct": true
+        },
+        {
+          "text": "Yesterday I send the invoice to the client."
+        },
+        {
+          "text": "Yesterday I am sending the invoice to the client."
+        }
+      ],
+      "rationale": "Choose the correct sentence: Finished past time marker ('yesterday') requires simple past. A is a common B1 error (present perfect with a finished time)."
+    },
+    {
+      "ref": "Q6",
+      "section": "sentence-composition",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "stem": "Choose the sentence with the correct word order.",
+      "options": [
+        {
+          "text": "I was late for work because the train was delayed.",
+          "correct": true
+        },
+        {
+          "text": "I was late for work because was delayed the train."
+        },
+        {
+          "text": "Because the train delayed was, I was late for work."
+        },
+        {
+          "text": "I for work was late because the train was delayed."
+        }
+      ],
+      "rationale": "Word order: Tests subject–verb–object order inside a 'because' clause and adverbial placement."
+    },
+    {
+      "ref": "Q7",
+      "section": "sentence-composition",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "Two sentences: 'Tom finished the report.'  'Then he went home.'",
+      "stem": "Which sentence combines the two ideas correctly?",
+      "options": [
+        {
+          "text": "Tom finished the report after he went home."
+        },
+        {
+          "text": "Before Tom finished the report, he went home."
+        },
+        {
+          "text": "After Tom finished the report, he went home.",
+          "correct": true
+        },
+        {
+          "text": "Tom went home before finish the report."
+        }
+      ],
+      "rationale": "Combine two sentences: Tests sequencing connectors (after/before) and clause form. A and B reverse the order of events; D has a verb-form error ('before finish')."
+    },
+    {
+      "ref": "Q8",
+      "section": "sentence-composition",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "A: 'Could you send me the file by 3 p.m. today?'",
+      "stem": "Choose the best reply from B.",
+      "options": [
+        {
+          "text": "Yes, I sent it tomorrow."
+        },
+        {
+          "text": "Sure, I'll send it right away.",
+          "correct": true
+        },
+        {
+          "text": "No, I'm send it now."
+        },
+        {
+          "text": "Sure, I send it yesterday."
+        }
+      ],
+      "rationale": "Best response in a dialogue: Correct future/spontaneous-decision form ('I'll') and appropriate register. A and D mix tenses with the wrong time word; C has a broken progressive."
+    },
+    {
+      "ref": "Q9",
+      "section": "reading-comprehension",
+      "type": "TRUE_FALSE",
+      "difficulty": "MEDIUM",
+      "context": "Ben has been on the phone with customers all morning and could really use a break.",
+      "stem": "True or False: Ben would like to stop working for a short time.",
+      "options": [
+        {
+          "text": "True",
+          "correct": true
+        },
+        {
+          "text": "False"
+        }
+      ],
+      "rationale": "True / False: 'Could use a break' = wants a short rest. Tests understanding of an idiomatic B1 expression, mirroring the 'isn't feeling up to' preview item."
+    },
+    {
+      "ref": "Q10",
+      "section": "reading-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "Hi all,\nThe office kitchen will be closed on Friday for cleaning. Please take any food out of the fridge by Thursday evening. Anything left in the fridge will be thrown away.\nThanks,\nFacilities Team",
+      "stem": "What will happen to food that is still in the fridge on Friday?",
+      "options": [
+        {
+          "text": "It will be moved to another kitchen."
+        },
+        {
+          "text": "It will be thrown away.",
+          "correct": true
+        },
+        {
+          "text": "It will be returned to its owner."
+        },
+        {
+          "text": "It will be kept until Monday."
+        }
+      ],
+      "rationale": "Multiple choice (short email): Direct comprehension of a workplace notice; distractors are plausible actions not stated in the text."
+    },
+    {
+      "ref": "Q11",
+      "section": "reading-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "context": "SHOP NOTICE – Sale ends Sunday. All items 30% off. Returns accepted within 14 days with a receipt.",
+      "stem": "A customer bought a jacket during the sale and wants to return it three weeks later. Which statement is true?",
+      "options": [
+        {
+          "text": "They can return it if they have the receipt."
+        },
+        {
+          "text": "They can return it but will only get 30% back."
+        },
+        {
+          "text": "They cannot return it because too much time has passed.",
+          "correct": true
+        },
+        {
+          "text": "They can exchange it for another item."
+        }
+      ],
+      "rationale": "Multiple choice (notice): Requires combining two pieces of information (14-day limit vs. three weeks). A is the key distractor – receipt alone is not enough."
+    },
+    {
+      "ref": "Q12",
+      "section": "reading-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "Priya works from home on Mondays and Wednesdays. On the other days she goes to the office, which is a 40-minute drive from her flat. She prefers working from home because she can start earlier and avoid the traffic.",
+      "stem": "Why does Priya prefer working from home?",
+      "options": [
+        {
+          "text": "The office is too far away."
+        },
+        {
+          "text": "She can begin work earlier.",
+          "correct": true
+        },
+        {
+          "text": "She does not have a car."
+        },
+        {
+          "text": "She works fewer hours."
+        }
+      ],
+      "rationale": "Multiple choice (short passage): Tests reading for a stated reason. A is inferable but not the reason given; C and D are not in the text."
+    },
+    {
+      "ref": "Q13",
+      "section": "listening-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "stem": "When is the client meeting now?",
+      "media": {
+        "file": "listening_Q13.mp3"
+      },
+      "options": [
+        {
+          "text": "Tuesday at 10"
+        },
+        {
+          "text": "Wednesday at 10"
+        },
+        {
+          "text": "Tuesday at 2"
+        },
+        {
+          "text": "Wednesday at 2",
+          "correct": true
+        }
+      ],
+      "rationale": "Audio + multiple choice: Listening for a change of arrangement. Distractors recombine the old and new day/time.",
+      "transcript": "Good morning, everyone. Just a quick update. The client meeting has moved from Tuesday at ten to Wednesday at two. It's in the same room as before. Please update your calendars."
+    },
+    {
+      "ref": "Q14",
+      "section": "listening-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "stem": "What will Sam do tomorrow?",
+      "media": {
+        "file": "listening_Q14.mp3"
+      },
+      "options": [
+        {
+          "text": "Leave the package with a neighbour"
+        },
+        {
+          "text": "Try to deliver the package again in the morning",
+          "correct": true
+        },
+        {
+          "text": "Send the package back to the sender"
+        },
+        {
+          "text": "Call the customer at nine o'clock"
+        }
+      ],
+      "rationale": "Audio + multiple choice: Voicemail comprehension – identifying the speaker's next action from a short message.",
+      "transcript": "Hi, this is Sam from Greenway Deliveries. I tried to deliver your package this morning, but nobody was home. I'll try again tomorrow between nine and twelve. If that doesn't work for you, please call us on 0800 555 210."
+    },
+    {
+      "ref": "Q15",
+      "section": "listening-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "stem": "How many tickets were sold in total over the weekend?",
+      "media": {
+        "file": "listening_Q15.mp3"
+      },
+      "options": [
+        {
+          "text": "55"
+        },
+        {
+          "text": "60"
+        },
+        {
+          "text": "75",
+          "correct": true
+        },
+        {
+          "text": "90"
+        }
+      ],
+      "rationale": "Audio + multiple choice (numbers): 40 + 35 = 75. Distractor 60 = 75 − 15 (refunds are a red herring); 55 = 40 + 15. Mirrors the 'customers yesterday and today' preview item.",
+      "transcript": "Here are the numbers from the weekend. We sold forty tickets on Saturday and thirty-five on Sunday. Fifteen people asked for a refund, so we still need to process those."
+    },
+    {
+      "ref": "Q16",
+      "section": "listening-comprehension",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "stem": "What should the passenger do?",
+      "media": {
+        "file": "listening_Q16.mp3"
+      },
+      "options": [
+        {
+          "text": "Stay on this train"
+        },
+        {
+          "text": "Get off at Airport"
+        },
+        {
+          "text": "Wait for the next train",
+          "correct": true
+        },
+        {
+          "text": "Take a bus instead"
+        }
+      ],
+      "rationale": "Audio + multiple choice: Short two-speaker exchange; tests understanding of advice/instructions in a travel situation.",
+      "transcript": "Passenger: Excuse me, does this train stop at Central Station?\nStaff: No, sorry, this is the express. It only stops at Airport and Harbour. You need the next train. It leaves in about ten minutes from this platform."
+    }
+  ]
+}

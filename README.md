@@ -30,42 +30,53 @@ TokenMinds' internal HR app. It brings recruitment into one platform, starting w
 
 ## Status
 
-- **Waiting on Robbie** for the 5 test specs.
-- **Next step:** a prototype of the assessment system that fits the wider HR app design.
+- **The assessment system is built.** Staff build tests, send them to candidates with one link, and read scored results. Communication, Critical Thinking, English B1 and Motivation come prefilled from the team's workbooks; Attention to Detail still needs its questions. See [backend/docs/assessments.md](backend/docs/assessments.md) and [frontend/docs/assessments.md](frontend/docs/assessments.md).
+- **Next step:** the recruitment pipeline.
 - **Priority:** work starts after the MMAL production work is done.
 - **Main contact:** Anchor.
+- **Decided:** candidates register interest through a Notion form, which the app imports. The assessments stay in this app.
 
 ## Open questions
 
-- Will this app replace monday.com and Calendly, or sync with them?
+- Will this app replace the monday.com board and Calendly, or sync with them? (The monday.com form is replaced by the Notion form.)
 - What is the pass mark for each test, and who reviews the scores?
 
 ## Repository layout
 
 | Folder | What it is | Docs |
 | --- | --- | --- |
-| [`backend/`](backend/) | REST API: NestJS 11, TypeScript | [README](backend/README.md) · [docs](backend/docs/) · [changelog](backend/docs/CHANGELOG.md) |
-| [`frontend/`](frontend/) | Web app: Next.js 16, React 19, Tailwind CSS 4 | [README](frontend/README.md) · [docs](frontend/docs/) · [changelog](frontend/docs/CHANGELOG.md) |
+| [`backend/`](backend/) | REST API: NestJS 11, TypeScript, Prisma with PostgreSQL | [README](backend/README.md) · [docs](backend/docs/) · [changelog](backend/docs/CHANGELOG.md) |
+| [`frontend/`](frontend/) | Web app: Next.js 16, React 19, Tailwind CSS 4, shadcn/ui | [README](frontend/README.md) · [docs](frontend/docs/) · [changelog](frontend/docs/CHANGELOG.md) |
 
-Both apps are fresh scaffolds. They are separate pnpm projects with their own lockfiles, so install and run each one from its own folder.
+They are separate pnpm projects with their own lockfiles, so install and run each one from its own folder.
+
+## Deployment
+
+- **Backend:** [.github/workflows/backend.yml](.github/workflows/backend.yml) builds a Docker image on every push to `main` that touches `backend/`, pushes it to GitHub Container Registry and deploys it to the TokenMinds VPS, where it uses the Postgres already running there. Pull requests get a build and lint check. See [backend/docs/operations.md](backend/docs/operations.md#deployment).
+- **Frontend:** Vercel, from the `frontend/` folder.
 
 ## Quick start
 
-You need Node.js 20.9 or newer and pnpm.
+You need Node.js 20.19 or newer and pnpm.
 
 ```bash
-# Terminal 1: backend
+# Terminal 1: backend, on http://localhost:4000/api
 cd backend
 pnpm install
-PORT=4000 pnpm start:dev
+cp .env.example .env
+pnpm db:start     # local Prisma Postgres; put the URL it prints in .env as DATABASE_URL
+pnpm db:migrate
+pnpm db:seed      # optional: load the prefilled tests
+pnpm start:dev
 
 # Terminal 2: frontend
 cd frontend
 pnpm install
+cp .env.example .env   # API_URL must match the backend's PORT
 pnpm dev          # http://localhost:3000
 ```
 
-Both apps default to port 3000, so start the backend with a different `PORT`.
+The backend runs on port 4000 and the frontend on 3000. The frontend forwards `/api/*` to the backend, so the browser only ever talks to http://localhost:3000. To create the first staff account, see [Create the first admin](backend/README.md#create-the-first-admin).
 
 ## Documentation
 
@@ -82,6 +93,7 @@ Each area doc starts with a status (**Not started**, **Scaffold only**, **In pro
 | Current state | What exists in the code today, with links |
 | Requirements | What has been agreed |
 | Proposed approach | Suggestions that haven't been agreed yet. Once the area is built, rename it to "How it works" and describe the real code. |
+| Decisions | Questions that have been answered: the decision, why, and its source. "Requested" means the team asked for it; "Build default" means it was chosen while building and is open to change. When an open decision is answered, move it here. |
 | Open decisions | Questions that still need an answer |
 | References | Related docs and agent skill rules |
 

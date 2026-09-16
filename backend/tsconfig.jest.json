@@ -1,0 +1,12 @@
+// Jest runs code through a CommonJS require hook, and it can't run the native
+// import() that the generated Prisma Client uses to load its query compiler.
+// Compiling to CommonJS turns that import() into require(). Only Jest uses
+// this file; the app builds with tsconfig.build.json. See docs/testing.md.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "resolvePackageJsonExports": false
+  }
+}

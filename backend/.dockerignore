@@ -1,0 +1,43 @@
+# Build context is backend/ (see Dockerfile), so this file covers the image.
+
+# Dependencies: reinstalled inside the image from the lockfile. The host's
+# node_modules would also carry darwin-arm64 native binaries that cannot run on
+# the linux/amd64 base.
+node_modules
+
+# Build output and generated code: the builder stage produces its own.
+dist
+src/generated
+coverage
+*.tsbuildinfo
+
+# Secrets. Real values reach the container through env_file, never a layer.
+# The example stays out too; nothing reads it at runtime.
+.env
+.env.*
+
+# Runtime data that lives on volumes, not in the image.
+storage
+.tmp
+
+# Tests, lint and formatting: not part of the runtime.
+test
+tsconfig.jest.json
+eslint.config.mjs
+.prettierrc
+
+# VCS, docs, agent tooling, editor cruft
+.git
+.gitignore
+docs
+*.md
+.agents
+skills-lock.json
+.DS_Store
+**/.DS_Store
+*.log
+
+# Docker's own files. Changing a compose file should not bust the build cache.
+Dockerfile
+.dockerignore
+docker-compose*.yml
