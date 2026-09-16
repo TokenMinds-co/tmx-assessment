@@ -18,10 +18,12 @@ WORKDIR /app
 
 # Manifests first, so the install layer stays cached until a dependency changes.
 # pnpm-workspace.yaml carries `allowBuilds`, which is what lets prisma and
-# @prisma/engines run their postinstall scripts. prisma.config.ts and prisma/
-# have to be in place before the install: the root postinstall runs
-# `prisma generate`, which reads them.
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml prisma.config.ts ./
+# @prisma/engines run their postinstall scripts. prisma.config.ts, prisma/ and
+# tsconfig.json have to be in place before the install: the root postinstall
+# runs `prisma generate`, which reads the first two, and reads tsconfig.json to
+# pick the import extension of the generated client. Without it the client
+# imports `./x.ts`, which does not exist in dist/, and the app fails to start.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml prisma.config.ts tsconfig.json ./
 COPY prisma ./prisma
 
 # The 60s default fetch timeout is not enough when both stages install at once,
@@ -46,23 +48,26 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml prisma.config.ts ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml prisma.config.ts tsconfig.json ./
 COPY prisma ./prisma
 
 # Runtime dependencies only. No --ignore-scripts: @prisma/engines' postinstall
 # downloads the schema engine that `prisma migrate deploy` needs, and
 # `allowBuilds` already limits which packages may run one. The root postinstall
 # (`prisma generate`) runs too; its output in src/ is unused here, since dist/
-# carries the compiled client, so it is removed along with the pnpm store.
+# carries the compiled client, so it is removed. So are the pnpm store and the
+# pnpm and Prisma download caches, which would otherwise sit in this layer at
+# about the size of node_modules itself.
 RUN pnpm config set store-dir /tmp/.pnpm-store && \
     pnpm config set fetch-timeout 600000 && \
     pnpm install --frozen-lockfile --prefer-offline --prod && \
-    rm -rf src /tmp/.pnpm-store
+    rm -rf src /tmp/.pnpm-store /root/.cache/pnpm /root/.cache/prisma
 
 COPY --from=builder /app/dist ./dist
 # The prefilled tests and their audio, so `node dist/cli/seed-assessments`
-# works inside a container.
-COPY seed ./seed
+# works inside a container. COPY keeps the host's file modes, and the audio is
+# not world-readable there, so the folder is handed to the runtime user.
+COPY --chown=node:node seed ./seed
 
 # Uploads go to a volume mounted at STORAGE_DIR. The folder is created now and
 # owned by node, so a fresh named volume inherits that ownership on first mount.

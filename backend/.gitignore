@@ -60,6 +60,3 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Uploaded files (STORAGE_DIR)
 /storage
-
-# Local Postgres credentials for docker-compose.yml
-database.env

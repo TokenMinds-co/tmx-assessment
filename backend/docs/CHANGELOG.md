@@ -8,6 +8,8 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ### Added
 
+- CI/CD for the backend, in `.github/workflows/backend.yml`: every PR that touches `backend/` gets a build, ESLint and a Docker build; every push to `main` builds the image, pushes it to GitHub Container Registry and deploys it to the TokenMinds VPS over SSH, then waits for `/api/health/ready`. See [operations](operations.md#deployment).
+- A `Dockerfile` (two stages, runs as `node`, applies migrations on start), `docker-compose-production.yml` (joins the server's `postgres_network`, keeps uploads on a named volume) and `docker-compose.yml`, the same stack built from the folder, for checking the image before it ships.
 - A fifth prefilled test, Attention to Detail (Textual): 15 single-choice questions over matching information, comparing statements for differences and checking consistency, 12 minutes, converted from the team's workbook. See [assessments](assessments.md).
 - Staff authentication: email and password sign-in, server-side sessions in an httpOnly cookie, invite-only accounts with `ADMIN` and `MEMBER` roles, password change, and forgot and reset password. Every route needs a session unless it's marked `@Public()`. See [authentication](authentication.md).
 - `pnpm auth:invite-admin` to invite the first admin from the command line.
@@ -37,6 +39,9 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ### Changed
 
+- Documented that the seed must run on the machine the app runs on, because it writes question audio to that machine's `STORAGE_DIR`, with the command for the deployed container. See [database](database.md#seed-data) and [operations](operations.md#once-its-running).
+- `prisma` and `dotenv` are regular dependencies now, since the image runs `prisma migrate deploy` after a production-only install. `packageManager` pins pnpm 11.8.0 for corepack, CI and the image.
+- Docs: production uses the Postgres already on the VPS instead of Prisma Postgres. See [database](database.md#deployed-environments) and [operations](operations.md#deployment).
 - The default port is now 4000 instead of 3000, so the backend and the frontend dev server can run side by side.
 - The scaffold's `GET /` is now `GET /api`, and it's public. It's hidden from the API docs.
 - CORS now lists its allowed methods and headers, and lets browsers cache preflight answers for 10 minutes.

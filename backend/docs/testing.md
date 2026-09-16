@@ -1,6 +1,6 @@
 # Testing
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-16
 
 ## Scope
 
@@ -13,7 +13,7 @@ Unit and end-to-end tests: tools, file layout, commands and conventions.
 - **E2E tests** are `*.e2e-spec.ts` files in `test/` and use Supertest. Their config is [test/jest-e2e.json](../test/jest-e2e.json). [auth.e2e-spec.ts](../test/auth.e2e-spec.ts) covers every auth flow: sign-in and cookie flags, identical errors for unknown emails and wrong passwords, validation, bearer tokens, sign-out, the Origin check, invitations and roles, password reset, password change and deactivated accounts. [app.e2e-spec.ts](../test/app.e2e-spec.ts) covers the health checks, the API docs and CORS. [assessments.e2e-spec.ts](../test/assessments.e2e-spec.ts) covers building and publishing tests, JSON import and export, duplicating, previews, question CSV and deleting. [take.e2e-spec.ts](../test/take.e2e-spec.ts) covers sending, taking and scoring tests, time running out, resending, revoking, expired links, the Sent list and candidate search. [media.e2e-spec.ts](../test/media.e2e-spec.ts) covers uploads, Range requests, type checks, the size limit and roles.
 - On 2026-09-15: 107 unit tests in 16 files, all passing, and 60 e2e tests in 5 files.
 - Coverage reports go to `coverage/`, which git ignores.
-- There's no CI yet.
+- **CI:** on every pull request that touches `backend/`, GitHub Actions ([.github/workflows/backend.yml](../../.github/workflows/backend.yml)) runs `nest build`, ESLint without `--fix` and a Docker build. The tests don't run in CI yet. See [operations.md](operations.md#deployment).
 
 | Command | What it runs |
 | --- | --- |
@@ -43,10 +43,11 @@ Unit and end-to-end tests: tools, file layout, commands and conventions.
 | Email in tests | An in-memory transport in place of Resend | Tests follow the real links in the real emails without sending anything. | Build default |
 | Uploaded files in e2e tests | A temporary folder per run, not `STORAGE_DIR` | Tests never touch real uploads, and the folder is deleted after the suite. | Build default |
 | Running Prisma 7 under Jest | A separate `tsconfig.jest.json` that compiles to CommonJS | The generated client's `import()` doesn't run under Jest otherwise. The app build is unaffected. | Build default |
+| What CI runs | Build, lint and a Docker build on every backend PR, in GitHub Actions; no tests yet | Needs no database, and finishes in a few minutes. | Build default |
 
 ## Open decisions
 
-- CI: where tests run on each PR, and which database the e2e tests use there (a `prisma dev` instance inside the job, or a throwaway Prisma Postgres database).
+- Tests in CI: whether the PR job should run `pnpm test`, and for the e2e tests which database they'd use there (a `prisma dev` instance inside the job, or a Postgres service container).
 
 ## References
 

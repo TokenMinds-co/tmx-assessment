@@ -2,7 +2,7 @@
 
 REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-> **Status: authentication and assessments are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Four tests are prefilled from the team's workbooks. The API has interactive docs and health checks, and the frontend is wired to it. Next is the recruitment pipeline.
+> **Status: authentication and assessments are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Four tests are prefilled from the team's workbooks. The API has interactive docs and health checks, and the frontend is wired to it. It deploys to the TokenMinds VPS as a Docker container through GitHub Actions. Next is the recruitment pipeline.
 
 ## Stack
 
@@ -10,6 +10,7 @@ REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product d
 - PostgreSQL on Prisma Postgres, through Prisma ORM 7. See [database.md](docs/database.md).
 - Resend for email. See [email.md](docs/email.md).
 - Swagger (`@nestjs/swagger`) for the API docs, Terminus for health checks
+- Docker, built and deployed by GitHub Actions. See [operations.md](docs/operations.md#deployment).
 - Jest 30 and Supertest for tests
 - ESLint 9 and Prettier (single quotes, trailing commas)
 - pnpm
@@ -102,10 +103,19 @@ backend/
 ├── storage/                # Uploaded files (STORAGE_DIR), gitignored
 ├── test/                   # E2E tests and their helpers
 ├── docs/                   # Area docs and CHANGELOG.md
+├── Dockerfile              # The production image; CI builds it from this folder
+├── docker-compose-production.yml  # Runs the image on the VPS, on its Postgres network
+├── docker-compose.yml      # The same stack, built from this folder, for checking the image
 └── .agents/skills/         # Agent skills for NestJS and Prisma
 ```
 
+The pipeline itself is [.github/workflows/backend.yml](../.github/workflows/backend.yml) at the repository root.
+
 New code goes into feature modules, one per domain (like `src/assessments/`, or `src/jobs/` next), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes). Document every endpoint for Swagger; see [api-conventions.md](docs/api-conventions.md#api-docs).
+
+## Deployment
+
+Every push to `main` that touches `backend/` builds the Docker image, pushes it to GitHub Container Registry and deploys it to the VPS; pull requests get a build and lint check. The server setup, the GitHub secrets, and how to run the first-admin and seed commands in the container are in [operations.md](docs/operations.md#deployment).
 
 ## Docs
 

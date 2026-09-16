@@ -12,10 +12,9 @@ coverage
 *.tsbuildinfo
 
 # Secrets. Real values reach the container through env_file, never a layer.
-# Examples stay out too; nothing reads them at runtime.
+# The example stays out too; nothing reads it at runtime.
 .env
 .env.*
-database.env
 
 # Runtime data that lives on volumes, not in the image.
 storage

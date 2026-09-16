@@ -8,7 +8,7 @@ The database engine, ORM, schema, migrations, seed data and transactions. The do
 
 ## Current state
 
-- **Prisma ORM 7.10 with PostgreSQL,** hosted on **Prisma Postgres**. Local development uses a local Prisma Postgres instance (`prisma dev`).
+- **Prisma ORM 7.10 with PostgreSQL.** Local development uses a local Prisma Postgres instance (`prisma dev`). Production uses the Postgres 17 container already on the TokenMinds VPS, over its `postgres_network`. See [Deployed environments](#deployed-environments).
 - **Files:** the schema is [prisma/schema.prisma](../prisma/schema.prisma), CLI config is [prisma.config.ts](../prisma.config.ts), and migrations are in [prisma/migrations/](../prisma/migrations/).
 - **Prisma Client is generated** into `src/generated/prisma/`. That folder is gitignored and regenerated on every `pnpm install`.
 - **[`PrismaService`](../src/prisma/prisma.service.ts)** is the app's one client, provided globally by `PrismaModule`. It connects over TCP with the `@prisma/adapter-pg` driver adapter.
@@ -17,7 +17,7 @@ The database engine, ORM, schema, migrations, seed data and transactions. The do
 
 ## Requirements
 
-- The database is **Prisma Postgres**.
+- Production uses the **Postgres already running on the TokenMinds VPS**, shared with the team's other apps (2026-09-16). Local development stays on Prisma Postgres.
 
 ## How it works
 
@@ -36,9 +36,24 @@ The instance keeps its data between restarts. It listens on ports 51216 to 51219
 
 ### Deployed environments
 
-1. Create a database in the [Prisma Console](https://console.prisma.io).
-2. Copy its **direct** connection string (`postgres://…@db.prisma.io:5432/postgres?sslmode=require`) into `DATABASE_URL`.
-3. Run `pnpm db:deploy` on every release, before the app starts.
+The API runs in Docker on the VPS and joins the Postgres container's network, `postgres_network`. See [operations.md](operations.md#deployment).
+
+1. On that Postgres, create a role and a database for TMX HR, once:
+
+   ```sql
+   CREATE ROLE tmx_hr LOGIN PASSWORD '<password>';
+   CREATE DATABASE tmx_hr OWNER tmx_hr;
+   ```
+
+2. Put its URL in `backend/.env` on the server, using the Postgres container's name on `postgres_network` and the container port `5432`:
+
+   ```
+   DATABASE_URL=postgresql://tmx_hr:<password>@postgres_db:5432/tmx_hr
+   ```
+
+3. Migrations run on every start. The image's start command is `prisma migrate deploy && node dist/main`, so a container that can't migrate never serves, and nothing runs `pnpm db:deploy` by hand.
+
+A managed database works too: put its direct URL (with `?sslmode=require`) in `DATABASE_URL` and drop `postgres_network` from [docker-compose-production.yml](../docker-compose-production.yml).
 
 ### Changing the schema
 
@@ -60,7 +75,17 @@ pnpm db:seed --force    # rewrite them from the files
 - **A test whose slug already exists is skipped.** With `--force` it's rewritten from its file. Candidates who were already sent it keep their frozen copy.
 - **Seeded tests are published,** so they can be sent straight away.
 - **The audio each test names** is uploaded from [seed/media/](../seed/media/) into `STORAGE_DIR`, unless a stored file with that name already exists.
-- `--dir <folder>` reads another folder with the same layout. In a deployed environment, run `node dist/cli/seed-assessments`.
+- `--dir <folder>` reads another folder with the same layout.
+
+**Seed from the machine the app runs on.** The audio goes to the `STORAGE_DIR` of whichever machine runs the seed, not of the machine holding the database. Seeding a deployed database from a laptop therefore splits the test in two: the rows land on the server and the mp3s stay on the laptop, and every listening question's audio answers `404`. On the server, run it inside the container, which carries `seed/` and writes to the uploads volume:
+
+```bash
+docker compose -f backend/docker-compose-production.yml exec backend node dist/cli/seed-assessments
+```
+
+Call `node dist/cli/seed-assessments`, not `pnpm db:seed`: that script runs `nest build` first, and the Nest CLI is a devDependency the production image doesn't install.
+
+Re-running won't repair a database that was seeded from the wrong machine. Without `--force` the slugs are skipped; with `--force` the files are uploaded again but the questions are relinked to the assets already on them, whose bytes are still missing. Copy the files onto the volume, or seed a database with no tests in it yet.
 
 ### Conventions
 
@@ -78,8 +103,8 @@ pnpm db:seed --force    # rewrite them from the files
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
-| Hosting | Prisma Postgres | | Requested |
-| Local development database | Local Prisma Postgres (`prisma dev`), no Docker | It's the same product as production, and it comes with the `prisma` package, so there's nothing else to install. | Build default |
+| Production database | The Postgres 17 container already on the TokenMinds VPS, joined over `postgres_network` | One database server for the team's apps, and the layout mmaon-polymarket uses. Replaces the earlier choice of Prisma Postgres for production (2026-09-16). | Requested |
+| Local development database | Local Prisma Postgres (`prisma dev`), no Docker | It's Postgres too, and it comes with the `prisma` package, so there's nothing else to install. | Build default |
 | Prisma version | 7.10, not 8.0 | npm's `latest` tag currently points at an 8.0 release candidate. The Prisma agent skills in this repo describe 7.x. | Build default |
 | How the app connects | `@prisma/adapter-pg` over a direct TCP connection | The setup the `prisma-postgres` skill recommends for Node.js servers. | Build default |
 | Where the client is generated | `src/generated/prisma`, gitignored, generated on install | `nest build` compiles it with the app, and it never goes stale in git. | Build default |

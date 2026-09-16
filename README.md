@@ -50,6 +50,11 @@ TokenMinds' internal HR app. It brings recruitment into one platform, starting w
 
 They are separate pnpm projects with their own lockfiles, so install and run each one from its own folder.
 
+## Deployment
+
+- **Backend:** [.github/workflows/backend.yml](.github/workflows/backend.yml) builds a Docker image on every push to `main` that touches `backend/`, pushes it to GitHub Container Registry and deploys it to the TokenMinds VPS, where it uses the Postgres already running there. Pull requests get a build and lint check. See [backend/docs/operations.md](backend/docs/operations.md#deployment).
+- **Frontend:** Vercel, from the `frontend/` folder.
+
 ## Quick start
 
 You need Node.js 20.19 or newer and pnpm.

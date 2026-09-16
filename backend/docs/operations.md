@@ -12,7 +12,7 @@ How the API runs in an environment: the startup log, health checks, shutdown, lo
 - **Health checks:** [src/health/](../src/health/), built with `@nestjs/terminus`. `/api/health/live` and `/api/health/ready`.
 - **Shutdown:** shutdown hooks are on, so on `SIGTERM` Nest stops the HTTP server and Prisma closes its connections.
 - **Logs:** Nest's built-in logger, plain text on stdout.
-- **Deployment:** the API ships as a Docker image, built by [.github/workflows/backend.yml](../../.github/workflows/backend.yml) on every push to `main`, pushed to GitHub Container Registry (GHCR) and started on the TokenMinds VPS with [docker-compose-production.yml](../docker-compose-production.yml). Pull requests get a build, lint and unit-test check. See [Deployment](#deployment).
+- **Deployment:** the API ships as a Docker image, built by [.github/workflows/backend.yml](../../.github/workflows/backend.yml) on every push to `main`, pushed to GitHub Container Registry (GHCR) and started on the TokenMinds VPS with [docker-compose-production.yml](../docker-compose-production.yml). Pull requests get a build and lint check. See [Deployment](#deployment).
 
 ## Requirements
 
@@ -59,7 +59,7 @@ The frontend deploys itself through Vercel from its own folder. The backend is a
 
 | Trigger | What runs |
 | --- | --- |
-| A PR to `main` that touches the backend | Install, `nest build`, ESLint (without `--fix`, so a fixable problem still fails), the unit tests, and a Docker build that isn't pushed |
+| A PR to `main` that touches the backend | Install, `nest build`, ESLint (without `--fix`, so a fixable problem still fails), and a Docker build that isn't pushed |
 | A push to `main` that touches the backend | Build the image, push it to GHCR, deploy it over SSH, verify it answers |
 | **Run workflow** in the Actions tab | The same as a push, without a commit |
 
@@ -74,6 +74,7 @@ node_modules/.bin/prisma migrate deploy && exec node dist/main
 - **A container that can't migrate never serves.** `exec` makes Nest PID 1, so `docker stop` reaches the shutdown hooks and Prisma disconnects cleanly.
 - **`prisma` and `dotenv` are regular dependencies** because of this command: the CLI loads [prisma.config.ts](../prisma.config.ts), which imports `dotenv/config`, and a `--prod` install would leave both out.
 - **pnpm is pinned once,** in `packageManager` in [package.json](../package.json). The image's corepack, the workflow's `pnpm/action-setup` and developers all read it.
+- **`tsconfig.json` is copied in before the install.** The install's `prisma generate` reads it to pick the import extension of the generated client. Without it the client imports `./x.ts`, which doesn't exist in `dist/`, and the container crashes on start after migrating.
 - **Right for one container.** Two containers starting at once would race on the migration lock. If the API is ever scaled out, move the migration to a one-off job.
 
 Every build pushes two tags: the commit's 7-character SHA, which the deploy pins to, and `production-latest`, a moving pointer for a manual `docker compose up`.
@@ -81,7 +82,7 @@ Every build pushes two tags: the commit's 7-character SHA, which the deploy pins
 #### The compose files
 
 - **[docker-compose-production.yml](../docker-compose-production.yml)** runs one service, `backend`, from the GHCR image. Postgres is the instance already on the server: the file joins its `postgres_network` and reads `DATABASE_URL` from `.env`. The network is `external: true`, so Compose attaches to it and never creates or removes it, and `docker compose down` here can't take the database with it. Uploads (`STORAGE_DIR`) live on a named volume, `tmx_hr_storage`, which survives redeploys. Only `docker compose down -v` deletes it, and with it every upload.
-- **[docker-compose.yml](../docker-compose.yml)** builds the image locally and runs it against its own Postgres 17 on host port 5434, with credentials from `database.env` (copy [database.env.example](../database.env.example)). It's for checking the image before it ships; development uses `pnpm start:dev`.
+- **[docker-compose.yml](../docker-compose.yml)** is the same stack, except the image is built from the folder instead of pulled. It joins `postgres_network` too and reads `DATABASE_URL` from `.env`. It's for checking the image before it ships; development uses `pnpm start:dev`.
 
 Both files name the project `tmx-hr`, so `--remove-orphans` never touches another project deployed from a folder that's also called `backend`.
 
@@ -137,16 +138,17 @@ docker compose -f backend/docker-compose-production.yml exec backend node dist/c
 docker compose -f backend/docker-compose-production.yml logs -f backend
 ```
 
+Seed from here, not from a laptop pointed at the server's database: the seed writes each test's audio to the `STORAGE_DIR` of the machine it runs on, so seeding from anywhere else leaves the rows on the server and the mp3s behind. See [database.md](database.md#seed-data).
+
 #### Checking the image locally
 
 ```bash
 cd backend
-cp database.env.example database.env
 docker compose up --build            # reads .env; keep NODE_ENV=development for a sign-in check
 curl localhost:4000/api/health/ready # 4000 = PORT in .env
 ```
 
-With `NODE_ENV=production` the API requires `RESEND_API_KEY` and sets `Secure` cookies, which a browser on plain `http://localhost` won't send back.
+There's no Postgres in this stack either: it joins the `postgres_network` of a Postgres already running on the machine, so `DATABASE_URL` in `.env` must name that container (for example `postgres_db`), not `localhost`. With `NODE_ENV=production` the API requires `RESEND_API_KEY` and sets `Secure` cookies, which a browser on plain `http://localhost` won't send back.
 
 ## Decisions
 
@@ -168,7 +170,7 @@ With `NODE_ENV=production` the API requires `RESEND_API_KEY` and sets `Secure` c
 | `prisma` and `dotenv` as runtime dependencies | Moved from `devDependencies` | The image runs `prisma migrate deploy` after a `--prod` install, and the CLI's config imports `dotenv/config`. | Build default |
 | Node.js in the image | `node:24-alpine`, with pnpm pinned by `packageManager` | Node 24 is the current LTS and what development uses. Corepack, CI and the image read one pin. | Build default |
 | Container user | `node`, not root | Standard hardening. The only folder it writes is the uploads volume. | Build default |
-| What CI runs on a PR | Build, lint, unit tests and a Docker build, no e2e tests | Needs no database, and catches a Dockerfile that no longer builds before it reaches `main`. See [testing.md](testing.md). | Build default |
+| What CI runs on a PR | Build, lint and a Docker build, no tests | Needs no database, and catches a Dockerfile that no longer builds before it reaches `main`. Tests in CI are an open decision in [testing.md](testing.md). | Build default |
 
 ## Open decisions
 

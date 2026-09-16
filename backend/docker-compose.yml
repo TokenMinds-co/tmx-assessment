@@ -1,9 +1,13 @@
-# Local build of the production image, run against its own Postgres. For
-# checking the image before it ships; day-to-day development uses `pnpm db:start`
-# and `pnpm start:dev` instead (see README.md).
+# Local build of the production image. The same stack as
+# docker-compose-production.yml, except the image is built from this folder
+# instead of pulled from GHCR. It's for checking the image before it ships;
+# day-to-day development uses `pnpm db:start` and `pnpm start:dev` (README.md).
 #
-#   cp .env.example .env                    # or reuse your dev .env
-#   cp database.env.example database.env
+# Postgres is not part of this stack. Like production, it joins the
+# `postgres_network` of a Postgres already running on this machine and reads
+# DATABASE_URL from .env, so DATABASE_URL must name that Postgres container
+# (for example postgres_db), not localhost.
+#
 #   docker compose up --build
 #   curl localhost:4000/api/health/ready    # 4000 = PORT in .env
 #
@@ -15,43 +19,6 @@
 # never touches sibling projects that also live in a "backend" directory.
 name: tmx-hr
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: tmx_hr_pg
-    restart: unless-stopped
-    env_file:
-      - database.env
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: "0.5"
-        reservations:
-          memory: 256M
-          cpus: "0.25"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-tmx_hr}",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - tmx_hr_network
-    ports:
-      # 5434 on the host, clear of a Postgres already on 5432 or 5433.
-      - "5434:5432"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   backend:
     build:
       context: .
@@ -62,11 +29,8 @@ services:
     env_file:
       - .env
     environment:
+      # Uploads live on the volume below, whatever STORAGE_DIR says in .env.
       - STORAGE_DIR=/app/storage
-      # DATABASE_URL in .env points at localhost, which inside a container is
-      # the container itself, so it is overridden to reach the postgres
-      # service. The values match database.env.example.
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/tmx_hr
     volumes:
       - tmx_hr_storage:/app/storage
     deploy:
@@ -94,11 +58,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - tmx_hr_network
+      - postgres_network
     ports:
       # The app listens on PORT (from .env, default 4000), published as-is.
       - "${PORT:-4000}:${PORT:-4000}"
@@ -109,8 +71,6 @@ services:
         max-file: "3"
 
 volumes:
-  postgres_data:
-    driver: local
   tmx_hr_storage:
     driver: local
 
@@ -118,3 +78,7 @@ networks:
   tmx_hr_network:
     driver: bridge
     internal: false
+  # The database's network. `external: true`: Compose attaches to it and never
+  # creates or removes it.
+  postgres_network:
+    external: true

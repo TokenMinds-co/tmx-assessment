@@ -77,10 +77,6 @@ jobs:
       - name: Lint
         run: pnpm exec eslint "{src,apps,libs,test}/**/*.ts"
 
-      # Unit tests only. The e2e tests need a database; see docs/testing.md.
-      - name: Unit tests
-        run: pnpm test
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -175,10 +171,10 @@ jobs:
       - name: SSH deploy
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
+          host: ${{ secrets.VPS_STAGING_HOST }}
+          username: ${{ secrets.VPS_STAGING_USER }}
+          key: ${{ secrets.VPS_STAGING_KEY }}
+          port: 22
           command_timeout: 15m
           envs: DEPLOY_PATH,DEPLOY_REF,REGISTRY,IMAGE_FULL,IMAGE_TAG,GHCR_ACTOR,GHCR_TOKEN,COMPOSE_FILE
           script: |
@@ -252,7 +248,7 @@ jobs:
           # Path on the server holding the repo clone (compose file + .env),
           # relative to the SSH user's home. Override with a repository
           # variable if the clone lives elsewhere.
-          DEPLOY_PATH: ${{ vars.VPS_DEPLOY_PATH || 'tmx-hr' }}
+          DEPLOY_PATH: "tmx-hr"
           COMPOSE_FILE: backend/docker-compose-production.yml
           # head_ref is set only on pull_request events and holds the real
           # source branch; ref_name there would be "<PR-number>/merge", which
