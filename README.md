@@ -30,14 +30,15 @@ TokenMinds' internal HR app. It brings recruitment into one platform, starting w
 
 ## Status
 
-- **Waiting on Robbie** for the 5 test specs.
-- **Next step:** a prototype of the assessment system that fits the wider HR app design.
+- **The assessment system is built.** Staff build tests, send them to candidates with one link, and read scored results. Communication, Critical Thinking, English B1 and Motivation come prefilled from the team's workbooks; Attention to Detail still needs its questions. See [backend/docs/assessments.md](backend/docs/assessments.md) and [frontend/docs/assessments.md](frontend/docs/assessments.md).
+- **Next step:** the recruitment pipeline.
 - **Priority:** work starts after the MMAL production work is done.
 - **Main contact:** Anchor.
+- **Decided:** candidates register interest through a Notion form, which the app imports. The assessments stay in this app.
 
 ## Open questions
 
-- Will this app replace monday.com and Calendly, or sync with them?
+- Will this app replace the monday.com board and Calendly, or sync with them? (The monday.com form is replaced by the Notion form.)
 - What is the pass mark for each test, and who reviews the scores?
 
 ## Repository layout
@@ -60,6 +61,7 @@ pnpm install
 cp .env.example .env
 pnpm db:start     # local Prisma Postgres; put the URL it prints in .env as DATABASE_URL
 pnpm db:migrate
+pnpm db:seed      # optional: load the prefilled tests
 pnpm start:dev
 
 # Terminal 2: frontend

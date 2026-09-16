@@ -11,7 +11,8 @@ The UI component library, design tokens, theming, typography, icons, brand asset
 - **shadcn/ui is set up** ([components.json](../components.json)): style `radix-vega`, Radix primitives, lucide icons. Components live in [components/ui/](../components/ui/), with kebab-case file names as the shadcn CLI writes them.
 - **The TMX theme** from TMX Visibility (`tmx-visibility-lite`) is in [app/globals.css](../app/globals.css): colors, fonts, type scale, radii, shadows and gradients, mapped onto shadcn's semantic tokens.
 - **Brand assets** are in [public/brand/](../public/brand/). The favicon is [app/icon.png](../app/icon.png), plus [app/apple-icon.png](../app/apple-icon.png).
-- **Shared UI built on top** is in [components/shared/](../components/shared/): the TMX HR logo, the app shell and the sign-in card. Where components go is in [project-structure.md](project-structure.md).
+- **Shared UI built on top** is in [components/shared/](../components/shared/): the TMX HR logo, the app shell, the sign-in card, and the assessment pieces such as the test runner, the status badges and the score summary. Where components go is in [project-structure.md](project-structure.md).
+- **Motion** uses `motion` (13.2), with the test runner's timings in one file (see [Motion](#motion)). **Toasts** use sonner.
 - **Light theme only.**
 
 ## Requirements
@@ -31,6 +32,7 @@ Agreed with the user on 2026-09-15:
 - **Class merging** uses `cn` from [lib/utils.ts](../lib/utils.ts), which re-exports shadcn's `cn` package (a drop-in for clsx plus tailwind-merge).
 - **Busy buttons** pair shadcn's `Spinner` ([spinner.tsx](../components/ui/spinner.tsx), unchanged from shadcn) with `data-icon="inline-start"` and `disabled`, as shadcn's rules ask. The sign-in forms share this as [submit-button.tsx](../components/shared/submit-button.tsx).
 - **Form errors:** the browser's own checks sit under each field in `FieldError`. A failure from the API sits above the fields in a destructive `Alert` ([form-error.tsx](../components/shared/form-error.tsx)).
+- **Added for the assessments, unchanged from shadcn:** `alert-dialog`, `checkbox`, `collapsible`, `command` (on `cmdk`), `dialog`, `empty`, `kbd`, `pagination`, `popover`, `progress`, `radio-group`, `scroll-area`, `select`, `switch` and `tabs`. The Assessments page and the editor use the tabs' `line` variant.
 - **Customized so far,** to match the reference app:
 
 | Component | Change |
@@ -44,6 +46,7 @@ Agreed with the user on 2026-09-15:
 | `dropdown-menu` | 14px corners, the card shadow, roomier items and a pointer cursor. |
 | `table` | Small, uppercase, muted headers and roomier cells. |
 | `sidebar` | TMX rail widths and gradient, 45px rows, uppercase group headings, full-width rows when collapsed, a centered "Soon" badge, and `SidebarInset` renders a `div` so pages own `<main>`. |
+| `sonner` | Light only: the theme is fixed, instead of read from `next-themes` as shadcn's version does, and `next-themes` isn't installed. Toasts use the popover colors, the `border` token, 14px corners and the card shadow, and their icons wear the status colors. |
 | `use-mobile` hook | Rewritten with `useSyncExternalStore`. The generated version set state inside an effect, which the React Compiler lint rules in `eslint-config-next` reject. |
 
 ### Tokens
@@ -127,6 +130,43 @@ Built from shadcn's `Sidebar` in [app/(app)/layout.tsx](<../app/(app)/layout.tsx
 
 Two differences from the reference shell: the whole page scrolls (the rail is fixed and the topbar sticky) instead of only `<main>`, and the rail doesn't force itself collapsed below 1280px. The reference did that to fit its editor's chat column, which TMX HR doesn't have.
 
+### Candidate pages
+
+- **No app shell.** The `(candidate)` layout is just the page background, and each page draws its own header.
+- **The TokenMinds wordmark** ([candidate-brand.tsx](../components/shared/candidate-brand.tsx)), not the TMX HR lockup, because candidates don't know the internal app.
+- **The test runner** ([assessment-runner.tsx](../components/shared/assessment-runner.tsx)) has a sticky white header with the test's name and a countdown pill, a 4px progress line in the brand violet under it, one question per screen in a column up to 42rem wide, and a fixed footer with the save status, "3 of 16", and previous and next buttons. Options are large rows lettered A to F, or numbered buttons on a rating scale with the end labels beneath; the chosen one gets the soft violet fill and a check.
+- **The countdown pill** ([runner-timer.tsx](../components/shared/runner-timer.tsx)) turns to the warning colors in the last minute.
+- **A link that doesn't work** gets one card with a warning icon, a title and a plain explanation.
+
+### Motion
+
+The runner's motion is in [runner-motion.ts](../components/shared/runner-motion.ts), on `motion`:
+
+- **Questions move like Typeform's.** The next question rises from 56px below, fading in and sharpening from a 6px blur, over 0.42 s with a fast-start, long-settle ease, `cubic-bezier(0.16, 1, 0.3, 1)` (`EASE_OUT`). The old one leaves upwards by 36px with a 4px blur in 0.18 s. Going back reverses both, so the previous question drops in from above.
+- **A question's parts arrive a beat apart:** each rises 14px over 0.34 s, 0.04 s after the one above it, and the options follow 0.035 s apart.
+- **A choice blinks twice** (its opacity dips to 0.35 twice over 0.44 s), and the runner moves on 520 ms after the choice.
+- **The progress line** fills with a spring (stiffness 160, damping 26).
+- **With reduced motion,** questions only fade (0.18 s in, 0.12 s out), nothing blinks, the runner moves on after 260 ms, and the progress line jumps.
+- **Elsewhere, `EASE_OUT` is reused:** the save bar rises 16px over 0.22 s, question cards glide to their new place over 0.28 s when reordered, a new question's form slides in over 0.26 s, and the finish mark ([done-mark.tsx](../components/shared/done-mark.tsx)) draws its ring, then its tick, over 0.55 s each. With reduced motion they fade or simply appear.
+
+### Status badges
+
+[status-badges.tsx](../components/shared/status-badges.tsx) gives every status a badge with an icon and a label, never color alone:
+
+| For | Status | Badge variant |
+| --- | --- | --- |
+| A test | Draft · Published · Archived | `outline` · `success` · `secondary` |
+| A sent link | Not started · In progress · Completed · Link expired · Revoked | `secondary` · `info` · `success` · `warning` · `outline` |
+| A test in a link | Not started · In progress · Done · Timed out | `secondary` · `info` · `success` · `warning` |
+
+### Save bar
+
+[save-bar.tsx](<../app/(app)/assessments/[id]/_components/save-bar.tsx>) rises from the bottom of a form while it has unsaved changes and sticks 16px above the bottom of the window. It says "You have unsaved changes." and offers Discard and "Save changes"; the Save button submits the form it sits in. The editor's Scoring and Settings tabs use it.
+
+### Toasts
+
+sonner's `Toaster` sits at the bottom right, mounted once in [app/providers.tsx](../app/providers.tsx). Toasts confirm saves, and show errors that a page doesn't show in place.
+
 ### Charts
 
 These follow the dataviz skill, and the palette was checked with its validator against the white card surface:
@@ -134,6 +174,8 @@ These follow the dataviz skill, and the palette was checked with its validator a
 - **One series** (stage counts, average scores) uses the brand violet, `chart-1`.
 - **Ordered steps** (test progress: not started, in progress, completed) use a three-step violet ramp, `chart-progress-1` to `chart-progress-3` (`#ae99f9`, `#8a59f5`, `#651dcb`). It passes the validator's ordinal checks: lightness gaps of at least 0.06, and the light end at 2.41:1 on white.
 - **Marks:** bars at most 24px thick, with a 4px rounded end and a square baseline, a 2px gap between stacked segments, and meter tracks in a lighter step of the same hue.
+- **Section scores** on results pages are `chart-1` bars on a lighter violet track, with the percentage in text beside them.
+- **The band bar** on the editor's Scoring tab ([scoring-tab.tsx](<../app/(app)/assessments/[id]/_components/scoring-tab.tsx>)) mixes `chart-1` into `primary-soft` with `color-mix()`, from 18% for the lowest band to 100% for the highest, with a thin `card` divider between bands. It stripes any range no band covers. A legend below names each band and its range beside a swatch, so no text sits on the bar.
 - **Text never wears a chart color.** Values sit in text colors next to a colored swatch or bar.
 - **Every chart has a text twin,** a table or a legend with the numbers, so hover tooltips add detail but never hide it.
 - **Status colors carry meaning** and always come with an icon and a label.
@@ -148,7 +190,7 @@ Themed from the palette in [app/globals.css](../app/globals.css): text selection
 
 ### Light only
 
-There is no dark theme. `dark:` classes only apply under a `.dark` class, which the app never sets, so the shadcn components' dark styles stay off even when the OS is in dark mode. `color-scheme: light` keeps native controls light too.
+There is no dark theme. `dark:` classes only apply under a `.dark` class, which the app never sets, so the shadcn components' dark styles stay off even when the OS is in dark mode. `color-scheme: light` keeps native controls light too. The toasts are fixed to light as well, so `next-themes` isn't needed.
 
 ## Decisions
 
@@ -166,6 +208,12 @@ There is no dark theme. `dark:` classes only apply under a `.dark` class, which 
 | Theme | Light only | The reference is light only, and one theme is less to maintain while the app is small | Build default |
 | Sidebar | shadcn's `Sidebar`, restyled, instead of the reference's hand-built rail | The keyboard shortcut, collapsed tooltips, the phone sheet with focus handling and the saved state come built in | Build default |
 | Chart colors | One violet for a single series, a three-step violet ramp for ordered progress | Stays on brand, and passes the dataviz validator | Build default |
+| Animation library | `motion` | | Requested |
+| The runner's motion | Inspired by Typeform: the next question rises from below, going back drops the previous one from above, with a short blur, and a choice blinks before the runner moves on | | Requested |
+| Motion timings | All in `runner-motion.ts`. Reduced motion fades only. | One place to tune them, and nothing moves for people who ask the OS for less motion. | Build default |
+| Toasts | sonner, fixed to light, without `next-themes` | shadcn's toast component. The app has one theme. | Build default |
+| Candidate pages' brand | The TokenMinds wordmark, not TMX HR | Candidates know the company, not the internal app. | Build default |
+| Unsaved changes | A save bar that appears only while a form has changes | Saving stays explicit, and unsaved edits are hard to miss. | Build default |
 | Design doc | This file, with no root `DESIGN.md` | One doc per area, as the root README asks | Build default |
 
 ## Open decisions

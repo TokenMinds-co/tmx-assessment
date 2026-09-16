@@ -2,7 +2,7 @@
 
 Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4 and shadcn/ui. For what the product does and why, see the [root README](../README.md).
 
-> **Status: staff sign-in works.** The sign-in screens are wired to the backend: staff sign in and out, reset a forgotten password and accept an invitation, and every staff page needs a live session. The dashboard still shows labelled sample data.
+> **Status: staff sign-in and assessments work.** Staff sign in and out, reset a forgotten password and accept an invitation, and every staff page needs a live session. Staff build tests, send them to candidates and read the results, and candidates take their tests from the emailed link. The dashboard still shows labelled sample data.
 
 ## Stack
 
@@ -12,7 +12,7 @@ Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4
 - Inter and Geist Mono, loaded with `next/font`
 - ESLint 9 with `eslint-config-next`
 - pnpm 11
-- **Planned, not installed:** TanStack Query ([data-fetching.md](docs/data-fetching.md))
+- TanStack Query 5 for data in the browser ([data-fetching.md](docs/data-fetching.md)), `motion` for animation and sonner for toasts
 
 ## Requirements
 
@@ -41,6 +41,8 @@ Pages to look at:
 | http://localhost:3000/reset-password?token=preview | Choose a new password. Any token shows the form; the API checks it when you submit. |
 | http://localhost:3000/accept-invite?token=preview | Set up an invited account. Any token shows the form; the API checks it when you submit. |
 | http://localhost:3000/ | Dashboard, for signed-in staff |
+| http://localhost:3000/assessments | Test library and sent tests, for signed-in staff. Run `pnpm db:seed` in the backend to load the prefilled tests. |
+| `/take/<token>` | A candidate's tests. Send a test to yourself to get a link; while the backend's `RESEND_API_KEY` is empty, the email is printed in its terminal. |
 
 ## Scripts
 
@@ -57,18 +59,20 @@ Pages to look at:
 frontend/
 ├── app/
 │   ├── layout.tsx          # Root layout: fonts, metadata, tooltip provider
+│   ├── providers.tsx       # TanStack Query client, toasts, devtools
 │   ├── globals.css         # Tailwind and the TMX theme tokens
 │   ├── icon.png            # Favicon (the TMX mark)
 │   ├── (auth)/             # Sign-in pages: login, forgot-password, reset-password, accept-invite
-│   └── (app)/              # Staff app shell and its pages (dashboard at /), for signed-in staff
+│   ├── (app)/              # Staff app shell and its pages (dashboard at /, assessments), for signed-in staff
+│   └── (candidate)/        # Candidate pages (/take/[token]) and the staff preview, without the shell
 ├── components/
-│   ├── shared/             # Used by more than one page: app shell, logo, sign-in card, form parts
+│   ├── shared/             # Used by more than one page: app shell, logo, sign-in card, form parts, the test runner, assessment dialogs
 │   └── ui/                 # shadcn/ui components, customized to TMX
-├── hooks/                  # Shared hooks (from shadcn)
+├── hooks/                  # Shared hooks: use-mobile (from shadcn), countdown, debounced value, online status
 ├── lib/
 │   ├── api/                # The API client: apiFetch() and one file per domain
-│   └── …                   # Session check, sign-in redirect, form validation, formatting, dashboard types, sample data, cn()
-├── proxy.ts                # Sends signed-out visitors to /login
+│   └── …                   # Query keys, session check, sign-in redirect, form validation, formatting, dashboard types, sample data, cn()
+├── proxy.ts                # Sends signed-out visitors to /login; /take/ is public
 ├── public/brand/           # TMX wordmark and mark
 ├── docs/                   # Area docs and CHANGELOG.md
 ├── .env.example            # Environment variables; copy it to .env
@@ -87,15 +91,15 @@ A component that only one page uses sits in a `_components/` folder next to that
 | --- | --- | --- |
 | Routing | [routing.md](docs/routing.md) | In progress |
 | Project structure | [project-structure.md](docs/project-structure.md) | Done |
-| Authentication | [authentication.md](docs/authentication.md) | In progress (staff sign-in done, candidate links not started) |
+| Authentication | [authentication.md](docs/authentication.md) | In progress (staff sign-in and candidate links done) |
 | Configuration | [configuration.md](docs/configuration.md) | In progress |
 | API client | [api-client.md](docs/api-client.md) | In progress |
-| Data fetching | [data-fetching.md](docs/data-fetching.md) | Not started |
-| Query keys | [query-keys.md](docs/query-keys.md) | Not started |
+| Data fetching | [data-fetching.md](docs/data-fetching.md) | In progress |
+| Query keys | [query-keys.md](docs/query-keys.md) | In progress |
 | Design system | [design-system.md](docs/design-system.md) | In progress |
 | Dashboard | [dashboard.md](docs/dashboard.md) | In progress (sample data) |
 | Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
-| Assessments | [assessments.md](docs/assessments.md) | Not started |
+| Assessments | [assessments.md](docs/assessments.md) | In progress |
 
 Changes are logged in [CHANGELOG.md](docs/CHANGELOG.md). To add or update a doc, follow the [doc rules in the root README](../README.md#documentation).
 

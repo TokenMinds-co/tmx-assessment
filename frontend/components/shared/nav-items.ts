@@ -30,7 +30,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboardIcon, group: "Overview" },
   { href: "/candidates", label: "Candidates", icon: UsersIcon, group: "Hiring", soon: true },
   { href: "/jobs", label: "Jobs", icon: BriefcaseIcon, group: "Hiring", soon: true },
-  { href: "/assessments", label: "Assessments", icon: ClipboardCheckIcon, group: "Hiring", soon: true },
+  { href: "/assessments", label: "Assessments", icon: ClipboardCheckIcon, group: "Hiring" },
   { href: "/settings", label: "Settings", icon: SettingsIcon, group: "Workspace", soon: true },
 ];
 

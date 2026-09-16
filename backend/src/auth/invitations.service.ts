@@ -15,7 +15,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { INVITATION_TTL_MS, toDays } from './auth.constants';
 import { AuthTokensService, INVALID_LINK_MESSAGE } from './auth-tokens.service';
 import { RequestMeta } from './auth.types';
-import { FRONTEND_ROUTES, frontendLink } from './frontend-links';
+import { FRONTEND_ROUTES, frontendLink } from '../common/frontend-links';
 import { PasswordService } from './password.service';
 import { SessionsService, SignedIn } from './sessions.service';
 

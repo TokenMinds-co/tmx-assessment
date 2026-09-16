@@ -2,7 +2,7 @@
 
 REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-> **Status: authentication is built.** Staff sign in with email and password, and admins invite staff by email. The API has interactive docs and health checks. The frontend's sign-in screens are wired to it. Next are the recruitment pipeline and assessments.
+> **Status: authentication and assessments are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Four tests are prefilled from the team's workbooks. The API has interactive docs and health checks, and the frontend is wired to it. Next is the recruitment pipeline.
 
 ## Stack
 
@@ -26,6 +26,7 @@ pnpm install        # also generates Prisma Client
 cp .env.example .env
 pnpm db:start       # starts local Prisma Postgres; put the URL it prints in .env as DATABASE_URL
 pnpm db:migrate     # creates the tables
+pnpm db:seed        # optional: loads the prefilled tests and their audio
 pnpm start:dev
 ```
 
@@ -38,7 +39,7 @@ The startup log prints where everything is:
 | OpenAPI document | http://localhost:4000/api/docs/json |
 | Health check | http://localhost:4000/api/health/ready |
 
-All settings live in `.env`; see [configuration.md](docs/configuration.md). While `RESEND_API_KEY` is empty, emails are printed in the terminal instead of sent.
+All settings live in `.env`; see [configuration.md](docs/configuration.md). While `RESEND_API_KEY` is empty, emails are printed in the terminal instead of sent. Uploaded files, such as question audio, go to `STORAGE_DIR` (default `./storage`).
 
 ### Create the first admin
 
@@ -68,6 +69,7 @@ It prints the invitation link, and while `RESEND_API_KEY` is empty it prints the
 | `pnpm db:deploy` | Apply pending migrations in a deployed environment |
 | `pnpm db:generate` | Regenerate Prisma Client after a schema change |
 | `pnpm db:studio` | Browse and edit data in Prisma Studio |
+| `pnpm db:seed` | Load the prefilled tests and their audio from `seed/`. Tests that exist are skipped; `--force` rewrites them. See [database.md](docs/database.md#seed-data). |
 | `pnpm auth:invite-admin` | Invite an admin by email (`--email`, `--name`) |
 
 ## Project structure
@@ -78,24 +80,32 @@ backend/
 │   ├── schema.prisma       # Database schema
 │   └── migrations/         # One folder per migration, committed
 ├── prisma.config.ts        # Prisma CLI config
+├── seed/
+│   ├── assessments/        # The prefilled tests, in the canonical JSON format
+│   └── media/              # Their audio clips
 ├── src/
 │   ├── main.ts             # Bootstrap: creates the app, listens on PORT, logs the URLs
 │   ├── app.setup.ts        # HTTP setup (CORS, validation, docs), shared with the e2e tests
 │   ├── app.module.ts       # Root module: config, rate limits, feature modules
 │   ├── auth/               # Sign-in, sessions, passwords, invitations, guards
+│   ├── assessments/        # Tests, questions, sending, the candidate API and scoring
+│   ├── candidates/         # Candidates, for sending tests
+│   ├── media/              # Uploading and serving question audio and images
+│   ├── storage/            # Where uploaded files are kept (local disk)
 │   ├── health/             # Liveness and readiness checks
 │   ├── mail/               # Email templates and transports (Resend)
 │   ├── prisma/             # PrismaService
 │   ├── config/             # Environment variable checks
-│   ├── common/             # Shared middleware and the API docs setup
-│   ├── cli/                # Command-line scripts
+│   ├── common/             # Shared middleware, tokens, email links, CSV, downloads and the API docs setup
+│   ├── cli/                # Command-line scripts: invite an admin, seed the tests
 │   └── generated/          # Prisma Client (generated, gitignored)
+├── storage/                # Uploaded files (STORAGE_DIR), gitignored
 ├── test/                   # E2E tests and their helpers
 ├── docs/                   # Area docs and CHANGELOG.md
 └── .agents/skills/         # Agent skills for NestJS and Prisma
 ```
 
-New code goes into feature modules, one per domain (for example `src/candidates/` or `src/assessments/`), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes). Document every endpoint for Swagger; see [api-conventions.md](docs/api-conventions.md#api-docs).
+New code goes into feature modules, one per domain (like `src/assessments/`, or `src/jobs/` next), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes). Document every endpoint for Swagger; see [api-conventions.md](docs/api-conventions.md#api-docs).
 
 ## Docs
 
@@ -108,7 +118,7 @@ New code goes into feature modules, one per domain (for example `src/candidates/
 | Email | [email.md](docs/email.md) | In progress |
 | Operations | [operations.md](docs/operations.md) | In progress |
 | Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
-| Assessments | [assessments.md](docs/assessments.md) | Not started |
+| Assessments | [assessments.md](docs/assessments.md) | In progress |
 | Question generation | [question-generation.md](docs/question-generation.md) | Not started |
 | Testing | [testing.md](docs/testing.md) | In progress |
 

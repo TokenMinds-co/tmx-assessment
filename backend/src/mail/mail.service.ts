@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  assessmentInvitationEmail,
+  AssessmentInvitationEmailInput,
   invitationEmail,
   InvitationEmailInput,
   passwordChangedEmail,
@@ -29,5 +31,12 @@ export class MailService {
     input: PasswordChangedEmailInput,
   ): Promise<void> {
     return this.transport.send({ to, ...passwordChangedEmail(input) });
+  }
+
+  sendAssessmentInvitation(
+    to: string,
+    input: AssessmentInvitationEmailInput,
+  ): Promise<void> {
+    return this.transport.send({ to, ...assessmentInvitationEmail(input) });
   }
 }

@@ -23,19 +23,37 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 - `PRODUCT.md`, the product context for the `impeccable` design skill.
 - `NEXT_PUBLIC_APP_VERSION`, set in `next.config.ts` from `package.json`. See [configuration.md](configuration.md).
 - Project docs: [README](../README.md) and area docs for [routing](routing.md), [authentication](authentication.md), [configuration](configuration.md), [API client](api-client.md), [data fetching](data-fetching.md), [query keys](query-keys.md), [design system](design-system.md), [dashboard](dashboard.md), [recruitment pipeline](recruitment-pipeline.md) and [assessments](assessments.md).
+- Assessment screens: the test library and sent links at `/assessments`, the test editor at `/assessments/[id]`, and the results of one send at `/assessments/invitations/[id]`. See [assessments.md](assessments.md).
+- The candidate's test page, `/take/[token]`, and the staff preview, `/preview/[assessmentId]`, in a new `(candidate)` route group without the staff shell. See [routing.md](routing.md).
+- The test runner both of them use: one question per screen with Typeform-style motion, answers by keyboard, a countdown on the server's clock, answers saved as the candidate goes, and audio with a replay limit. See [assessments.md](assessments.md#the-candidates-side) and [design-system.md](design-system.md#motion).
+- TanStack Query, with its devtools in development, set up in `app/providers.tsx`, and the key factories in `lib/query-keys.ts`. See [data-fetching.md](data-fetching.md) and [query-keys.md](query-keys.md).
+- `motion` for animation, sonner for toasts, and `cmdk` for shadcn's `Command`.
+- shadcn's Alert dialog, Checkbox, Collapsible, Command, Dialog, Empty, Kbd, Pagination, Popover, Progress, Radio group, Scroll area, Select, Sonner, Switch and Tabs. See [design-system.md](design-system.md).
+- API modules for assessments, invitations, candidates, media and the candidate's link, `apiUpload()` for file uploads, and `serverApiFetch()` for server components. See [api-client.md](api-client.md).
+- Hooks: `use-countdown`, `use-debounced-value` and `use-online`. Formatting helpers in `lib/format.ts` for percentages, clocks, durations and dates.
 
 ### Changed
 
 - The account menu shows the signed-in user, and "Sign out" ends the session.
 - The reset and invitation pages show their "doesn't work" card when the API turns a link down, not only when the token is missing.
+- Docs: candidates apply through a Notion form, so the app has no application page. See [recruitment-pipeline.md](recruitment-pipeline.md).
 - Components are placed by where they're used: a page's own components in a `_components/` folder next to it, components used by more than one page in `components/shared/`, and shadcn/ui in `components/ui/`. This replaces `components/auth/`, `brand/`, `layout/` and `dashboard/`. The form validation moved to `lib/validation.ts` and the dashboard types to `lib/dashboard-types.ts`. See [project-structure.md](project-structure.md).
 - The UI font is Inter instead of Geist. Geist Mono stays for code.
 - ESLint skips `.agents/`, the vendored agent skill scripts.
+- `proxy.ts` lets candidate pages under `/take/` through without a session. See [authentication.md](authentication.md#candidate-links).
+- A 401 from any browser-side call sends the user to sign in and back, except on candidate pages. See [authentication.md](authentication.md#a-401-in-the-browser).
+- Assessments in the navigation is a link, no longer marked "Soon".
+- The Sonner toaster is fixed to the light theme, so it doesn't need `next-themes`.
+- Docs: the area docs describe the built assessments: [assessments](assessments.md), [routing](routing.md), [data fetching](data-fetching.md), [query keys](query-keys.md), [API client](api-client.md), [authentication](authentication.md), [design system](design-system.md) and [project structure](project-structure.md).
 
 ### Removed
 
 - `SAMPLE_USER` from `lib/sample-data.ts`: the account menu shows the real user.
 - The `create-next-app` starter page, its SVGs and `favicon.ico`.
+
+### Fixed
+
+- The wordmark on candidate pages keeps its proportions. The tests overview, the link-problem message and the test intro put it in a flex column, which stretched it to the column's width. See [design-system.md](design-system.md#candidate-pages).
 
 ## [0.1.0] - 2026-09-15
 

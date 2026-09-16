@@ -1,0 +1,463 @@
+{
+  "format": "tmx-hr.assessment/1",
+  "slug": "critical-thinking",
+  "name": "Critical Thinking",
+  "tagline": "Deductive and inductive reasoning",
+  "description": "This Critical Thinking screening test evaluates candidates' skills in critical thinking through inductive and deductive reasoning. It helps identify candidates who can evaluate information and make sound decisions.\n\nEffective critical thinking requires the ability to actively and skilfully conceptualise, apply, analyse, synthesise and evaluate information to make a judgement or formulate a solution. Employees with strong critical thinking skills can solve issues independently and devise new approaches to complex problems.\n\nThis test evaluates candidates' ability to solve syllogisms through deductive reasoning, to interpret sequences and arrangements and draw sound conclusions, to assess cause-and-effect relationships, to recognise assumptions, and to weigh how evidence bears on an argument. Candidates are presented with single or multiple statements and asked to analyse the information and use logic to identify the right answer.\n\nCandidates who score well think independently, distinguish what follows from what merely seems plausible, and resist outside knowledge and intuition when the task requires strict logic.",
+  "level": "Advanced",
+  "relevantFor": "Any role that involves a high degree of critical and independent thinking to solve complex problems – analysts, executives, legal roles, computer and data scientists, product managers, consultants.",
+  "instructions": "This test has 16 questions and takes 12 minutes. Each question says how to treat the information it gives. Use only that information, not what you know or believe about the real world. Pen and paper are fine. A wrong answer costs nothing, so answer every question.",
+  "durationMinutes": 12,
+  "scoringMethod": "CORRECT_ANSWER",
+  "questionOrder": "SHUFFLE_ALL",
+  "shuffleOptions": true,
+  "allowBackNavigation": true,
+  "audioReplays": 1,
+  "sections": [
+    {
+      "key": "analyzing-syllogisms",
+      "name": "Analyzing syllogisms",
+      "description": "Evaluates validity purely from premise structure; recognises when nothing follows."
+    },
+    {
+      "key": "making-inferences",
+      "name": "Making inferences",
+      "description": "Works systematically through constraints and patterns; separates description from causation; refuses to extrapolate."
+    },
+    {
+      "key": "recognizing-assumptions",
+      "name": "Recognizing assumptions",
+      "description": "Finds the unstated premise that bridges evidence and conclusion, distinguishing it from merely compatible facts."
+    },
+    {
+      "key": "weighing-arguments",
+      "name": "Weighing arguments",
+      "description": "Judges relationships between statements by logic, not topic; recognises when data is irrelevant."
+    }
+  ],
+  "bands": [
+    {
+      "minScore": 0.875,
+      "label": "Advanced",
+      "interpretation": "Applies formal logic reliably, resists plausible-but-invalid inferences, isolates assumptions and judges evidence accurately.",
+      "recommendedAction": "Progress. Suitable for roles where independent analytical judgement is core (analyst, legal, data science, senior decision-makers)."
+    },
+    {
+      "minScore": 0.6875,
+      "label": "Strong",
+      "interpretation": "Sound reasoning with occasional slips – typically on the hardest traps (affirming the consequent, attack-on-premise relationships).",
+      "recommendedAction": "Progress. For senior analytical roles, add a case interview or work-sample exercise."
+    },
+    {
+      "minScore": 0.5,
+      "label": "Developing",
+      "interpretation": "Handles direct deductions and clear evidence but is influenced by real-world plausibility and topical similarity.",
+      "recommendedAction": "Progress for roles where analysis is supported by process or review; probe reasoning in interview with a 'think aloud' problem."
+    },
+    {
+      "minScore": 0.0,
+      "label": "Below expectation",
+      "interpretation": "Frequent logical errors; conclusions driven by intuition rather than the information given.",
+      "recommendedAction": "Do not progress for roles requiring independent critical analysis."
+    }
+  ],
+  "questions": [
+    {
+      "ref": "Q1",
+      "section": "analyzing-syllogisms",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "For this question, consider the following premises as factual and choose which conclusion logically follows from these premises. To logically follow, the conclusion must be a logical consequence of the premises. Do not consider these premises or conclusions based on information or beliefs outside of this test, including your understanding of reality, known information, or educated assumptions.",
+      "context": "Premise 1: All contractors must sign a non-disclosure agreement.\nPremise 2: Some consultants are contractors.",
+      "stem": "Which conclusion logically follows from these premises?",
+      "options": [
+        {
+          "text": "All consultants must sign a non-disclosure agreement."
+        },
+        {
+          "text": "Some consultants must sign a non-disclosure agreement.",
+          "correct": true
+        },
+        {
+          "text": "No consultants are contractors."
+        },
+        {
+          "text": "All contractors are consultants."
+        }
+      ],
+      "rationale": "Syllogism (valid conclusion): Valid form (All M are P; Some S are M → Some S are P). A over-generalises 'some' to 'all'; C contradicts premise 2; D is an illicit conversion of premise 2.\n\nWorked solution (Categorical syllogism, mood AII (Darii)): All C → NDA. Some Cons are C. Take one consultant who is a contractor: they must sign. Hence some consultants must sign.\nCommon wrong answer: A – generalises from 'some' to 'all'."
+    },
+    {
+      "ref": "Q2",
+      "section": "analyzing-syllogisms",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, consider the following premises as factual and choose which conclusion logically follows from these premises. To logically follow, the conclusion must be a logical consequence of the premises. Do not consider these premises or conclusions based on information or beliefs outside of this test, including your understanding of reality, known information, or educated assumptions.",
+      "context": "Premise 1: No temporary staff have building access after 8 p.m.\nPremise 2: All night-shift workers have building access after 8 p.m.",
+      "stem": "Which conclusion logically follows from these premises?",
+      "options": [
+        {
+          "text": "No night-shift workers are temporary staff.",
+          "correct": true
+        },
+        {
+          "text": "Some temporary staff are night-shift workers."
+        },
+        {
+          "text": "All staff with building access after 8 p.m. are night-shift workers."
+        },
+        {
+          "text": "No temporary staff work at night."
+        }
+      ],
+      "rationale": "Syllogism (negative premise): Valid (No P are M; All S are M → No S are P). B contradicts the valid conclusion; C is an illicit conversion of premise 2; D uses 'work at night', which appears in neither premise.\n\nWorked solution (Categorical syllogism, mood EAE (Camestres)): Every night-shift worker has access. No temporary staff member has access. So no night-shift worker can be temporary staff.\nCommon wrong answer: D – 'work at night' is a real-world substitution for 'have access after 8 p.m.'; not in the premises."
+    },
+    {
+      "ref": "Q3",
+      "section": "analyzing-syllogisms",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, consider the following premises as factual and choose which conclusion logically follows from these premises. To logically follow, the conclusion must be a logical consequence of the premises. Do not consider these premises or conclusions based on information or beliefs outside of this test, including your understanding of reality, known information, or educated assumptions.",
+      "context": "Premise 1: If a shipment is delayed, the customer receives a discount code.\nPremise 2: Customer Reyes did not receive a discount code.",
+      "stem": "Which conclusion logically follows from these premises?",
+      "options": [
+        {
+          "text": "Customer Reyes's shipment was delayed."
+        },
+        {
+          "text": "Customer Reyes received a refund instead."
+        },
+        {
+          "text": "Discount codes are only issued for delayed shipments."
+        },
+        {
+          "text": "Customer Reyes's shipment was not delayed.",
+          "correct": true
+        }
+      ],
+      "rationale": "Conditional reasoning (modus tollens): Modus tollens: If D then C; not C → not D. A contradicts; B introduces information not in the premises; C converts the conditional (only-if is not stated).\n\nWorked solution (Modus tollens): Delayed → code. No code. Therefore not delayed.\nCommon wrong answer: C – converts 'if delayed then code' into 'code only if delayed'."
+    },
+    {
+      "ref": "Q4",
+      "section": "analyzing-syllogisms",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "For this question, consider the following premises as factual and choose which conclusion logically follows from these premises. To logically follow, the conclusion must be a logical consequence of the premises. Do not consider these premises or conclusions based on information or beliefs outside of this test, including your understanding of reality, known information, or educated assumptions.",
+      "context": "Premise 1: All approved invoices are logged in the finance system.\nPremise 2: Invoice 4471 is logged in the finance system.",
+      "stem": "Which conclusion logically follows from these premises?",
+      "options": [
+        {
+          "text": "Invoice 4471 is approved."
+        },
+        {
+          "text": "All invoices logged in the finance system are approved."
+        },
+        {
+          "text": "Invoice 4471 is not approved."
+        },
+        {
+          "text": "None of these conclusions necessarily follows.",
+          "correct": true
+        }
+      ],
+      "rationale": "Recognising an invalid inference: Classic affirming-the-consequent trap (A). Premises allow logged-but-unapproved invoices, so neither A nor C follows; B is an illicit conversion. Strong candidates must be willing to pick 'none'.\n\nWorked solution (Affirming the consequent (invalid)): Approved → logged. Logged. Nothing follows about approval: logged invoices may include rejected ones.\nCommon wrong answer: A – the fallacy itself; feels natural because in practice most logged invoices are approved.",
+      "keepLastOptionFixed": true
+    },
+    {
+      "ref": "Q5",
+      "section": "making-inferences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "For this question, treat the information given as complete and accurate. Choose the option that can be concluded from the information alone, without relying on outside knowledge or assumptions.",
+      "context": "Five colleagues – Lena, Omar, Priya, Sam and Tom – sit in a single row of five desks numbered 1 to 5 from left to right.\n• Sam sits at desk 3.\n• Lena sits at one end of the row.\n• Priya sits immediately to the left of Tom.\n• Omar sits next to Lena.",
+      "stem": "Which of the following must be true?",
+      "options": [
+        {
+          "text": "Tom sits at an end of the row."
+        },
+        {
+          "text": "Priya sits at desk 1."
+        },
+        {
+          "text": "Omar sits next to Sam.",
+          "correct": true
+        },
+        {
+          "text": "Lena sits next to Tom."
+        }
+      ],
+      "rationale": "Arrangement puzzle: Two valid arrangements: L-O-S-P-T and P-T-S-O-L. Omar is at desk 2 or 4, always adjacent to Sam (desk 3). A and B are true in only one arrangement; D is true in neither.\n\nWorked solution (Constraint satisfaction): Fix Sam = 3. Lena = 1 or 5. The Priya–Tom pair needs two adjacent free desks: only (1,2) or (4,5). If Lena = 1, Omar = 2, so Priya–Tom = 4–5. If Lena = 5, Omar = 4, so Priya–Tom = 1–2. In both, Omar is beside Sam.\nCommon wrong answer: A – true only in the first arrangement."
+    },
+    {
+      "ref": "Q6",
+      "section": "making-inferences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, treat the information given as complete and accurate. Choose the option that can be concluded from the information alone, without relying on outside knowledge or assumptions.",
+      "context": "A security code changes every week following a fixed rule. The codes so far have been: 3, 5, 9, 17, 33.",
+      "stem": "Following the same rule, what will next week's code be?",
+      "options": [
+        {
+          "text": "49"
+        },
+        {
+          "text": "57"
+        },
+        {
+          "text": "65",
+          "correct": true
+        },
+        {
+          "text": "66"
+        }
+      ],
+      "rationale": "Sequence: Differences double (+2, +4, +8, +16) → +32 → 65. Equivalently each term is 2n − 1. 49 assumes +16 again; 66 doubles the last term; 57 is +24.\n\nWorked solution (Difference pattern): 5−3=2, 9−5=4, 17−9=8, 33−17=16 → next difference 32 → 65.\nCommon wrong answer: 49 – repeats the last difference instead of doubling it."
+    },
+    {
+      "ref": "Q7",
+      "section": "making-inferences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, treat the information given as complete and accurate. Choose the option that can be concluded from the information alone, without relying on outside knowledge or assumptions.",
+      "context": "Since the company introduced a four-day working week in March, recorded sick days have fallen by 20%. Also in March, the company moved to a new office building with a much better ventilation system.",
+      "stem": "Which of the following is the most reasonable conclusion?",
+      "options": [
+        {
+          "text": "The four-day week caused the reduction in sick days."
+        },
+        {
+          "text": "The improved ventilation caused the reduction in sick days."
+        },
+        {
+          "text": "It cannot be determined from this information which change, if either, caused the reduction.",
+          "correct": true
+        },
+        {
+          "text": "Sick days will continue to fall over the coming months."
+        }
+      ],
+      "rationale": "Cause and effect: Two simultaneous changes (confounding); the data cannot separate their effects, and a third cause is possible. D extrapolates beyond the data.\n\nWorked solution (Confounded causes): Two interventions began at the same time; the outcome cannot be attributed to either without further data.\nCommon wrong answer: A – accepts the first-mentioned cause (order-of-presentation bias)."
+    },
+    {
+      "ref": "Q8",
+      "section": "making-inferences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, treat the information given as complete and accurate. Choose the option that can be concluded from the information alone, without relying on outside knowledge or assumptions.",
+      "context": "A company has 100 employees. All 40 employees who attended an optional training session passed the annual compliance audit. Of the 60 employees who did not attend, 45 passed.",
+      "stem": "Which of the following can be concluded from the information?",
+      "options": [
+        {
+          "text": "Attending the training causes employees to pass the audit."
+        },
+        {
+          "text": "More than half of the employees attended the training."
+        },
+        {
+          "text": "The pass rate was higher among employees who attended than among those who did not.",
+          "correct": true
+        },
+        {
+          "text": "The employees who failed would have passed if they had attended the training."
+        }
+      ],
+      "rationale": "Inference from data: 100% vs 75% – a descriptive comparison that follows directly. A and D are causal/counterfactual claims the data cannot support (self-selection); B is false (40%).\n\nWorked solution (Descriptive vs causal inference): Attendees: 40/40 = 100%. Non-attendees: 45/60 = 75%. The comparison holds; causation does not (attendance was optional → self-selection).\nCommon wrong answer: A – reads a correlation as a cause."
+    },
+    {
+      "ref": "Q9",
+      "section": "recognizing-assumptions",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "For this question, consider the passage below and identify which assumption the passage's argument most logically relies on or depends upon.",
+      "context": "Passage: Our helpdesk resolves 90% of tickets within 24 hours. Therefore, customers are satisfied with our support.",
+      "stem": "Which one of the following is an assumption upon which the passage's argument depends?",
+      "options": [
+        {
+          "text": "24 hours is faster than the resolution time of competitors."
+        },
+        {
+          "text": "Customers judge support quality mainly by how quickly their ticket is resolved.",
+          "correct": true
+        },
+        {
+          "text": "The remaining 10% of tickets are unusually complex."
+        },
+        {
+          "text": "The helpdesk is adequately staffed."
+        }
+      ],
+      "rationale": "Assumption: The argument jumps from speed to satisfaction; it only works if speed is what drives satisfaction. A, C and D are compatible with the passage but the conclusion does not depend on them.\n\nWorked solution (Bridge assumption): Evidence = speed; conclusion = satisfaction. Bridge: speed determines satisfaction.\nCommon wrong answer: A – a comparison with competitors is not needed for the argument."
+    },
+    {
+      "ref": "Q10",
+      "section": "recognizing-assumptions",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, consider the passage below and identify which assumption the passage's argument most logically relies on or depends upon.",
+      "context": "Passage: To reduce staff turnover, the company will raise all salaries by 5% next quarter. This will stop employees from leaving.",
+      "stem": "Which one of the following is an assumption upon which the passage's argument depends?",
+      "options": [
+        {
+          "text": "A 5% raise is larger than what competing employers offer."
+        },
+        {
+          "text": "Employees are leaving mainly for pay-related reasons.",
+          "correct": true
+        },
+        {
+          "text": "The company can afford the salary increase."
+        },
+        {
+          "text": "Staff turnover is currently above the industry average."
+        }
+      ],
+      "rationale": "Assumption: If people leave for non-pay reasons the raise cannot 'stop' them, so the argument depends on B. C is about feasibility, not logic; A and D are not required.\n\nWorked solution (Bridge assumption): Evidence = raise; conclusion = people stop leaving. Bridge: pay is why they leave.\nCommon wrong answer: C – affordability affects whether the plan happens, not whether it would work."
+    },
+    {
+      "ref": "Q11",
+      "section": "recognizing-assumptions",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, consider the passage below and identify which assumption the passage's argument most logically relies on or depends upon.",
+      "context": "Passage: The redesigned website has increased sales. Sales rose 12% in the month after the new design launched.",
+      "stem": "Which one of the following is an assumption upon which the passage's argument depends?",
+      "options": [
+        {
+          "text": "Sales will continue to rise in the following months."
+        },
+        {
+          "text": "The new design is visually more attractive than the old one."
+        },
+        {
+          "text": "No other factor, such as a marketing campaign or seasonal demand, explains the rise in sales.",
+          "correct": true
+        },
+        {
+          "text": "Most customers noticed that the website had changed."
+        }
+      ],
+      "rationale": "Assumption (alternative cause): Post-hoc reasoning: the conclusion requires ruling out alternative causes. B and D are plausible mechanisms but the argument does not depend on either; A is a prediction, not a premise.\n\nWorked solution (Alternative-cause assumption): Temporal sequence (design then sales rise) is offered as proof of cause. Requires that nothing else explains the rise.\nCommon wrong answer: B – attractiveness is a possible mechanism, not a required assumption."
+    },
+    {
+      "ref": "Q12",
+      "section": "recognizing-assumptions",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "For this question, consider the passage below and identify which assumption the passage's argument most logically relies on or depends upon.",
+      "context": "Passage: The two finalists for the analyst position have identical qualifications and experience. Therefore, we should hire whichever candidate accepts the lower salary.",
+      "stem": "Which one of the following is an assumption upon which the passage's argument depends?",
+      "options": [
+        {
+          "text": "A candidate who accepts a lower salary is less confident in their abilities."
+        },
+        {
+          "text": "Nothing other than qualifications, experience and salary should influence the hiring decision.",
+          "correct": true
+        },
+        {
+          "text": "Both candidates will accept an offer if one is made."
+        },
+        {
+          "text": "The company's budget for the position is limited."
+        }
+      ],
+      "rationale": "Assumption (decision rule): The conclusion treats salary as the tie-breaker, which is only valid if no other relevant differences exist (e.g. team fit, references). D is a motive, not a logical requirement.\n\nWorked solution (Decision-rule assumption): Tie on stated criteria → choose by salary. Valid only if the stated criteria plus salary are the only relevant ones.\nCommon wrong answer: D – budget is a motive; the argument's logic does not rely on it."
+    },
+    {
+      "ref": "Q13",
+      "section": "weighing-arguments",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "For this question, consider the statements below and choose the option that best describes whether Statement 2 contradicts, supports, restates, or is irrelevant to the logic of Statement 1. Contradicts means it denies or implies the opposite; supports means it verifies or makes more certain; restates means it says again or in a very similar way; is irrelevant to means it does not affect or apply.",
+      "context": "Statement 1: Remote teams are less productive than co-located teams because the informal conversations that spark new ideas do not happen online.\nStatement 2: Most breakthrough ideas at our company have come from scheduled brainstorming sessions rather than from casual conversations.",
+      "stem": "Which of the following best describes the logical relationship between these statements?",
+      "options": [
+        {
+          "text": "Statement 2 contradicts Statement 1.",
+          "correct": true
+        },
+        {
+          "text": "Statement 2 supports Statement 1."
+        },
+        {
+          "text": "Statement 2 restates Statement 1."
+        },
+        {
+          "text": "Statement 2 is irrelevant to Statement 1."
+        }
+      ],
+      "rationale": "Statement relationship: Statement 1 rests on the premise that informal conversation is the source of ideas; Statement 2 implies the opposite, undermining that reasoning. Candidates who focus only on the conclusion ('less productive') may wrongly choose 'irrelevant'.\n\nWorked solution (Statement relationship – attack on a premise): S1's reason: ideas come from informal chat. S2: ideas come from scheduled sessions, not chat. S2 denies the reason → contradicts.\nCommon wrong answer: D – judged only against S1's conclusion, not its reasoning."
+    },
+    {
+      "ref": "Q14",
+      "section": "weighing-arguments",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, consider the statements below and choose the option that best describes whether Statement 2 contradicts, supports, restates, or is irrelevant to the logic of Statement 1. Contradicts means it denies or implies the opposite; supports means it verifies or makes more certain; restates means it says again or in a very similar way; is irrelevant to means it does not affect or apply.",
+      "context": "Statement 1: Hiring decisions should rely on structured interview scores because such scores are more consistent between different interviewers.\nStatement 2: Most candidates prefer video interviews to in-person interviews because they save travel time.",
+      "stem": "Which of the following best describes the logical relationship between these statements?",
+      "options": [
+        {
+          "text": "Statement 2 contradicts Statement 1."
+        },
+        {
+          "text": "Statement 2 supports Statement 1."
+        },
+        {
+          "text": "Statement 2 restates Statement 1."
+        },
+        {
+          "text": "Statement 2 is irrelevant to Statement 1.",
+          "correct": true
+        }
+      ],
+      "rationale": "Statement relationship: Both statements are about interviews, but Statement 2 concerns the medium and candidate preference, which has no bearing on scoring consistency. Tests resisting topical similarity.\n\nWorked solution (Statement relationship – topical but irrelevant): S1 is about scoring consistency; S2 about interview medium and travel time. No logical bearing.\nCommon wrong answer: B – assumes anything positive about interviews supports S1."
+    },
+    {
+      "ref": "Q15",
+      "section": "weighing-arguments",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "For this question, consider the following argument and related piece of data. Then decide the relationship of the piece of data to the strength of the argument. The data strengthens when it adds credibility; it weakens when it reduces credibility; it has no effect if it does not affect the argument's credibility.",
+      "context": "Argument: Offering free shipping increases online sales, because shipping costs are the most common reason shoppers abandon their carts.\n\nPiece of data: A retailer that introduced free shipping saw cart abandonment fall from 70% to 50%, while total orders rose by 18%.",
+      "stem": "Does the piece of data strengthen, weaken, or have no effect on the persuasiveness of the argument?",
+      "options": [
+        {
+          "text": "Strengthen",
+          "correct": true
+        },
+        {
+          "text": "Weaken"
+        },
+        {
+          "text": "Has no effect"
+        }
+      ],
+      "rationale": "Argument + data (strengthen / weaken / no effect): The data shows the predicted mechanism (less abandonment) and the predicted outcome (more orders) occurring together, adding credibility.\n\nWorked solution (Evidence evaluation – strengthen): Data shows both the mechanism (abandonment down) and the outcome (orders up) after free shipping.\nCommon wrong answer: Has no effect – over-cautious reading; one case is weak but still adds credibility.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q16",
+      "section": "weighing-arguments",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "For this question, consider the following argument and related piece of data. Then decide the relationship of the piece of data to the strength of the argument. The data strengthens when it adds credibility; it weakens when it reduces credibility; it has no effect if it does not affect the argument's credibility.",
+      "context": "Argument: Mandatory cybersecurity training reduces phishing incidents, because employees learn to recognise suspicious emails.\n\nPiece of data: The company that provides the training also offers courses in data privacy and password management.",
+      "stem": "Does the piece of data strengthen, weaken, or have no effect on the persuasiveness of the argument?",
+      "options": [
+        {
+          "text": "Strengthen"
+        },
+        {
+          "text": "Weaken"
+        },
+        {
+          "text": "Has no effect",
+          "correct": true
+        }
+      ],
+      "rationale": "Argument + data (strengthen / weaken / no effect): The vendor's other courses say nothing about whether phishing training works. Tests recognising irrelevant-but-related information; pair with Q15 so candidates cannot assume every data item strengthens.\n\nWorked solution (Evidence evaluation – no effect): Vendor's product range is unrelated to whether phishing training reduces incidents.\nCommon wrong answer: Strengthen – treats the vendor's breadth as a sign of quality; that is outside the argument.",
+      "shuffleOptions": false
+    }
+  ]
+}

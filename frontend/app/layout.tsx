@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Providers } from "./providers";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // The font variables go on <html>, where the `--font-sans` token reads them.
     <html lang="en" className={cn(inter.variable, geistMono.variable, "h-full")}>
       <body className="min-h-full">
-        <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+        <TooltipProvider delayDuration={200}>
+          <Providers>{children}</Providers>
+        </TooltipProvider>
       </body>
     </html>
   );

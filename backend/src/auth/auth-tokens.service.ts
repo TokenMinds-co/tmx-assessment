@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '../generated/prisma/client';
 import { AuthTokenType } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
-import { generateToken, hashToken } from './tokens';
+import { generateToken, hashToken } from '../common/tokens';
 
 export const INVALID_LINK_MESSAGE = 'This link is invalid or has expired.';
 

@@ -88,3 +88,25 @@ async function toApiError(response: Response): Promise<ApiError> {
   }
   return new ApiError(status, messages);
 }
+
+/**
+ * Sends a file as multipart/form-data and returns the JSON answer, with the
+ * same errors as apiFetch. The browser sets the multipart boundary, so there's
+ * no Content-Type header here.
+ */
+export async function apiUpload<T>(url: string, form: FormData): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: form,
+    });
+  } catch (error) {
+    throw new ApiError(0, [NETWORK_ERROR], { cause: error });
+  }
+
+  if (!response.ok) throw await toApiError(response);
+  const text = await response.text();
+  return (text ? JSON.parse(text) : undefined) as T;
+}

@@ -1,6 +1,6 @@
 # Authentication
 
-**Status:** In progress (staff sign-in done) · **Last updated:** 2026-09-15
+**Status:** In progress (staff sign-in and candidate links done) · **Last updated:** 2026-09-15
 
 ## Scope
 
@@ -9,7 +9,7 @@ The sign-in screens, how the browser holds the session, protecting staff pages a
 ## Current state
 
 - **Staff sign-in is wired to the backend,** end to end: signing in and out, forgot and reset password, and accepting an invitation. Every staff page needs a live session. Checked in a browser against a local backend on 2026-09-15.
-- **Candidate links:** not started. See [Proposed approach](#proposed-approach-candidate-links).
+- **Candidate links are built:** `/take/<token>` opens without a session. See [Candidate links](#candidate-links).
 - **Not built yet:** screens for changing your password and for inviting staff. The backend has both endpoints.
 
 | Screen | File | Backend endpoint | What it does |
@@ -43,12 +43,12 @@ The sign-in screens, how the browser holds the session, protecting staff pages a
 
 Two layers, following the Next.js 16 authentication guide:
 
-1. **[proxy.ts](../proxy.ts)** runs before every page. If there's no `tmx_hr_session` cookie, it redirects to `/login?next=<the page>`, or plain `/login` for the dashboard. It lets through the four sign-in pages, `/api/*` (where the backend answers 401 itself), Next.js's own files, and files with an extension. It only reads the cookie and never calls the API, because it runs on every request, prefetches included.
+1. **[proxy.ts](../proxy.ts)** runs before every page. If there's no `tmx_hr_session` cookie, it redirects to `/login?next=<the page>`, or plain `/login` for the dashboard. It lets through the four sign-in pages, anything under `/take/` (`PUBLIC_PREFIXES`), `/api/*` (where the backend answers 401 itself), Next.js's own files, and files with an extension. It only reads the cookie and never calls the API, because it runs on every request, prefetches included.
 2. **[lib/session.ts](../lib/session.ts)** asks the API. `getCurrentUser()` sends the cookie's token to `GET /api/auth/me` as a bearer token, with a 10-second timeout. It returns the user, or null on a 401, and React's `cache()` keeps it to one call per request. `requireUser()` redirects to `/login` when there's no user. The [(app) layout](<../app/(app)/layout.tsx>) calls it, so an ended session never renders the shell. The layout passes only the name and email to the account menu.
 
 - **A cookie doesn't mean a session.** It can outlive one: sessions end after 7 idle days, and a reset signs everyone out. With such a cookie, proxy.ts lets the request through, the layout's check fails, and the user lands on `/login`. The sign-in page asks the API too, so there's no redirect loop.
 - **A signed-in visitor skips `/login`.** The page asks the API, then redirects to `?next=` or the dashboard. If the API can't be reached, it shows the form anyway.
-- **Layouts don't re-render on client-side navigation.** A server component, server action or route handler that loads or changes staff data must call `requireUser()` itself, not rely on the layout. The dashboard only shows sample data, so it doesn't call it yet.
+- **Layouts don't re-render on client-side navigation.** A server component, server action or route handler that loads or changes staff data must call `requireUser()` itself, not rely on the layout. The dashboard only shows sample data, so it doesn't call it yet. The assessment pages call it, then fetch their data in the browser.
 - **If the API is down,** staff pages show Next.js's default error page ("This page couldn’t load"), and signing in says "Something went wrong on our side. Try again in a moment."
 
 ### Forms
@@ -59,6 +59,17 @@ Two layers, following the Next.js 16 authentication guide:
 - **While a request runs,** the submit button is disabled and shows a spinner and a label such as "Signing in…". After signing in or accepting an invitation, it stays busy until the next page has loaded.
 - **Forgot password never reveals who has an account.** The confirmation reads the same either way, matching the backend, which always answers `202`.
 - **The sign-in page says "No account? Ask an admin to invite you."** There's no sign-up page, because accounts are invite-only.
+
+### Candidate links
+
+- **Candidates don't sign in.** `/take/<token>` is public: proxy.ts lets anything under `/take/` through, and the page calls the API with the token in the path, which the backend checks on every call (see the backend's [authentication.md](../../backend/docs/authentication.md#candidate-links)).
+- **A link the API turns down** gets its own message: unknown or revoked (404), or expired (410).
+- **Candidate pages send no referrer,** so the token in the address never reaches another site.
+- **The staff preview isn't public.** `/preview/[assessmentId]` looks like a candidate page, but proxy.ts sends signed-out visitors to sign in, and the page calls `requireUser()` before it loads the test with `serverApiFetch()`.
+
+### A 401 in the browser
+
+Staff screens fetch in the browser with TanStack Query. A 401 from any query or mutation means the session ended, so [app/providers.tsx](../app/providers.tsx) loads `/login?next=<this page>` as a full page, and signing in returns there. Pages under `/take/` are skipped, since the link is the candidate's access.
 
 ### Trying it locally
 
@@ -88,18 +99,13 @@ Two layers, following the Next.js 16 authentication guide:
 | Busy state | The submit button is disabled, with a spinner, until the next page loads | Stops double submits and shows that something is happening | Build default |
 | Signing out | A full page load to `/login` after the API call | Clears the router cache, so Back can't show staff pages from the ended session | Build default |
 | Session check timeout | 10 seconds | A hung API shouldn't hang every page | Build default |
-
-## Proposed approach: candidate links
-
-Not built yet:
-
-- **Candidate pages** authenticate with the token in the link, which the backend verifies. They're public, so proxy.ts must let them through (see [routing.md](routing.md)).
+| Candidate pages | Public under `/take/`, with the token in the path checked by the API on every call | Candidates have no accounts. proxy.ts only has to match a prefix. | Build default |
+| A 401 in the browser (was open) | A full page load to `/login?next=…`, except on candidate pages | The session has ended, and a full load clears what it left in memory. Signing in returns to the same page. | Build default |
 
 ## Open decisions
 
 - Screens the backend supports that the UI doesn't have yet: changing your password, and inviting staff (for admins).
 - An error page for when the API can't be reached, instead of Next.js's default one.
-- What browser-side calls do on a 401, once staff screens fetch data in the browser. Probably send the user to `/login?next=…`.
 
 ## References
 

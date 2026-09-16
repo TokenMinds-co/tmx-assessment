@@ -4,12 +4,12 @@
 
 ## Scope
 
-Sending email from the backend: the provider, templates, and what happens in development. Which account emails go out and when is in [authentication.md](authentication.md). Emails to candidates will be added with [assessments.md](assessments.md).
+Sending email from the backend: the provider, templates, and what happens in development. Which account emails go out and when is in [authentication.md](authentication.md). When candidates get their assessment link is in [assessments.md](assessments.md#candidate-links).
 
 ## Current state
 
 - **`MailModule`** in [src/mail/](../src/mail/). [`MailService`](../src/mail/mail.service.ts) renders an email and hands it to the active transport.
-- **Three emails:** staff invitation, password reset, and "your password was changed". Templates are in [mail.templates.ts](../src/mail/mail.templates.ts).
+- **Four emails:** staff invitation, password reset, "your password was changed", and a candidate's assessment link. Templates are in [mail.templates.ts](../src/mail/mail.templates.ts).
 - **Two transports:** [Resend](../src/mail/resend.transport.ts), and a [console transport](../src/mail/console.transport.ts) for local development.
 - **Not set up yet:** a verified sending domain in Resend. See [Open decisions](#open-decisions).
 
@@ -22,7 +22,8 @@ Sending email from the backend: the provider, templates, and what happens in dev
 - **The transport is picked at startup.** If `RESEND_API_KEY` is set, emails go through Resend. If it's empty, they're printed to the terminal, and the app logs a warning saying so. Production refuses to start without the key (see [configuration.md](configuration.md)).
 - **The sender is `EMAIL_FROM`.** Its domain must be verified in Resend. The default, `onboarding@resend.dev`, only delivers to the email address of the Resend account's owner, which is fine for a first test.
 - **Templates are plain functions** that return a subject, an HTML body and a plain-text body. The HTML uses inline styles only, because many email clients drop `<style>` blocks. Every piece of user-supplied text is HTML-escaped.
-- **Failures throw `MailDeliveryError`.** Invitations turn it into a 503; the invitation stays saved, and inviting the same email again retries. Reset emails and password-changed notices are sent after the response, so failures there are only logged.
+- **The candidate email** (`assessmentInvitationEmail()`, sent by `MailService.sendAssessmentInvitation()`) carries the company's name, TokenMinds, not the app's, because candidates don't know TMX HR. It lists each test with its minutes and the total, gives the link's expiry as a date such as "29 September 2026" (in UTC, so every server writes the same date), and adds the sender's note if there is one. With one test, the subject names it.
+- **Failures throw `MailDeliveryError`.** Invitations turn it into a 503; the invitation stays saved, and inviting the same email again retries. Reset emails and password-changed notices are sent after the response, so failures there are only logged. A failed candidate email is logged too, and the send still succeeds: the API returns the link with `emailSent: false`, so staff can share it another way or resend.
 - **Tests never send email.** They replace the `MAIL_TRANSPORT` provider with an [in-memory transport](../test/utils/in-memory-mail.transport.ts) and read the links from it (see [testing.md](testing.md)).
 
 To add an email: write a template function in `mail.templates.ts`, add a method to `MailService`, and cover it in [mail.templates.spec.ts](../src/mail/mail.templates.spec.ts).
@@ -34,8 +35,9 @@ To add an email: write a template function in `mail.templates.ts`, add a method 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
 | Provider | Resend | | Requested |
-| Templates | Plain TypeScript functions with inline styles, not React Email | Three short emails don't need another dependency. Resend supports React Email if we want designed emails later. | Build default |
+| Templates | Plain TypeScript functions with inline styles, not React Email | A few short emails don't need another dependency. Resend supports React Email if we want designed emails later. | Build default |
 | Development without a key | Print emails to the terminal | Anyone can run the app without a Resend account and still copy the links. | Build default |
+| The name in candidate emails | TokenMinds, not TMX HR | Candidates don't know the internal app's name. | Build default |
 | Sending | Straight away, with no queue | The volume is tiny: a few invitations and resets a week. | Build default |
 
 ## Open decisions

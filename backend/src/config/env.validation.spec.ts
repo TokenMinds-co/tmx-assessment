@@ -14,6 +14,7 @@ describe('validateEnv', () => {
     expect(env.SESSION_TTL_DAYS).toBe(7);
     expect(env.TRUST_PROXY).toBe(0);
     expect(env.EMAIL_FROM).toBe('TMX HR <onboarding@resend.dev>');
+    expect(env.STORAGE_DIR).toBe('./storage');
   });
 
   it('converts numeric strings to numbers', () => {

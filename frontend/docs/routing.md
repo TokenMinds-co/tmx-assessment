@@ -8,7 +8,7 @@ The route map, layouts and route groups, and which routes are for staff and whic
 
 ## Current state
 
-Two route groups, each with its own layout:
+Three route groups, each with its own layout:
 
 | Route | Group | Page | Notes |
 | --- | --- | --- | --- |
@@ -17,11 +17,17 @@ Two route groups, each with its own layout:
 | `/forgot-password` | `(auth)` | Ask for a reset link | |
 | `/reset-password?token=…` | `(auth)` | Choose a new password | Linked from the reset email. Without a token it shows the "This reset link doesn't work" state. |
 | `/accept-invite?token=…` | `(auth)` | Set up an invited account | Linked from the invitation email. Without a token it shows the "This invitation link doesn't work" state. |
+| `/assessments` | `(app)` | Test library and sent tests | Library and Sent tabs; `?tab=sent` opens Sent. See [assessments.md](assessments.md). |
+| `/assessments/[id]` | `(app)` | Test editor | Questions, Role profile (alignment tests), Scoring and Settings tabs |
+| `/assessments/invitations/[id]` | `(app)` | Results of one send | |
+| `/preview/[assessmentId]` | `(candidate)` | Staff preview of a test | Signed-in staff only, opened in a new tab. Nothing is saved. |
+| `/take/[token]` | `(candidate)` | A candidate's tests | Public: the token in the path is the access. Linked from the candidate's email. |
 
 - **`(app)`** ([layout](<../app/(app)/layout.tsx>)) is the staff app shell: sidebar, topbar and page. It reads the `sidebar_state` cookie, so its pages render on each request.
 - **`(auth)`** ([layout](<../app/(auth)/layout.tsx>)) is the TMX HR logo above one centered card.
-- **Navigation** comes from [components/shared/nav-items.ts](../components/shared/nav-items.ts). Candidates, Jobs, Assessments and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
-- **Staff pages need a session.** [proxy.ts](../proxy.ts) sends signed-out visitors to `/login?next=…`, and the `(app)` layout confirms the session with the API. The four `(auth)` pages are public. See [authentication.md](authentication.md).
+- **`(candidate)`** ([layout](<../app/(candidate)/layout.tsx>)) has no staff shell: each page draws its own header, since the test runner needs the whole screen. Its pages are titled "Your assessment · TokenMinds" and send no referrer (`referrer: "no-referrer"`), so the token in a candidate's address never reaches another site. `/take/[token]` has its own error page.
+- **Navigation** comes from [components/shared/nav-items.ts](../components/shared/nav-items.ts). Assessments is a link. Candidates, Jobs and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
+- **Staff pages need a session.** [proxy.ts](../proxy.ts) sends signed-out visitors to `/login?next=…`, and the `(app)` layout confirms the session with the API. The four `(auth)` pages are public, and so is everything under `/take/` (`PUBLIC_PREFIXES` in proxy.ts). `/preview/[assessmentId]` sits in the `(candidate)` group for its look but still needs a session: proxy.ts redirects without the cookie, and the page calls `requireUser()`. See [authentication.md](authentication.md).
 - **`/api/*` belongs to the backend.** A rewrite in [next.config.ts](../next.config.ts) forwards it, so no page or route handler can live there. See [api-client.md](api-client.md).
 - **Metadata:** page titles use the template `%s · TMX HR`, and every page is `noindex, nofollow` ([app/layout.tsx](../app/layout.tsx)).
 
@@ -29,21 +35,18 @@ Two route groups, each with its own layout:
 
 - Staff manage jobs, candidates, stages and results.
 - Candidates open a link and take their assigned tests.
-- The backend's emails link to `/reset-password?token=…` and `/accept-invite?token=…`, so those paths must stay put (the backend sets them in `src/auth/frontend-links.ts`).
+- The backend's emails link to `/reset-password?token=…`, `/accept-invite?token=…` and `/take/<token>`, so those paths must stay put (the backend sets them in `src/common/frontend-links.ts`).
 
 ## Proposed approach
 
-- **Candidate pages** get a third route group, `app/(candidate)/`, with a minimal layout without distractions, for taking tests. Candidates don't sign in, so proxy.ts has to let these pages through. Its `PUBLIC_PATHS` only matches exact paths today.
-- Draft route map for what's still to build:
+Draft route map for what's still to build:
 
 | Route | Who | Purpose |
 | --- | --- | --- |
 | `/candidates` | Staff | Pipeline board and candidate list |
 | `/candidates/[id]` | Staff | Profile, stage history, call reports and results |
 | `/jobs` | Staff | Job openings |
-| `/assessments` | Staff | Test library and review of generated questions |
 | `/settings/pipeline` | Staff | Edit stages, statuses and owners |
-| `/take/[token]` | Candidate | Take the tests in an invitation |
 
 When one of these ships, remove `soon` from its row in `nav-items.ts`.
 
@@ -53,12 +56,16 @@ When one of these ships, remove `soon` from its row in `nav-items.ts`.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
-| Route groups | `(auth)` for the sign-in pages, `(app)` for the staff shell | Each audience gets its own layout. `(app)` is the reference app's name, used instead of the `(staff)` first proposed here. | Build default |
+| Route groups | `(auth)` for the sign-in pages, `(app)` for the staff shell, `(candidate)` for candidate pages and the staff preview | Each audience gets its own layout. `(app)` is the reference app's name, used instead of the `(staff)` first proposed here. | Build default |
 | Home page | The dashboard, at `/` | It's the first thing staff need after signing in | Build default |
 | Planned pages in the nav | Listed with a "Soon" badge, not linked | Shows the shape of the app without leading to 404s | Build default |
 | Search engines | `noindex, nofollow` on every page | It's an internal tool | Build default |
 | Page titles | "Page · TMX HR" | The reference app's pattern | Build default |
-| Which pages need a session | Every page except `/login`, `/forgot-password`, `/reset-password` and `/accept-invite` | Staff pages hold candidates' personal data, so a new page is protected unless someone adds it to the list | Build default |
+| Which pages need a session | Every page except `/login`, `/forgot-password`, `/reset-password`, `/accept-invite` and anything under `/take/` | Staff pages hold candidates' personal data, so a new page is protected unless someone adds it to the list | Build default |
+| A candidate's address | `/take/<token>`, with the token as the last part of the path | Candidates keep and reopen the link, so it reads as a page address. The backend builds it with `frontendPathLink()`. | Build default |
+| Referrer on candidate pages | `no-referrer` | The candidate's token is in the address. | Build default |
+| Where the preview lives | `/preview/[assessmentId]` in the `(candidate)` group, opened in a new tab | It looks exactly like the candidate's page, without the staff shell. | Build default |
+| The Assessments tab | In the address, as `?tab=sent` | Back and shared links land on the right tab. | Build default |
 | `/api/*` | Reserved for the rewrite to the backend | The browser talks to one origin (see [api-client.md](api-client.md)) | Build default |
 
 ## Open decisions

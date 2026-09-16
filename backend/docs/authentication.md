@@ -4,16 +4,16 @@
 
 ## Scope
 
-How staff sign in, how the API keeps them signed in and protects routes, and what each role can do. This includes staff invitations and password resets, which send email (see [email.md](email.md)). Candidate access links are planned here but not built yet. The frontend side is in the frontend's [authentication.md](../../frontend/docs/authentication.md).
+How staff sign in, how the API keeps them signed in and protects routes, and what each role can do. This includes staff invitations and password resets, which send email (see [email.md](email.md)), and how candidates get in with a link instead of an account (see [Candidate links](#candidate-links)). The frontend side is in the frontend's [authentication.md](../../frontend/docs/authentication.md).
 
 ## Current state
 
 - **Staff sign in with email and password.** The backend is built and covered by e2e tests, and the frontend is wired to it (see [How the frontend connects](#how-the-frontend-connects)).
 - **Code:** [src/auth/](../src/auth/). The controller is [auth.controller.ts](../src/auth/auth.controller.ts); sessions live in [sessions.service.ts](../src/auth/sessions.service.ts), sign-in and passwords in [auth.service.ts](../src/auth/auth.service.ts), invitations in [invitations.service.ts](../src/auth/invitations.service.ts), and the guards in [guards/](../src/auth/guards/).
-- **Every route needs a session** unless it's marked `@Public()`. The public routes today are `GET /api`, the [health checks](operations.md#health-checks), sign-in, sign-out, forgot and reset password, and accepting an invitation.
+- **Every route needs a session** unless it's marked `@Public()`. The public routes today are `GET /api`, the [health checks](operations.md#health-checks), sign-in, sign-out, forgot and reset password, accepting an invitation, downloading media (`GET /api/media/:id`), and the candidate routes under `/api/take/:token`.
 - **To try the endpoints in a browser,** use the [API docs](api-conventions.md#api-docs) at `/api/docs`.
 - **No user management API yet.** There's no endpoint to list staff, change a role or deactivate someone. Until there is, do it in the database (`pnpm db:studio`).
-- **Candidate links:** not started. See [Proposed approach](#proposed-approach-candidate-links).
+- **Candidate links** are built, with the assessments. See [Candidate links](#candidate-links).
 
 ## Requirements
 
@@ -69,7 +69,7 @@ Errors use the shape in [api-conventions.md](api-conventions.md). The messages t
 ### Accounts and roles
 
 - **Staff accounts are invite-only.** An admin invites someone by email; they open the link, set a password, and are signed in.
-- **Roles:** `ADMIN` (can invite staff) and `MEMBER`. Guard a route with `@Roles(UserRole.ADMIN)`.
+- **Roles:** `ADMIN` (can invite staff, edit tests, and import and upload files) and `MEMBER`. Guard a route with [`@AdminOnly()`](../src/auth/decorators/admin-only.decorator.ts), which adds `@Roles(UserRole.ADMIN)` and documents the 403 in the API docs, or with `@Roles(...)` directly.
 - **Statuses:** `INVITED` (no password yet), `ACTIVE`, and `DEACTIVATED` (can't sign in; existing sessions stop working).
 - **Invitation links last 7 days** and work once. Inviting someone who hasn't accepted yet sends a fresh link and cancels the old one.
 - **The first admin comes from the command line:**
@@ -106,13 +106,24 @@ create(@CurrentUser() user: AuthUser, @Body() dto: CreateJobDto) {
 ### Abuse protection
 
 - **Rate limits** use `@nestjs/throttler`, tracked per IP in memory: 100 requests a minute on every route, and the tighter limits in the endpoint table. Behind a load balancer, set `TRUST_PROXY` so the real client IP is used (see [configuration.md](configuration.md)).
-- **CSRF:** the `SameSite=Lax` cookie, JSON-only bodies and an Origin check on writes. See [api-conventions.md](api-conventions.md).
+- **CSRF:** the `SameSite=Lax` cookie, JSON bodies (multipart only on two admin upload routes) and an Origin check on writes. See [api-conventions.md](api-conventions.md).
+
+### Candidate links
+
+Candidates don't get accounts. The token in their link is their access. What the links do is in [assessments.md](assessments.md#candidate-links).
+
+- **Each send gets one link,** `/take/<token>`, where the token has 256 bits of randomness. The database stores only its SHA-256 hash, as with sessions ([tokens.ts](../src/common/tokens.ts)).
+- **The candidate routes are public** (`@Public()`) and guarded by [`InvitationTokenGuard`](../src/assessments/guards/invitation-token.guard.ts), which finds the link by the token's hash. A link only reaches its own tests.
+- **Unknown, malformed or revoked links** answer 404. Expired links answer 410, unless a test is still running.
+- **Links last 14 days by default** (1 to 60) and can be reopened until then, including to continue a test already started. Resending makes a new token, so the old link stops working; revoking ends it at once.
+- **Rate limits** are per IP and route: 60 a minute to open the link, 30 to start or submit a test, and 300 to save answers.
+- **Media is public by id** (`GET /api/media/:id`), so a candidate's browser can play question audio without a session.
 
 ### How the frontend connects
 
 The frontend uses every endpoint above except changing a password and inviting staff, which have no screens yet. Its side is in the frontend's [authentication.md](../../frontend/docs/authentication.md) and [api-client.md](../../frontend/docs/api-client.md).
 
-- **The pages the emails link to** are `/accept-invite?token=…` and `/reset-password?token=…`, set in [frontend-links.ts](../src/auth/frontend-links.ts). Keep the two apps in step.
+- **The pages the emails link to** are `/accept-invite?token=…`, `/reset-password?token=…` and, for candidates, `/take/<token>`, set in [frontend-links.ts](../src/common/frontend-links.ts). Keep the two apps in step.
 - **The frontend serves the API on its own origin,** in development too: a Next.js rewrite forwards `/api/*` to the backend (the frontend's `API_URL`). Browser calls are same-origin, and the session cookie is first-party on the frontend's origin, where its `proxy.ts` can read it. Leave `COOKIE_DOMAIN` empty. The frontend doesn't need CORS; the allowlist still guards any other browser caller.
 - **`FRONTEND_URL` must be the frontend's public origin.** The browser's `Origin` header passes through the rewrite, so with any other value the Origin check turns every sign-in down with `403 Cross-origin request blocked.`
 - **Server components send the token as `Authorization: Bearer`,** read from the cookie, to `GET /api/auth/me`.
@@ -129,26 +140,19 @@ The frontend uses every endpoint above except changing a password and inviting s
 | Email provider | Resend | | Requested |
 | Session model | Server-side sessions: a random token in an httpOnly cookie, its hash in Postgres. No JWTs. | Matches the frontend's plan for an httpOnly cookie. Signing out and deactivating take effect on the next request, which matters with candidate data. The frontend doesn't need a token-refresh flow. JWTs would still need a database lookup to be revocable. | Build default |
 | Who can create accounts | Invite-only. Admins invite; the first admin comes from the CLI. | It's an internal app holding candidates' personal data, so open sign-up would let anyone in. | Build default |
-| Roles | `ADMIN` and `MEMBER`. Every staff member can see everything for now. | Enough to protect invitations. Per-job access is still an open question. | Build default |
+| Roles | `ADMIN` and `MEMBER`. Admins also edit tests. Every staff member can see everything, send tests and read results for now. | Enough to protect invitations and the shared tests. Per-job access is still an open question. | Build default |
 | Password hashing | Argon2id, OWASP baseline cost | OWASP's first choice. `@node-rs/argon2` ships prebuilt binaries, so pnpm 11 doesn't need to run a build script. | Build default |
 | Password rule | 12 to 128 characters, no other rules | NIST SP 800-63B: length helps, composition rules don't. | Build default |
 | Session lifetime | 7 days idle (configurable), 30 days at most | Staff don't sign in every day, but a lost laptop's session still ends. | Build default |
 | Link lifetimes | Invitations 7 days, resets 60 minutes, each works once | Common defaults. A reset link is the riskier of the two. | Build default |
 | After accepting an invitation | Signed in straight away | They've just set a password. | Build default |
 | After a password reset | Every session ends; the user signs in again | A reset often follows a compromised account. | Build default |
+| Candidate access (link lifetime was open) | A link with a random token in its path, no account. Only the token's hash is stored. It lasts 14 days by default and can be reopened until then. Details in [assessments.md](assessments.md#decisions). | Candidates only reach the tests they were sent, and a hashed token can't be read back from the database. | Build default |
 | Passport | Not used; two small guards instead | One sign-in method and no JWTs, so Passport would only add dependencies. The [`security-auth-jwt`](../.agents/skills/nestjs-best-practices/rules/security-auth-jwt.md) rule doesn't apply without JWTs. | Build default |
-
-## Proposed approach: candidate links
-
-Not built yet. Unchanged from the original plan:
-
-- **Candidates get a signed, expiring link** for each invitation instead of an account. The link only gives access to that candidate's assigned tests.
-- **Rate-limit** the candidate link endpoints like the sign-in endpoint.
 
 ## Open decisions
 
 - Roles: can every staff member see every candidate, or is access limited per job?
-- How long a candidate link stays valid, and whether it can be reopened after the candidate starts.
 - A user management API: list staff, change roles, deactivate. Today that's done in the database.
 - Rate-limit storage once the API runs as more than one instance (for example Redis), since the in-memory limits are per instance.
 - Real client IPs for rate limits behind the frontend's rewrite, once hosting is chosen (see [How the frontend connects](#how-the-frontend-connects)).
@@ -158,7 +162,7 @@ Not built yet. Unchanged from the original plan:
 ## References
 
 - [email.md](email.md), [configuration.md](configuration.md), [database.md](database.md), [api-conventions.md](api-conventions.md)
-- [assessments.md](assessments.md) (candidate invitations)
+- [assessments.md](assessments.md#candidate-links) (candidate links)
 - Rules: [`security-use-guards`](../.agents/skills/nestjs-best-practices/rules/security-use-guards.md), [`security-rate-limiting`](../.agents/skills/nestjs-best-practices/rules/security-rate-limiting.md), [`security-validate-all-input`](../.agents/skills/nestjs-best-practices/rules/security-validate-all-input.md)
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 - Frontend: [authentication.md](../../frontend/docs/authentication.md), [api-client.md](../../frontend/docs/api-client.md)

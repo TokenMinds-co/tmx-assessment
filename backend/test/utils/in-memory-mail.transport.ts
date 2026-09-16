@@ -42,3 +42,10 @@ export function tokenFrom(message: MailMessage): string {
   if (!match) throw new Error(`No token link in "${message.subject}"`);
   return match[1];
 }
+
+/** The token from the link in a candidate's assessment email. */
+export function takeTokenFrom(message: MailMessage): string {
+  const match = /\/take\/([A-Za-z0-9_-]+)/.exec(message.text);
+  if (!match) throw new Error(`No assessment link in "${message.subject}"`);
+  return match[1];
+}

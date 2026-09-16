@@ -9,7 +9,7 @@ import {
   SESSION_RENEW_INTERVAL_MS,
 } from './auth.constants';
 import { RequestMeta } from './auth.types';
-import { generateToken, hashToken } from './tokens';
+import { generateToken, hashToken } from '../common/tokens';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

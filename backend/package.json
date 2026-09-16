@@ -25,6 +25,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "db:seed": "nest build && node dist/cli/seed-assessments",
     "auth:invite-admin": "nest build && node dist/cli/invite-admin"
   },
   "dependencies": {
@@ -55,6 +56,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/multer": "^2.2.0",
     "@types/node": "^24.0.0",
     "@types/pg": "^8.23.1",
     "@types/supertest": "^7.0.0",

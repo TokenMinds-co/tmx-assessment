@@ -41,9 +41,11 @@ Most tasks need more than one skill:
 - Inter (UI) and Geist Mono, loaded with `next/font` in `app/layout.tsx`.
 - shadcn/ui is set up (`components.json`): style `radix-vega` on Radix primitives, `lucide-react` icons, components in `components/ui/`. Several components are customized to the TMX theme. [docs/design-system.md](docs/design-system.md) lists the tokens and every change; read it before editing a component or adding a color.
 - `lib/sample-data.ts` holds invented data for screens built before the API. A screen that renders it shows a "Sample data" badge ([docs/dashboard.md](docs/dashboard.md)).
-- The browser calls the backend at `/api/*` on this app's own origin, and `next.config.ts` rewrites it to `API_URL`. Call it with `apiFetch` from `lib/api/client.ts`, with one module per domain in `lib/api/` ([docs/api-client.md](docs/api-client.md)). Server code that loads or changes staff data calls `requireUser()` from `lib/session.ts` first ([docs/authentication.md](docs/authentication.md)).
+- The browser calls the backend at `/api/*` on this app's own origin, and `next.config.ts` rewrites it to `API_URL`. Call it with `apiFetch` from `lib/api/client.ts`, with one module per domain in `lib/api/` ([docs/api-client.md](docs/api-client.md)). Server code that loads or changes staff data calls `requireUser()` from `lib/session.ts` first, then the API with `serverApiFetch()` from `lib/api/server-fetch.ts` ([docs/authentication.md](docs/authentication.md)).
 - Next.js 16 renamed Middleware to Proxy. `proxy.ts` at the root sends signed-out visitors to `/login`.
-- Not set up yet: TanStack Query (not in `package.json`). Check before relying on it.
+- Candidate pages live in `app/(candidate)/`, without the staff shell. `/take/[token]` is public (`proxy.ts` lets `/take/` through), and `/preview/[assessmentId]` still needs a session ([docs/routing.md](docs/routing.md)).
+- TanStack Query 5 is set up. The `QueryClient` is in `app/providers.tsx`, and every key comes from the factories in `lib/query-keys.ts` ([docs/data-fetching.md](docs/data-fetching.md), [docs/query-keys.md](docs/query-keys.md)). A 401 from a browser-side call already sends the user to sign in.
+- Animation uses `motion` (`motion/react`); the test runner's timings are in `components/shared/runner-motion.ts` ([docs/design-system.md](docs/design-system.md#motion)). Toasts use sonner's `toast()`; the `Toaster` is light only and mounted in `app/providers.tsx`.
 
 ## Where components go
 
@@ -81,7 +83,7 @@ Settled conflicts:
 - **One component system.** This project uses shadcn/ui on Tailwind. Don't bring in Fluent, Carbon, Material or another system suggested by `design-taste-frontend` section 2.A without asking.
 - **shadcn/ui preset and rules.** shadcn/ui is set up with the `radix-vega` style. Ask the user before applying a different preset or running `shadcn init` again, because either one overwrites the TMX theme and the component changes. Its rules win for component code: semantic color tokens, `gap-*` instead of `space-x-*`/`space-y-*`, its `Skeleton`, `Empty` and `Alert` components instead of custom markup, and the icon library named in `components.json` over `design-taste-frontend`'s icon preferences.
 - **Design documentation.** The design system is documented in [docs/design-system.md](docs/design-system.md), following the doc rules in the root README. `impeccable` looks for a root `DESIGN.md`; don't create one. Read and update `docs/design-system.md` instead. Product context for `impeccable` is in [PRODUCT.md](PRODUCT.md).
-- **Client data fetching.** Use one library. If `@tanstack/react-query` is installed, use it and skip the `client-swr-dedup` rule in `vercel-react-best-practices`. If neither TanStack Query nor SWR is installed, ask the user which to add.
+- **Client data fetching.** Use TanStack Query, which is installed, and skip the `client-swr-dedup` rule in `vercel-react-best-practices`. Don't add SWR or another fetching library.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

@@ -8,7 +8,7 @@ Using an LLM to write the questions, options and answer keys for each test from 
 
 ## Current state
 
-Not started. No LLM provider is chosen, and the test specs from Robbie haven't arrived.
+Not started, and no LLM provider is chosen. The team's workbooks for four tests have arrived and are now the seeded tests in `backend/seed/assessments/` (see [assessments.md](assessments.md)), so they don't need generating. Generation could still write more questions, or the Attention to Detail test, which has no workbook yet.
 
 ## Requirements
 

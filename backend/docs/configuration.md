@@ -34,6 +34,7 @@ Environment variables, how config is loaded and checked, and ports.
 | `TRUST_PROXY` | No | `0` | Number of reverse proxies in front of the API. Usually `1` behind a load balancer. | [api-conventions.md](api-conventions.md) |
 | `RESEND_API_KEY` | In production | Not set | Resend API key. When it's empty, emails are printed to the terminal. | [email.md](email.md) |
 | `EMAIL_FROM` | No | `TMX HR <onboarding@resend.dev>` | The sender. Its domain must be verified in Resend. | [email.md](email.md) |
+| `STORAGE_DIR` | No | `./storage` | The folder for uploaded files, such as question audio. A relative path starts at the folder the API runs in. Keep it out of `dist/`, which every build empties. The default folder is gitignored. | [assessments.md](assessments.md#media) |
 
 An empty value (`KEY=`) counts as not set, so the default applies.
 
@@ -53,6 +54,7 @@ To add a variable: add it to `EnvironmentVariables` with its checks, to `.env.ex
 
 - Where secrets are stored in deployed environments. This depends on the hosting target, which isn't chosen yet.
 - The LLM API key, once question generation starts (see [question-generation.md](question-generation.md)).
+- Where uploaded files live once hosting is chosen: a persistent disk for `STORAGE_DIR`, or a bucket behind the `FileStorage` interface (see [assessments.md](assessments.md#media)).
 
 ## References
 

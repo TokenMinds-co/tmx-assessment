@@ -14,14 +14,24 @@ Not started. The dashboard already previews candidates per stage and per open ro
 
 - Staff can add, rename and reorder stages and status categories, and change who owns each stage.
 - Candidate details include location, notice period and salary expectations.
+- Candidates don't apply in this app. They fill in a Notion form, and the backend imports each response.
 - Call reports from screening calls are stored on the candidate.
 
 ## Proposed approach
 
 - **Pipeline board** with a column per stage, plus a table view for filtering by job, stage and owner.
 - **Candidate profile** with details, current stage and owner, stage history, call reports, assessment results, and a "Send assessment" action.
+- **Notion responses:** the candidate profile links to the Notion response the candidate came from, and a "Sync now" button pulls in new responses without waiting for the backend's next import.
 - **Pipeline settings** screen for stages, statuses and owners.
 - **Stages come from API data.** Never hardcode stage or status names in components, because the list changes.
+
+## Decisions
+
+"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+
+| Question | Decision | Why | Source |
+| --- | --- | --- | --- |
+| A page where candidates apply | None. Candidates apply through a Notion form, and the backend imports the responses. Assessments are still taken in this app. | | Requested |
 
 ## Open decisions
 

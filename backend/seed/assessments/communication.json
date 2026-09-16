@@ -1,0 +1,434 @@
+{
+  "format": "tmx-hr.assessment/1",
+  "slug": "communication",
+  "name": "Communication",
+  "tagline": "Clear, professional communication at work",
+  "description": "This Communication test evaluates candidates' skills in communicating clearly and effectively using professional etiquette. It assesses written and verbal communication, as well as non-verbal cues and active listening.\n\nGood communication is the foundation of good relationships, and good relationships are key to building strong teams. Good communication among team members builds trust, resolves (and often prevents) problems, provides clarity and direction, improves productivity, and increases engagement.\n\nThis test evaluates candidates' skills in understanding, using and interpreting written communication, and assesses their verbal communication skills (in-person and virtual) along with active listening and the interpretation of non-verbal cues. It also evaluates their ability to clarify next steps, summarise messages effectively, and use professional communication etiquette.\n\nCandidates who perform well can listen attentively to others, communicate with confidence and open-mindedness, and offer both empathy and feedback in the appropriate scenarios and in the appropriate manner.",
+  "level": "Entry level",
+  "relevantFor": "Any role that requires good communication skills to facilitate effective collaboration with others – customer support, sales, project coordination, HR, operations, junior management.",
+  "instructions": "This test has 15 questions and takes 8 minutes. They cover written messages, workplace scenarios and two short audio clips, which you can replay once. Pick the best answer for each question. A wrong answer costs nothing, so answer every question.",
+  "durationMinutes": 8,
+  "scoringMethod": "CORRECT_ANSWER",
+  "questionOrder": "SHUFFLE_ALL",
+  "shuffleOptions": true,
+  "allowBackNavigation": true,
+  "audioReplays": 1,
+  "sections": [
+    {
+      "key": "written-communication",
+      "name": "Written communication",
+      "description": "Identifies the real request behind a message, reads tone, chooses replies that acknowledge + explain + offer a next step, and follows conditional instructions."
+    },
+    {
+      "key": "active-listening-non-verbal-cues",
+      "name": "Active listening & non-verbal cues",
+      "description": "Captures all details from spoken input, notices unclear delivery, interprets clusters of non-verbal cues and checks them rather than assuming."
+    },
+    {
+      "key": "clear-business-communication",
+      "name": "Clear business communication",
+      "description": "Writes plainly, assigns owners and dates, picks a channel that reaches everyone and is traceable, summarises without distortion."
+    },
+    {
+      "key": "professional-etiquette",
+      "name": "Professional etiquette",
+      "description": "Owns mistakes quickly, corrects others privately, repairs relationships directly and in person."
+    }
+  ],
+  "bands": [
+    {
+      "minScore": 0.86,
+      "label": "Strong communicator",
+      "interpretation": "Reads tone and intent accurately, listens for detail, writes clearly with next steps, and handles awkward situations directly and professionally.",
+      "recommendedAction": "Progress. Suitable for customer-facing and coordination roles without additional screening on this competency."
+    },
+    {
+      "minScore": 0.66,
+      "label": "Competent",
+      "interpretation": "Generally sound; occasional slips on tone, summarising detail, or choosing the most professional option.",
+      "recommendedAction": "Progress. Review sub-scores – probe the weakest area with one behavioural interview question."
+    },
+    {
+      "minScore": 0.46,
+      "label": "Developing",
+      "interpretation": "Understands literal content but misses tone or non-verbal cues, or picks avoidant/escalating responses in conflict scenarios.",
+      "recommendedAction": "Progress only for roles with limited external communication or with a coaching plan; verify in a role-play interview."
+    },
+    {
+      "minScore": 0.0,
+      "label": "Needs significant development",
+      "interpretation": "Frequent misreads of messages and situations; communication likely to create friction in a team.",
+      "recommendedAction": "Do not progress for roles where communication is core."
+    }
+  ],
+  "questions": [
+    {
+      "ref": "Q1",
+      "section": "written-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "\"Hi Dana, thanks for sending the proposal over. The team liked the overall direction, but the budget section is higher than we can commit to this quarter. Could we look at a smaller first phase and revisit the full scope in Q1? Happy to jump on a call this week if that helps.\"",
+      "stem": "What is the main point of the message?",
+      "options": [
+        {
+          "text": "The sender is rejecting the proposal."
+        },
+        {
+          "text": "The sender wants to start with a reduced first phase and discuss the full scope later.",
+          "correct": true
+        },
+        {
+          "text": "The sender thinks the proposal is going in the wrong direction."
+        },
+        {
+          "text": "The sender wants to delay all work until next year."
+        }
+      ],
+      "rationale": "Main point of a message: Tests reading past a partial negative ('budget is higher') to the actual request. A and D over-read the negative; C contradicts 'liked the direction'."
+    },
+    {
+      "ref": "Q2",
+      "section": "written-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "\"Per my last email, the figures were already sent on Monday. Please check your inbox before raising this again.\"",
+      "stem": "How is the reader most likely to feel after receiving this message?",
+      "options": [
+        {
+          "text": "Appreciated for their attention to detail."
+        },
+        {
+          "text": "Reassured that the figures are on the way."
+        },
+        {
+          "text": "That the sender is irritated and talking down to them.",
+          "correct": true
+        },
+        {
+          "text": "Unsure whether the figures were ever sent."
+        }
+      ],
+      "rationale": "Interpreting tone: 'Per my last email' and 'before raising this again' are widely read as passive-aggressive. Tests awareness of how wording lands, not just literal content."
+    },
+    {
+      "ref": "Q3",
+      "section": "written-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "A client writes: \"We noticed the invoice total doesn't match the quote we received. Can you clarify?\"",
+      "stem": "Which reply is the most appropriate?",
+      "options": [
+        {
+          "text": "\"The invoice is correct.\""
+        },
+        {
+          "text": "\"As we discussed, extra work costs extra.\""
+        },
+        {
+          "text": "\"I'll ask accounting and get back to you at some point.\""
+        },
+        {
+          "text": "\"Thanks for flagging this. The difference is the two extra hours of support you requested on the 10th – I've attached the breakdown. Let me know if you'd like to talk it through.\"",
+          "correct": true
+        }
+      ],
+      "rationale": "Choose the best written reply: Best reply acknowledges, explains the cause, provides evidence and offers a next step. A is curt, B is defensive, C is vague with no commitment."
+    },
+    {
+      "ref": "Q4",
+      "section": "written-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "Your manager writes: \"Please send the draft to Sam for review by Thursday, then share the final with the client on Monday. Don't send anything to the client before Sam has signed off.\"\n\nIt is Monday morning and Sam has not replied.",
+      "stem": "What should you do?",
+      "options": [
+        {
+          "text": "Send the draft to the client – the Monday deadline is the priority."
+        },
+        {
+          "text": "Chase Sam for sign-off and let your manager know the Monday deadline is at risk.",
+          "correct": true
+        },
+        {
+          "text": "Send the client a note saying the document is delayed, without telling your manager."
+        },
+        {
+          "text": "Wait for Sam to reply and say nothing until someone asks."
+        }
+      ],
+      "rationale": "Interpreting written instructions: Tests reading a conditional instruction ('don't send before sign-off') and proactively surfacing the conflict. A breaks an explicit rule; C and D leave the manager uninformed."
+    },
+    {
+      "ref": "Q5",
+      "section": "active-listening-non-verbal-cues",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "A colleague gives this status update in a team meeting.",
+      "stem": "What is the issue with how the speaker communicates their message?",
+      "media": {
+        "file": "communication_Q5.mp3"
+      },
+      "options": [
+        {
+          "text": "The speaker is too formal for a team meeting."
+        },
+        {
+          "text": "The speaker uses so much hedging that the team cannot tell whether the launch date is really at risk.",
+          "correct": true
+        },
+        {
+          "text": "The speaker is too blunt and may upset the team."
+        },
+        {
+          "text": "Nothing – it is fine the way it is."
+        }
+      ],
+      "rationale": "Audio + issue with delivery: Clip is deliberately full of 'kind of', 'maybe', 'I think', 'probably'. Tests recognising unclear verbal communication. Mirrors the 'but detracts from the compliment' preview format.",
+      "transcript": "So, um, about the launch. Basically, the thing is, we kind of maybe won't hit the date, I think. Probably. But it might be fine, honestly, I don't know. We'll see how it goes, I guess."
+    },
+    {
+      "ref": "Q6",
+      "section": "active-listening-non-verbal-cues",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "A customer leaves this voicemail.",
+      "stem": "Which summary correctly captures what the caller needs?",
+      "media": {
+        "file": "communication_Q6.mp3"
+      },
+      "options": [
+        {
+          "text": "Cancel order 2271 and call Jordan back to confirm."
+        },
+        {
+          "text": "Reduce order 2271 to 30 chairs, keep Friday delivery, and call to confirm."
+        },
+        {
+          "text": "Reduce order 2271 to 30 chairs, move delivery to Monday, and confirm by email.",
+          "correct": true
+        },
+        {
+          "text": "Increase order 2271 to 40 chairs, move delivery to Monday, and confirm by email."
+        }
+      ],
+      "rationale": "Audio + accurate summary (active listening): Three details to capture (quantity, day, channel). Each distractor gets exactly one detail wrong, so only full listening scores.",
+      "transcript": "Hi, this is Jordan Lee from Brightline. I'm calling about order number two-two-seven-one. I ordered forty chairs last week, but I only need thirty now. Also, could the delivery move from Friday to Monday? Please confirm by email, not by phone – I'm in meetings all day. Thanks."
+    },
+    {
+      "ref": "Q7",
+      "section": "active-listening-non-verbal-cues",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "During a video call you present the pricing for a project. As soon as you mention the total, the client leans back, folds their arms, stops nodding and starts giving one-word answers.",
+      "stem": "What is the best interpretation, and what should you do?",
+      "options": [
+        {
+          "text": "They are relaxed and satisfied – carry on with the rest of the presentation."
+        },
+        {
+          "text": "They are probably bored – speed up and finish quickly."
+        },
+        {
+          "text": "They may be uncomfortable with the price – pause and invite them to share any concerns.",
+          "correct": true
+        },
+        {
+          "text": "Body language on video is unreliable – ignore it and continue as planned."
+        }
+      ],
+      "rationale": "Non-verbal cues (scenario): Cluster of closed cues right after the price = likely resistance. Best response checks the interpretation rather than assuming or ignoring it."
+    },
+    {
+      "ref": "Q8",
+      "section": "active-listening-non-verbal-cues",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "A teammate is explaining a problem with the monthly export report.",
+      "stem": "Which response best shows active listening?",
+      "options": [
+        {
+          "text": "\"So if I understand correctly, the export only fails when the file is over 10 MB – is that right?\"",
+          "correct": true
+        },
+        {
+          "text": "\"That happened to me once too – let me tell you what I did.\""
+        },
+        {
+          "text": "\"Just restart the tool, that usually fixes it.\""
+        },
+        {
+          "text": "Nod along while finishing an email so you don't fall behind."
+        }
+      ],
+      "rationale": "Active listening technique: Paraphrasing and checking understanding is the core active-listening behaviour. B shifts focus to self, C jumps to a solution, D is divided attention."
+    },
+    {
+      "ref": "Q9",
+      "section": "clear-business-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "You have just finished a planning meeting with two colleagues, Ana and Ravi.",
+      "stem": "Which follow-up message best clarifies next steps?",
+      "options": [
+        {
+          "text": "\"Great meeting – let's keep the momentum going!\""
+        },
+        {
+          "text": "\"To recap: Ana sends the revised budget by Wed 18th, I book the venue by Fri 20th, and we meet again Mon 23rd at 10:00. Shout if I've missed anything.\"",
+          "correct": true
+        },
+        {
+          "text": "\"I'll write up some notes at some point this week.\""
+        },
+        {
+          "text": "\"I think everyone knows what they need to do, so no notes needed.\""
+        }
+      ],
+      "rationale": "Clarifying next steps: Owners + actions + dates + invitation to correct. Tests the 'clarify next steps' skill named in the test description."
+    },
+    {
+      "ref": "Q10",
+      "section": "clear-business-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "Original sentence: \"It has come to our attention that there may be a situation in which the aforementioned deliverables could potentially be subject to some degree of delay.\"",
+      "stem": "Which rewrite communicates the same message most clearly?",
+      "options": [
+        {
+          "text": "\"We would like to inform you that the deliverables in question may possibly experience a delay.\""
+        },
+        {
+          "text": "\"The deliverables may be delayed. We'll confirm the new date by Friday.\"",
+          "correct": true
+        },
+        {
+          "text": "\"Delays are possible with regard to the previously mentioned deliverables at this point in time.\""
+        },
+        {
+          "text": "\"Unfortunately it seems that there is a chance that things could be late.\""
+        }
+      ],
+      "rationale": "Clear writing (choose the clearest version): Plain language + a concrete next step. A and C keep the padding; D is short but vague ('things')."
+    },
+    {
+      "ref": "Q11",
+      "section": "clear-business-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "The Friday deadline for a team of 12 has just moved to Thursday, and you need each person to confirm they can make it.",
+      "stem": "What is the best way to communicate this?",
+      "options": [
+        {
+          "text": "Mention it to whoever you happen to see in the office."
+        },
+        {
+          "text": "Post it in the team channel (or email the team) with the change highlighted and ask each person to reply to confirm.",
+          "correct": true
+        },
+        {
+          "text": "Save it for Thursday morning's stand-up so everyone hears it at once."
+        },
+        {
+          "text": "Message one team member and ask them to spread the word."
+        }
+      ],
+      "rationale": "Choosing the right channel: Written, traceable, reaches everyone, includes the explicit confirmation ask. C is too late; A and D risk people being missed."
+    },
+    {
+      "ref": "Q12",
+      "section": "clear-business-communication",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "Your manager sends: \"The vendor demo has moved to the 22nd. Before then I need the requirements list finalised – Priya owns that. Legal still hasn't returned the NDA, so no documents go to the vendor until it's signed. And please make sure the meeting room has a working screen this time.\"",
+      "stem": "Which summary is the most accurate?",
+      "options": [
+        {
+          "text": "Demo on the 22nd; Priya finalises requirements; hold all documents until the NDA is signed; check the room screen works.",
+          "correct": true
+        },
+        {
+          "text": "Demo cancelled until Legal returns the NDA; Priya sends the requirements to the vendor; book a new room."
+        },
+        {
+          "text": "Demo on the 22nd; Priya sends the NDA to Legal; send the vendor the requirements now; check the screen."
+        },
+        {
+          "text": "Demo on the 22nd; Legal finalises the requirements; no documents to the vendor; book a bigger room."
+        }
+      ],
+      "rationale": "Summarising a message: Four facts; each distractor swaps an owner or an action. Tests faithful summarising without adding or losing information."
+    },
+    {
+      "ref": "Q13",
+      "section": "professional-etiquette",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "You realise you double-booked yourself and missed a scheduled call with a colleague 30 minutes ago. They have not messaged you.",
+      "stem": "What is the first action you take?",
+      "options": [
+        {
+          "text": "Message them straight away, apologise, and offer two new times that work.",
+          "correct": true
+        },
+        {
+          "text": "Wait to see whether they mention it – they may not have noticed."
+        },
+        {
+          "text": "Reply to the invite saying it never appeared in your calendar."
+        },
+        {
+          "text": "Ask your manager to reschedule the call for you."
+        }
+      ],
+      "rationale": "Etiquette – recovering from a mistake: Own it, apologise, make it easy to fix. B is avoidant, C is dishonest, D escalates unnecessarily. Mirrors the 'out-of-office voicemails' preview structure."
+    },
+    {
+      "ref": "Q14",
+      "section": "professional-etiquette",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "context": "A colleague sends an all-company email announcing the town hall, but the date in the email is wrong.",
+      "stem": "What is the most professional thing to do?",
+      "options": [
+        {
+          "text": "Reply-all pointing out the mistake so everyone sees the correction quickly."
+        },
+        {
+          "text": "Message the colleague privately so they can send a correction themselves.",
+          "correct": true
+        },
+        {
+          "text": "Ignore it – people will work it out from the calendar invite."
+        },
+        {
+          "text": "Forward the email to their manager so they are aware."
+        }
+      ],
+      "rationale": "Etiquette – correcting others: Praise in public, correct in private. A embarrasses the colleague; C leaves the error live; D escalates."
+    },
+    {
+      "ref": "Q15",
+      "section": "professional-etiquette",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "context": "In yesterday's meeting you interrupted a teammate several times. Today another colleague mentions that the teammate was frustrated by it.",
+      "stem": "What is the best way to move forward?",
+      "options": [
+        {
+          "text": "Send a short apology to the whole meeting group so everyone knows you meant no harm."
+        },
+        {
+          "text": "Give the teammate some space and avoid working with them for a while."
+        },
+        {
+          "text": "Speak with the teammate privately, acknowledge what happened, and ask how you can work better together.",
+          "correct": true
+        },
+        {
+          "text": "Ask the colleague who told you to pass on your apology."
+        }
+      ],
+      "rationale": "Etiquette – repairing a working relationship: Direct, private, accountable, forward-looking. A makes it public, B is avoidant, D uses an intermediary. Same principle as the 'hurt feelings' preview item."
+    }
+  ]
+}
