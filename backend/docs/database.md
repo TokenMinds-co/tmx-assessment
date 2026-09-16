@@ -1,6 +1,6 @@
 # Database
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-16
 
 ## Scope
 
@@ -91,7 +91,7 @@ pnpm db:seed --force    # rewrite them from the files
 
 - **Retention:** how long candidate personal data and answers are kept, and how they're deleted on request.
 - **Cleanup of expired rows:** expired sessions are deleted when their user next signs in, and used tokens when a new one is issued. A scheduled cleanup job can come later.
-- **Seed data for the pipeline:** the default stages, once that module exists. The prefilled tests are seeded already; Attention to Detail has no workbook yet. See the [db seed reference](../.agents/skills/prisma-cli/references/db-seed.md).
+- **Seed data for the pipeline:** the default stages, once that module exists. All five prefilled tests are seeded already. See the [db seed reference](../.agents/skills/prisma-cli/references/db-seed.md).
 
 ## References
 

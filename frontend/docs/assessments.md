@@ -1,6 +1,6 @@
 # Assessments
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-16
 
 ## Scope
 
@@ -25,7 +25,7 @@ The staff screens for the test library, the test editor, sending tests and readi
 
 ## Requirements
 
-- Five tests: motivation, communication, attention to detail, critical thinking and English. Four come prefilled from the team's workbooks; Attention to Detail has no workbook yet.
+- Five tests: motivation, communication, attention to detail, critical thinking and English. All five come prefilled from the team's workbooks.
 - Each test is timed and scored. A candidate's total should stay around 30–40 minutes.
 - All of a candidate's tests are in one place, behind one link.
 - Agreed on 2026-09-15:
@@ -55,7 +55,7 @@ The staff screens for the test library, the test editor, sending tests and readi
   - Each question opens in place ([question-form.tsx](<../app/(app)/assessments/[id]/_components/question-form.tsx>)) and saves with an explicit Save, or Cmd/Ctrl+Enter. The form runs the API's checks as you type ([question-draft.ts](<../app/(app)/assessments/[id]/_components/question-draft.ts>)), and shows the API's own answer if it still refuses. Closing the tab with unsaved edits asks first.
   - Up and down buttons move a question. The new order shows at once and goes back if the save fails. There's no drag and drop.
   - The Sections sheet ([sections-sheet.tsx](<../app/(app)/assessments/[id]/_components/sections-sheet.tsx>)) adds, renames, describes, reorders and deletes sections.
-  - The CSV menu imports questions, exports them and downloads the template. The import dialog ([csv-import-dialog.tsx](<../app/(app)/assessments/[id]/_components/csv-import-dialog.tsx>)) checks the file as soon as it's chosen, with a dry run, and shows errors and warnings by row, and a preview of the rows, before anything is saved. It asks whether to keep or replace the current questions. Files over 1 MB are turned down in the browser.
+  - The CSV menu imports questions, exports them and downloads the template. The import dialog ([csv-import-dialog.tsx](<../app/(app)/assessments/[id]/_components/csv-import-dialog.tsx>)) opens with the template's example rows in a table ([csv-example.tsx](<../app/(app)/assessments/[id]/_components/csv-example.tsx>)), so the columns are clear without downloading anything; the download is still the one with every column. It then checks the file as soon as it's chosen, with a dry run, and shows errors and warnings by row, and a preview of the rows, before anything is saved. It asks whether to keep or replace the current questions. Files over 1 MB are turned down in the browser.
   - Each question can have an audio clip ([media-field.tsx](<../app/(app)/assessments/[id]/_components/media-field.tsx>)): MP3, M4A, WAV or OGG, up to 10 MB, checked in the browser first. It uploads straight away and the question points to it once saved. A question whose import named a file that isn't uploaded yet shows "Needs audio".
 - **The Role profile tab** ([role-profile-tab.tsx](<../app/(app)/assessments/[id]/_components/role-profile-tab.tsx>)), on alignment tests only, sets the answer that fits the role for each scale question, grouped by section. Each pick saves at once.
 - **The Scoring tab** ([scoring-tab.tsx](<../app/(app)/assessments/[id]/_components/scoring-tab.tsx>)) edits the score bands as percentages, with a bar that shows each band's range from 0 to 100% and warns about scores no band covers. Alignment tests also set section weights here, with each section's share of the score.
@@ -107,6 +107,7 @@ The staff screens for the test library, the test editor, sending tests and readi
 | Saving answers | One at a time as the candidate goes, in order per question, up to four tries (1, 2 and 4 seconds apart) after a dropped connection, a rate limit or a server error | Nothing is lost if the page closes. Other refusals, such as time running out, won't change on a retry. | Build default |
 | Link lengths in the send dialog | 3, 7, 14 or 30 days, 14 by default | The API allows 1 to 60; these cover the usual cases. | Build default |
 | Total time warning | Above 40 minutes | A candidate's total should stay around 30–40 minutes. | Build default |
+| The CSV example in the import dialog | The template's example rows are copied into the frontend and shown as a table, not fetched and parsed from the template endpoint | The dialog needs a few columns and a row to show, not a CSV parser in the browser. The columns move rarely, and [csv-questions.ts](../../backend/src/assessments/canonical/csv-questions.ts) stays the one that writes the file. | Build default |
 | Where the preview lives | `/preview/[assessmentId]`, in the `(candidate)` group, in a new tab | It looks exactly like the candidate's page, without the staff shell, and the editor stays open. | Build default |
 
 ## Open decisions

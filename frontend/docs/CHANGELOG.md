@@ -8,6 +8,7 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Added
 
+- The question CSV import dialog opens with the template's example rows in a table, so the columns are clear without downloading the template. See [assessments.md](assessments.md).
 - Staff sign-in wired to the backend: sign in, sign out, forgot and reset password, and accepting an invitation. The forms show the API's errors, and every submit button shows a busy state while its request runs. See [authentication.md](authentication.md).
 - Protected staff pages: `proxy.ts` sends signed-out visitors to `/login?next=…`, the `(app)` layout confirms the session with `GET /api/auth/me` (`lib/session.ts`), and signing in returns to the page that asked for it. See [authentication.md](authentication.md#protecting-staff-pages).
 - The API client in `lib/api/`, and a `/api/*` rewrite to the backend. See [api-client.md](api-client.md).

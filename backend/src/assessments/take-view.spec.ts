@@ -7,6 +7,7 @@ import { answerKey, takeQuestions } from './take-view';
 
 const SEED = join(__dirname, '../../seed/assessments');
 const SLUGS = [
+  'attention-to-detail',
   'communication',
   'critical-thinking',
   'english-b1',

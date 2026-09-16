@@ -1,0 +1,444 @@
+{
+  "format": "tmx-hr.assessment/1",
+  "slug": "attention-to-detail",
+  "name": "Attention to Detail (Textual)",
+  "tagline": "Matching, comparing and checking written details",
+  "description": "This Attention to Detail (Textual) test evaluates candidates' attention to textual detail while processing information. It helps identify candidates who can thoroughly and carefully handle intricate processes.\n\nNoticing little things can have a big impact. From grammatical mistakes that give an impression of unprofessionalism to mistakes in numbers and data that cause serious errors, paying attention to detail is an important skill for every professional.\n\nThis test evaluates candidates' ability to consider details by presenting tasks that require them to match information, compare statements and check the consistency of information. It provides insight into candidates' alertness by asking them to identify errors, omissions or inconsistencies in the information presented.\n\nCandidates who score well can process textual information and arrive at the correct answer without losing sight of small details. Errors are of the kind that occur in real administrative work: transposed digits, changed units, a missing apostrophe, a day that does not match its date, a total that does not match its parts.",
+  "level": "Intermediate",
+  "relevantFor": "Any role that requires attention to detail – customer care, office assistant, administrator, bookkeeper, data entry, QA, compliance – and as a general focus check for entry-level roles.",
+  "instructions": "This test has 15 questions and takes 12 minutes, so about 48 seconds per question. Read every passage carefully: the answers turn on small details such as a transposed digit, a missing apostrophe or a day that does not match its date. Two items match only if they use identical words, numbers, symbols and punctuation marks. Use only the information each question gives, not what you know about the real world, and remember that some pairs have no differences at all. A wrong answer costs nothing, so answer every question.",
+  "durationMinutes": 12,
+  "scoringMethod": "CORRECT_ANSWER",
+  "questionOrder": "SHUFFLE_ALL",
+  "shuffleOptions": true,
+  "allowBackNavigation": true,
+  "audioReplays": 1,
+  "sections": [
+    {
+      "key": "matching-information",
+      "name": "Matching information",
+      "description": "Compares character by character, checks every field of a record, and counts exact strings without being distracted by near-matches."
+    },
+    {
+      "key": "comparing-statements-for-differences",
+      "name": "Comparing statements for differences",
+      "description": "Works systematically through both texts, counts each differing token once, and correctly reports zero when the texts are identical."
+    },
+    {
+      "key": "checking-the-consistency-of-information",
+      "name": "Checking the consistency of information",
+      "description": "Holds facts from earlier sentences in mind and tests each later sentence against them, including arithmetic and calendar checks."
+    }
+  ],
+  "bands": [
+    {
+      "minScore": 0.93,
+      "label": "Excellent",
+      "interpretation": "Catches transposed digits, missing punctuation and cross-sentence contradictions reliably, and does not invent errors where there are none.",
+      "recommendedAction": "Progress. Suitable for bookkeeping, data entry, compliance and QA roles without further detail screening."
+    },
+    {
+      "minScore": 0.73,
+      "label": "Good",
+      "interpretation": "Reliable on direct comparisons; occasional misses on multi-fact consistency items or on 'no difference' traps.",
+      "recommendedAction": "Progress. Review which sub-score is weakest and include one proofreading task in the interview."
+    },
+    {
+      "minScore": 0.53,
+      "label": "Fair",
+      "interpretation": "Notices obvious differences but misses subtle ones (a single digit, an apostrophe, a day/date mismatch) or over-reports differences.",
+      "recommendedAction": "Progress only for roles where detail work is checked by a second person or by system validation."
+    },
+    {
+      "minScore": 0,
+      "label": "Below expectation",
+      "interpretation": "Frequent misses; likely to introduce or overlook data errors in administrative work.",
+      "recommendedAction": "Do not progress for detail-critical roles."
+    }
+  ],
+  "questions": [
+    {
+      "ref": "Q1",
+      "section": "matching-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Review the information carefully. Two items match only if they use identical words, numbers, symbols and punctuation marks.",
+      "context": "Your coworker drafted a message containing the following four snippets. You are checking whether they match each other exactly.\n\nSnippet 1: Order A-2291: 12 units of Model X200 shipped 14 Aug; tracking no. 7783 4410 2; invoice total €1,860.00.\n\nSnippet 2: Order A-2291: 12 units of Model X200 shipped 14 Aug; tracking no. 7783 4410 2; invoice total €1,680.00.\n\nSnippet 3: Order A-2291: 12 units of Model X200 shipped 14 Aug; tracking no. 7783 4410 2; invoice total €1,860.00.\n\nSnippet 4: Order A-2291: 12 units of Model X200 shipped 14 Aug; tracking no. 7783 4401 2; invoice total €1,860.00.",
+      "stem": "How many different unique snippet versions are included in the draft?",
+      "options": [
+        {
+          "text": "One"
+        },
+        {
+          "text": "Two"
+        },
+        {
+          "text": "Three",
+          "correct": true
+        },
+        {
+          "text": "Four"
+        }
+      ],
+      "rationale": "Count unique versions: Snippets 1 and 3 are identical. Snippet 2 changes €1,860.00 → €1,680.00 (transposed digits). Snippet 4 changes tracking 4410 → 4401. Three unique versions.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q2",
+      "section": "matching-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "Review the information carefully. Two items match only if they use identical words, numbers, symbols and punctuation marks.",
+      "context": "Reference record on file:\nAnika Berg, 47 Larkspur Road, Flat 3B, Leeds LS6 2QT",
+      "stem": "Select the option that matches the reference record exactly.",
+      "options": [
+        {
+          "text": "Anika Berg, 47 Larkspur Road, Flat 3B, Leeds LS6 2QT",
+          "correct": true
+        },
+        {
+          "text": "Anika Berg, 47 Larkspur Rd, Flat 3B, Leeds LS6 2QT"
+        },
+        {
+          "text": "Anika Berg, 47 Larkspur Road, Flat 38, Leeds LS6 2QT"
+        },
+        {
+          "text": "Anika Berg, 47 Larkspur Road, Flat 3B, Leeds LS6 2OT"
+        }
+      ],
+      "rationale": "Match a reference record: B abbreviates Road → Rd; C changes Flat 3B → 38; D changes postcode 2QT → 2OT (letter O for Q)."
+    },
+    {
+      "ref": "Q3",
+      "section": "matching-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Review the information carefully. Two items match only if they use identical words, numbers, symbols and punctuation marks.",
+      "context": "Approved invoice numbers:\nINV-30417\nINV-30471\nINV-30714\nINV-30741\n\nInvoices received in today's batch:\nINV-30417\nINV-30174\nINV-30741\nINV-30471\nINV-31047\nINV-30714",
+      "stem": "How many of the invoices received today are on the approved list?",
+      "options": [
+        {
+          "text": "Two"
+        },
+        {
+          "text": "Three"
+        },
+        {
+          "text": "Four",
+          "correct": true
+        },
+        {
+          "text": "Five"
+        }
+      ],
+      "rationale": "Cross-check two lists: Matches: 30417, 30741, 30471, 30714. Non-matches are digit transpositions: 30174, 31047. Four.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q4",
+      "section": "matching-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "Review the information carefully. Two items match only if they use identical words, numbers, symbols and punctuation marks.",
+      "context": "Reference SKU: TM-2048-BLK-XL",
+      "stem": "Which option is identical to the reference SKU?",
+      "options": [
+        {
+          "text": "TM-2084-BLK-XL"
+        },
+        {
+          "text": "TM-2048-BLK-XL",
+          "correct": true
+        },
+        {
+          "text": "TM-2048-BKL-XL"
+        },
+        {
+          "text": "TM-2048-BLK-LX"
+        }
+      ],
+      "rationale": "Match a product code: A transposes 2048 → 2084; C transposes BLK → BKL; D transposes XL → LX."
+    },
+    {
+      "ref": "Q5",
+      "section": "matching-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Review the information carefully. Two items match only if they use identical words, numbers, symbols and punctuation marks.",
+      "context": "Passage: \"Please send the report to Finance by Friday. Once the report is approved, the summary will be reported to the board. Last quarter's reports were late, so this report must be on time. If you need the template, the reporting team can share it.\"",
+      "stem": "How many times does the exact word \"report\" appear in the passage? (Do not count \"reports\", \"reported\" or \"reporting\".)",
+      "options": [
+        {
+          "text": "Two"
+        },
+        {
+          "text": "Three",
+          "correct": true
+        },
+        {
+          "text": "Four"
+        },
+        {
+          "text": "Five"
+        }
+      ],
+      "rationale": "Count exact occurrences: Exact matches: 'the report to Finance', 'the report is approved', 'this report must'. Excluded: reported, reports, reporting.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q6",
+      "section": "comparing-statements-for-differences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Compare the two texts word by word. Count every word, number or punctuation mark that differs (a changed, added or missing item counts as one difference).",
+      "context": "Sentence A: Please confirm that the three invoices attached to this email have been forwarded to the accounts team before Thursday's deadline.\n\nSentence B: Please confirm that the three invoices attached to this email have been forwarded to the account team before Thursdays deadline.",
+      "stem": "How many words and punctuation marks are different between the two sentences?",
+      "options": [
+        {
+          "text": "There are 0 differences between Sentence A and Sentence B."
+        },
+        {
+          "text": "There is 1 difference between Sentence A and Sentence B."
+        },
+        {
+          "text": "There are 2 differences between Sentence A and Sentence B.",
+          "correct": true
+        },
+        {
+          "text": "There are 3 differences between Sentence A and Sentence B."
+        }
+      ],
+      "rationale": "Count differences (words & punctuation): accounts → account; Thursday's → Thursdays (missing apostrophe). Two.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q7",
+      "section": "comparing-statements-for-differences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Compare the two texts word by word. Count every word, number or punctuation mark that differs (a changed, added or missing item counts as one difference).",
+      "context": "Sentence A: The supplier will deliver the replacement parts on 22 September, and installation is scheduled for the following Monday.\n\nSentence B: The supplier will deliver the replacement parts on 22 September, and installation is scheduled for the following Monday.",
+      "stem": "How many words and punctuation marks are different between the two sentences?",
+      "options": [
+        {
+          "text": "There are 0 differences between Sentence A and Sentence B.",
+          "correct": true
+        },
+        {
+          "text": "There is 1 difference between Sentence A and Sentence B."
+        },
+        {
+          "text": "There are 2 differences between Sentence A and Sentence B."
+        },
+        {
+          "text": "There are 3 differences between Sentence A and Sentence B."
+        }
+      ],
+      "rationale": "Count differences (identical pair): The sentences are identical. Tests whether candidates verify rather than assume a difference must exist.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q8",
+      "section": "comparing-statements-for-differences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "Compare the two texts word by word. Count every word, number or punctuation mark that differs (a changed, added or missing item counts as one difference).",
+      "context": "Version A: Attendance: 14; budget approved: €12,500; next review: 3 March; action items: 7; owner: R. Costa.\n\nVersion B: Attendance: 14; budget approved: €12,900; next review: 3 March; action items: 7; owner: R. Costa.",
+      "stem": "How many differences are there between Version A and Version B?",
+      "options": [
+        {
+          "text": "0"
+        },
+        {
+          "text": "1",
+          "correct": true
+        },
+        {
+          "text": "2"
+        },
+        {
+          "text": "3"
+        }
+      ],
+      "rationale": "Count differences (numeric): €12,500 → €12,900 only. Everything else, including 'R. Costa', is identical.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q9",
+      "section": "comparing-statements-for-differences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "EASY",
+      "instruction": "Compare the two texts word by word. Count every word, number or punctuation mark that differs (a changed, added or missing item counts as one difference).",
+      "context": "Record A\nName: Daniel Okafor\nStreet: 118 Mill Lane\nCity: Norwich\nPostcode: NR2 4PA\nPhone: 01603 555 018\n\nRecord B\nName: Daniel Okafor\nStreet: 118 Mill Lane\nCity: Norwich\nPostcode: NR2 4PA\nPhone: 01603 555 081",
+      "stem": "Which field is different between Record A and Record B?",
+      "options": [
+        {
+          "text": "Street"
+        },
+        {
+          "text": "Postcode"
+        },
+        {
+          "text": "Phone",
+          "correct": true
+        },
+        {
+          "text": "None – the records are identical"
+        }
+      ],
+      "rationale": "Identify the differing field: Phone ends 018 in A and 081 in B (transposed digits). Street and postcode are identical.",
+      "keepLastOptionFixed": true
+    },
+    {
+      "ref": "Q10",
+      "section": "comparing-statements-for-differences",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "Compare the two texts word by word. Count every word, number or punctuation mark that differs (a changed, added or missing item counts as one difference).",
+      "context": "Text A: Our office will be closed on Monday 4 May for the public holiday. Urgent requests should be sent to support@northwind.example, and a member of the team will respond within 24 hours.\n\nText B: Our office will be closed on Monday 6 May for the public holiday. Urgent requests should be send to support@northwind.example, and a member of the team will respond within 48 hours.",
+      "stem": "How many words, numbers or punctuation marks are different between Text A and Text B?",
+      "options": [
+        {
+          "text": "1"
+        },
+        {
+          "text": "2"
+        },
+        {
+          "text": "3",
+          "correct": true
+        },
+        {
+          "text": "4"
+        }
+      ],
+      "rationale": "Count differences (paragraph): 4 May → 6 May; sent → send; 24 hours → 48 hours. Three. The email address is identical and acts as a distractor.",
+      "shuffleOptions": false
+    },
+    {
+      "ref": "Q11",
+      "section": "checking-the-consistency-of-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Review the sentences for textual consistency. Consistency means that the facts and/or details in each sentence do not contradict facts or details in the other sentences. Do not use outside knowledge; judge only what the text says.",
+      "context": "Sentence 1: All expense claims must be submitted through the online portal by the 25th of each month.\nSentence 2: Claims received after the 25th will be processed in the following month's payroll.\nSentence 3: Paper claim forms handed to the finance office are also accepted until the 25th.",
+      "stem": "Which of the following best describes the consistency of the sentences?",
+      "options": [
+        {
+          "text": "All three sentences are consistent."
+        },
+        {
+          "text": "Sentences 1 and 2 are inconsistent with each other."
+        },
+        {
+          "text": "Sentences 1 and 3 are inconsistent with each other.",
+          "correct": true
+        },
+        {
+          "text": "Sentences 2 and 3 are inconsistent with each other."
+        }
+      ],
+      "rationale": "Consistency – procedure: Sentence 1 says claims 'must' go through the portal; Sentence 3 says paper forms are also accepted. Sentence 2 is consistent with both."
+    },
+    {
+      "ref": "Q12",
+      "section": "checking-the-consistency-of-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Review the sentences for textual consistency. Consistency means that the facts and/or details in each sentence do not contradict facts or details in the other sentences. Do not use outside knowledge; judge only what the text says.",
+      "context": "Sentence 1: The workshop runs from 9:30 to 12:30 on Tuesday 6 October.\nSentence 2: Participants should arrive by 9:15 to register before the session begins.\nSentence 3: Lunch will be provided after the session ends at 12:30.",
+      "stem": "Which of the following best describes the consistency of the sentences?",
+      "options": [
+        {
+          "text": "All three sentences are consistent.",
+          "correct": true
+        },
+        {
+          "text": "Sentence 1 is inconsistent with sentences 2 and 3."
+        },
+        {
+          "text": "Sentence 2 is inconsistent with sentences 1 and 3."
+        },
+        {
+          "text": "Sentence 3 is inconsistent with sentences 1 and 2."
+        }
+      ],
+      "rationale": "Consistency – all consistent: 9:15 is before 9:30; 12:30 matches; 6 October 2026 is a Tuesday. No contradictions. Tests resisting the urge to find a fault."
+    },
+    {
+      "ref": "Q13",
+      "section": "checking-the-consistency-of-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "MEDIUM",
+      "instruction": "Review the sentences for textual consistency. Consistency means that the facts and/or details in each sentence do not contradict facts or details in the other sentences. Do not use outside knowledge; judge only what the text says.",
+      "context": "Sentence 1: The external audit will take place on Wednesday 14 October 2026.\nSentence 2: The auditors will arrive at 8:00 a.m. and need access to the archive room.\nSentence 3: Please make sure the archive room is unlocked by 7:45 a.m. on Thursday 14 October.",
+      "stem": "Which of the following best describes the consistency of the sentences?",
+      "options": [
+        {
+          "text": "All three sentences are consistent."
+        },
+        {
+          "text": "Sentence 1 is inconsistent with sentences 2 and 3."
+        },
+        {
+          "text": "Sentence 2 is inconsistent with sentences 1 and 3."
+        },
+        {
+          "text": "Sentence 3 is inconsistent with sentence 1.",
+          "correct": true
+        }
+      ],
+      "rationale": "Consistency – day and date: Sentence 1 gives Wednesday 14 October; Sentence 3 gives Thursday 14 October – same date, different day. 7:45 before 8:00 is consistent with Sentence 2."
+    },
+    {
+      "ref": "Q14",
+      "section": "checking-the-consistency-of-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "Review the sentences for textual consistency. Consistency means that the facts and/or details in each sentence do not contradict facts or details in the other sentences. Do not use outside knowledge; judge only what the text says.",
+      "context": "Sentence 1: The training cohort consists of three teams of four people.\nSentence 2: Each team will present for ten minutes, so the presentations will take about 30 minutes in total.\nSentence 3: Certificates have been printed for all 14 participants.",
+      "stem": "Which of the following best describes the consistency of the sentences?",
+      "options": [
+        {
+          "text": "All three sentences are consistent."
+        },
+        {
+          "text": "Sentences 1 and 2 are inconsistent with each other."
+        },
+        {
+          "text": "Sentences 1 and 3 are inconsistent with each other.",
+          "correct": true
+        },
+        {
+          "text": "Sentences 2 and 3 are inconsistent with each other."
+        }
+      ],
+      "rationale": "Consistency – numbers: 3 × 4 = 12 people, but Sentence 3 says 14 participants. Sentence 2 (3 × 10 = 30 min) is consistent with Sentence 1."
+    },
+    {
+      "ref": "Q15",
+      "section": "checking-the-consistency-of-information",
+      "type": "SINGLE_CHOICE",
+      "difficulty": "HARD",
+      "instruction": "Review the sentences for textual consistency. Consistency means that the facts and/or details in each sentence do not contradict facts or details in the other sentences. Do not use outside knowledge; judge only what the text says.",
+      "context": "Sentence 1: Customers may return unused items within 30 days of delivery for a full refund.\nSentence 2: Items returned after 30 days are eligible for store credit only.\nSentence 3: Refunds for returns made 45 days after delivery are paid to the original payment method within 5 working days.",
+      "stem": "Which of the following best describes the consistency of the sentences?",
+      "options": [
+        {
+          "text": "All three sentences are consistent."
+        },
+        {
+          "text": "Sentence 1 is inconsistent with sentences 2 and 3."
+        },
+        {
+          "text": "Sentence 2 is inconsistent with sentences 1 and 3."
+        },
+        {
+          "text": "Sentence 3 is inconsistent with sentences 1 and 2.",
+          "correct": true
+        }
+      ],
+      "rationale": "Consistency – policy: A return at 45 days is 'after 30 days', so per Sentence 2 only store credit applies – yet Sentence 3 promises a refund to the payment method, contradicting both 1 and 2."
+    }
+  ]
+}

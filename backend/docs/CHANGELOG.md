@@ -8,6 +8,7 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ### Added
 
+- A fifth prefilled test, Attention to Detail (Textual): 15 single-choice questions over matching information, comparing statements for differences and checking consistency, 12 minutes, converted from the team's workbook. See [assessments](assessments.md).
 - Staff authentication: email and password sign-in, server-side sessions in an httpOnly cookie, invite-only accounts with `ADMIN` and `MEMBER` roles, password change, and forgot and reset password. Every route needs a session unless it's marked `@Public()`. See [authentication](authentication.md).
 - `pnpm auth:invite-admin` to invite the first admin from the command line.
 - Email through Resend, printed to the terminal in development when no API key is set. See [email](email.md).

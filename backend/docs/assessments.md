@@ -1,6 +1,6 @@
 # Assessments
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-16
 
 ## Scope
 
@@ -10,23 +10,23 @@ Test templates and their questions, question audio, candidates, sending tests to
 
 - **Built and covered by tests.** Staff build tests, import and export them, preview them, send them to candidates by email and read the results. Candidates take them through their link. The frontend is wired to every endpoint (see the frontend's [assessments.md](../../frontend/docs/assessments.md)).
 - **Code:** [src/assessments/](../src/assessments/) (templates, questions, sending, the candidate API, scoring), [src/candidates/](../src/candidates/), [src/media/](../src/media/) (uploads) and [src/storage/](../src/storage/) (where files are kept). The rules that don't touch the database, such as scoring, question order and the CSV format, are plain functions in [src/assessments/canonical/](../src/assessments/canonical/).
-- **Four prefilled tests** in [seed/assessments/](../seed/assessments/), converted from the team's workbooks, with their audio in [seed/media/](../seed/media/):
+- **Five prefilled tests** in [seed/assessments/](../seed/assessments/), converted from the team's workbooks, with their audio in [seed/media/](../seed/media/):
 
   | Test | Questions | Time | Scoring | Audio clips |
   | --- | --- | --- | --- | --- |
+  | Attention to Detail (Textual) | 15 | 12 min | Right answers | 0 |
   | Communication | 15 | 8 min | Right answers | 2 |
   | Critical Thinking | 16 | 12 min | Right answers | 0 |
   | English B1 (Intermediate) | 16 | 10 min | Right answers | 4 |
   | Motivation | 20 | 15 min | Alignment with the role profile | 0 |
 
-  Load them with `pnpm db:seed` (see [database.md](database.md#seed-data)).
-- **Attention to Detail has no workbook yet.** Add it through the editor, a question CSV or a JSON import once the questions exist.
+  Load them with `pnpm db:seed` (see [database.md](database.md#seed-data)). [seed-files.spec.ts](../src/assessments/canonical/seed-files.spec.ts) checks each file against its workbook, so add a row there when a test joins the seed.
 - **Limits** are in [assessments.constants.ts](../src/assessments/assessments.constants.ts) and [media.constants.ts](../src/media/media.constants.ts).
 
 ## Requirements
 
 - Five general skills tests: **motivation, communication, attention to detail, critical thinking and English**.
-- Each test is **timed**, uses **multiple-choice or scale questions**, and has a **scoring model**. The plan was 15–20 minutes per test; the four workbooks set 8 to 15.
+- Each test is **timed**, uses **multiple-choice or scale questions**, and has a **scoring model**. The plan was 15–20 minutes per test; the five workbooks set 8 to 15.
 - A candidate's total should stay around **30–40 minutes**, so staff choose which tests to send.
 - Tests can be sent **at any stage**: right after the application (once salary and location fit), or before or after the first call.
 - All of a candidate's tests are in **one place** in this app, not in separate links.
@@ -286,7 +286,7 @@ Attempt statuses are `NOT_STARTED`, `IN_PROGRESS`, `SUBMITTED` and `EXPIRED` (ti
 | What candidates see at the end | A thank-you screen, never a score | | Requested |
 | Motivation scoring (was open) | The formula from the Motivation workbook's calculator: a rating item scores 1 − \|role − candidate\| ÷ the scale's span, a choice item 1, 0.5 or 0; a section is the mean of its answered items; the total is the weighted mean of the sections; gaps of 2 or more are flagged | Motivation has no right answers, so it's matched against the role's profile. The workbook's own example scores the same 0.8225. | Requested |
 | Where media is kept | Local disk under `STORAGE_DIR`, behind a `FileStorage` interface | | Requested |
-| Question types and scoring methods | Four types (single choice, true/false, rating scale, choice scale) and two methods (correct answers, alignment). A test holds right-answer types or scales, never both. | They cover all four workbooks, and each test has one way to score it. | Build default |
+| Question types and scoring methods | Four types (single choice, true/false, rating scale, choice scale) and two methods (correct answers, alignment). A test holds right-answer types or scales, never both. | They cover all five workbooks, and each test has one way to score it. | Build default |
 | Where the role profile lives | On the template: one answer per scale question | There are no jobs yet. Per-job profiles come with Jobs (see [recruitment-pipeline.md](recruitment-pipeline.md)). | Build default |
 | Versions of a test | A frozen JSON copy on each attempt, not a versions table | Scoring needs exactly the test the candidate got, and it's one column to read. Tests stay editable after publishing. | Build default |
 | Candidate links (link expiry was open) | One reusable link per send. Only the token's hash is stored, as with sessions. 14 days by default, 1 to 60. Resending makes a new link and the old one stops working; revoking ends it. Expired links answer `410`. | Candidates come back for their other tests. The distinct status lets the page say the link expired instead of that it doesn't exist. | Build default |
@@ -294,6 +294,7 @@ Attempt statuses are `NOT_STARTED`, `IN_PROGRESS`, `SUBMITTED` and `EXPIRED` (ti
 | Question order (was open) | A setting per test (as listed, shuffled within sections, or shuffled), drawn once per attempt and kept across refreshes. Alignment tests treat "shuffled" as shuffled within sections. | Shuffling makes answers harder to share without writing a larger pool. Each motivation dimension stays together. | Build default |
 | Going back to earlier questions | A setting per test, on by default | The workbooks' rubrics say no revisits, but the requested Typeform-style flow has previous and next. Turn it off per test. | Build default |
 | English B1 band minimums | 0.875 and 0.6875 | The sheet's 0.88 and 0.69 contradict its own "14–16 correct" and "11–13 correct" column: 14 ÷ 16 is 0.875 and 11 ÷ 16 is 0.6875. | Build default |
+| Attention to Detail option order | The test shuffles options, except on the counting questions (Q1, Q3, Q5–Q8, Q10), which turn shuffling off. Q9 keeps "None – the records are identical" last. | The workbook's rubric asks for count options in ascending order, and a shuffled 0/1/2/3 reads as a mistake. | Build default |
 | Who can do what | Admins edit tests, import and upload. Any staff member previews, sends tests and reads results. | Tests are shared templates; sending and reading results is everyday recruiting work. | Build default |
 | Deleting a sent test | Refused (`409`); archive it instead | Results keep pointing at their test. | Build default |
 | Audio replay limits | Enforced in the browser only | The server only serves the file and can't tell a replay from a seek or a reload. Hearing a clip again is a small advantage. | Build default |

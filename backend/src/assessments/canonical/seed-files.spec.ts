@@ -6,6 +6,7 @@ const SEED = join(__dirname, '../../../seed');
 
 // The prefilled tests, converted from the workbooks in the repo's assessment/ folder.
 const EXPECTED = {
+  'attention-to-detail': { questions: 15, minutes: 12, media: 0 },
   communication: { questions: 15, minutes: 8, media: 2 },
   'critical-thinking': { questions: 16, minutes: 12, media: 0 },
   'english-b1': { questions: 16, minutes: 10, media: 4 },

@@ -31,6 +31,7 @@ import { errorMessage } from "@/lib/api/client";
 import { plural } from "@/lib/format";
 import { assessmentKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
+import { CsvExample } from "./csv-example";
 import { TYPE_LABELS } from "./question-draft";
 
 /** The API's limit, checked here too so a big file fails before it uploads. */
@@ -137,6 +138,8 @@ function CsvImport({ assessment, onDone }: { assessment: AssessmentDetail; onDon
           </a>
         </DialogDescription>
       </DialogHeader>
+
+      <CsvExample scoringMethod={assessment.scoringMethod} />
 
       <FileDrop accept=".csv,text/csv" file={file} onFile={choose} hint="A .csv file up to 1 MB, saved from Excel, Sheets or Numbers." />
 
