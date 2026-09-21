@@ -4,7 +4,7 @@ import { readSeedFile } from '../assessment-seed.service';
 
 const SEED = join(__dirname, '../../../seed');
 
-// The prefilled tests, converted from the workbooks in the repo's assessment/ folder.
+// The prefilled tests, converted from the workbooks in seed/workbooks/.
 const EXPECTED = {
   'attention-to-detail': { questions: 15, minutes: 12, media: 0 },
   communication: { questions: 15, minutes: 8, media: 2 },

@@ -1,7 +1,18 @@
 {
-  "name": "tmx-hr",
+  "name": "tmx-hr-frontend",
   "version": "0.1.0",
+  "description": "Next.js app for TMX HR: the staff console and the pages candidates take their tests on.",
+  "author": "TokenMinds.co",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TokenMinds-co/tmx-hr.git",
+    "directory": "frontend"
+  },
+  "engines": {
+    "node": "^20.19 || ^22.12 || >=24"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

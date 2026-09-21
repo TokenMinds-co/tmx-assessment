@@ -20,6 +20,11 @@ coverage
 storage
 .tmp
 
+# The source spreadsheets the prefilled tests were converted from. The image
+# needs seed/assessments and seed/media, which `node dist/cli/seed-assessments`
+# reads; the workbooks are reference material for people, not for the runtime.
+seed/workbooks
+
 # Tests, lint and formatting: not part of the runtime.
 test
 tsconfig.jest.json

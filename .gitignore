@@ -1,0 +1,23 @@
+# What no branch of this repo should ever carry. Anything that concerns only
+# one package belongs in backend/.gitignore or frontend/.gitignore instead.
+
+# macOS drops one of these into every folder someone opens in Finder.
+.DS_Store
+**/.DS_Store
+
+# Environment files hold real credentials. Only the examples are committed, and
+# they hold placeholders. See CONTRIBUTING.md for how to fill them in.
+.env*
+!.env.example
+
+# Dependencies. Both packages install them from their own pnpm-lock.yaml.
+node_modules/
+
+# Logs
+*.log
+
+# Agent skills, vendored from eight other repositories by the skills installer.
+# They stay on disk for whoever works with a coding agent, but they are someone
+# else's code under someone else's licence, so this repo does not redistribute
+# them. skills-lock.json is tracked and restores them. See CONTRIBUTING.md.
+.agents/
