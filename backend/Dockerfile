@@ -32,7 +32,8 @@ RUN pnpm config set store-dir /tmp/.pnpm-store && \
     pnpm config set fetch-timeout 600000 && \
     pnpm install --frozen-lockfile --prefer-offline
 
-# Everything .dockerignore lets through: src/, seed/, the tsconfigs.
+# Everything .dockerignore lets through: src/, seed/assessments/ and seed/media/,
+# the tsconfigs. seed/workbooks/ is excluded: the app never reads it.
 COPY . .
 
 # Compiles src/ to dist/, including the Prisma Client the install generated into

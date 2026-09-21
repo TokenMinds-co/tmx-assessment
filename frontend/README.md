@@ -16,8 +16,8 @@ Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4
 
 ## Requirements
 
-- Node.js 20.9 or newer (Next.js 16 requires `>= 20.9.0`)
-- pnpm 11 (pinned in `packageManager` in `package.json`)
+- Node.js 24, the version [`.nvmrc`](../.nvmrc) pins and CI runs. The `engines` field in `package.json` also accepts 20.19+ and 22.12+, the same range as the backend.
+- pnpm 11.8.0, pinned in `packageManager` in `package.json`. `corepack enable` picks it up on its own.
 - The backend, running (see its [README](../backend/README.md))
 
 ## Getting started
@@ -80,7 +80,7 @@ frontend/
 ├── PRODUCT.md              # Product context for the impeccable design skill
 ├── AGENTS.md               # Instructions for coding agents
 ├── CLAUDE.md               # Claude Code additions to AGENTS.md
-└── .agents/skills/         # Agent skills (see AGENTS.md)
+└── .agents/skills/         # Agent skills (not tracked in git; see AGENTS.md)
 ```
 
 A component that only one page uses sits in a `_components/` folder next to that page's `page.tsx`, for example `app/(auth)/login/_components/`. The rules are in [AGENTS.md](AGENTS.md#where-components-go) and the reasons in [project-structure.md](docs/project-structure.md).
@@ -97,7 +97,7 @@ A component that only one page uses sits in a `_components/` folder next to that
 | Data fetching | [data-fetching.md](docs/data-fetching.md) | In progress |
 | Query keys | [query-keys.md](docs/query-keys.md) | In progress |
 | Design system | [design-system.md](docs/design-system.md) | In progress |
-| Dashboard | [dashboard.md](docs/dashboard.md) | In progress |
+| Dashboard | [dashboard.md](docs/dashboard.md) | In progress (reads real data) |
 | Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
 | Assessments | [assessments.md](docs/assessments.md) | In progress |
 
@@ -106,3 +106,5 @@ Changes are logged in [CHANGELOG.md](docs/CHANGELOG.md). To add or update a doc,
 ## Working with coding agents
 
 [AGENTS.md](AGENTS.md) tells coding agents which skills in `.agents/skills/` to load for each kind of task, and how to settle conflicts between them. Product context for design work is in [PRODUCT.md](PRODUCT.md). Next.js 16 has breaking changes from older versions, so check `node_modules/next/dist/docs/` before using a Next.js API.
+
+`.agents/skills/` is not tracked in git, so a fresh clone doesn't have it; only `skills-lock.json` is. Restore the skills with `pnpm dlx skills experimental_install`, run once here and once in `backend/`. Nothing else needs them: they only matter if you work with a coding agent.

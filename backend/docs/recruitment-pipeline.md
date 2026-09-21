@@ -1,20 +1,20 @@
 # Recruitment pipeline
 
-**Status:** Not started · **Last updated:** 2026-09-15
+**Status:** Not started · **Last updated:** 2026-09-21
 
 ## Scope
 
-Jobs, candidates, applications, stages, statuses and stage owners: the data and API that replace today's monday.com board, plus importing the candidate interest form from Notion. Assessments have their own doc, [assessments.md](assessments.md).
+Jobs, candidates, applications, stages, statuses and stage owners: the data and API that replace the external board a team tracks hiring on today, plus importing the candidate interest form from Notion. Assessments have their own doc, [assessments.md](assessments.md).
 
 ## Current state
 
-Not started. Today this lives in monday.com, and stages are updated by hand.
+Not started. Today this is tracked outside the app, on an external board, and stages are updated by hand.
 
 ## Requirements
 
 - Staff can add, rename, reorder and remove **stages** and **status categories**. They are stored as data, not as enums in code.
 - Each stage has an **owner** (a team member), and the owner can change.
-- Candidates register interest through a **Notion form**, not a form in this app. Import each response, with what the monday.com form collects today: **location, notice period and salary expectations**.
+- Candidates register interest through a **Notion form**, not a form in this app. Import each response with the **application details** the external board's form collects today, such as location and notice period.
 - Store **call reports** from screening calls on the candidate.
 - Record every **stage move**: who moved the candidate, when, and from which stage to which.
 
@@ -33,7 +33,7 @@ Not started. Today this lives in monday.com, and stages are updated by hand.
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Not started. Today this lives in monday.com, and stages are updated by hand.
 
 ## Open decisions
 
-- Does the app replace the monday.com board and Calendly, or sync with them? If it syncs, Calendly bookings could arrive by webhook. The monday.com form is replaced by the Notion form.
+- Does the app replace the external board and the scheduling tool, or sync with them? If it syncs, bookings could arrive by webhook. The board's own intake form is replaced by the Notion form either way.
 - Which questions the Notion form asks, and how a response says which job it's for: a role question on one form, or one form per job.
 - Are stages shared by all jobs, or set per job?
 - Can one candidate apply to more than one job, and what happens when the same email sends the form twice?

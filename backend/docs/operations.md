@@ -1,6 +1,6 @@
 # Operations
 
-**Status:** In progress · **Last updated:** 2026-09-16
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -12,7 +12,7 @@ How the API runs in an environment: the startup log, health checks, shutdown, lo
 - **Health checks:** [src/health/](../src/health/), built with `@nestjs/terminus`. `/api/health/live` and `/api/health/ready`.
 - **Shutdown:** shutdown hooks are on, so on `SIGTERM` Nest stops the HTTP server and Prisma closes its connections.
 - **Logs:** Nest's built-in logger, plain text on stdout.
-- **Deployment:** the API ships as a Docker image, built by [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) on every push to `main`, pushed to GitHub Container Registry (GHCR) and started on the TokenMinds VPS with [docker-compose-production.yml](../docker-compose-production.yml). See [Deployment](#deployment).
+- **Deployment:** the API ships as a Docker image, built by [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) on every push to `main`, pushed to GitHub Container Registry (GHCR) and started on a Linux server with [docker-compose-production.yml](../docker-compose-production.yml). See [Deployment](#deployment).
 - **CI:** [.github/workflows/ci.yml](../../.github/workflows/ci.yml) is a separate workflow that checks both apps on every pull request and every push to `main`, and needs no secrets, so it runs on a fork. See [CI and deploy are two workflows](#ci-and-deploy-are-two-workflows).
 - **Compose files:** three, for three situations: [docker-compose.local.yml](../docker-compose.local.yml) (self-contained, brings its own Postgres), [docker-compose.yml](../docker-compose.yml) (production shape, image built here) and [docker-compose-production.yml](../docker-compose-production.yml) (production, image pulled from GHCR). See [The compose files](#the-compose-files).
 
@@ -20,8 +20,8 @@ How the API runs in an environment: the startup log, health checks, shutdown, lo
 
 - Log the port the API runs on at startup.
 - A health check endpoint.
-- The backend deploys with the same pipeline as mmaon-polymarket: a GitHub Actions workflow that builds a Docker image and deploys it to the VPS over SSH. The frontend is hosted on Vercel.
-- In production the API uses the Postgres already on the VPS, over its `postgres_network`.
+- The backend deploys through GitHub Actions: a workflow that builds a Docker image and deploys it to a Linux server over SSH. The frontend is hosted on Vercel.
+- In production the API uses a Postgres already running on that server, reached over a shared Docker network (`postgres_network` in the compose file).
 
 ## How it works
 
@@ -57,7 +57,7 @@ To check another dependency later (a queue, the LLM provider), add a Terminus in
 
 ### Deployment
 
-The frontend deploys itself through Vercel from its own folder. The backend is a Docker image: [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) builds it, pushes it to GHCR and starts it on the TokenMinds VPS over SSH. The workflow only runs when `backend/**` or the workflow itself changes, so a frontend-only or docs-only push never redeploys the API.
+The frontend deploys itself through Vercel from its own folder. The backend is a Docker image: [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) builds it, pushes it to GHCR and starts it on the server over SSH. The workflow only runs when `backend/**` or the workflow itself changes, so a frontend-only or docs-only push never redeploys the API.
 
 #### CI and deploy are two workflows
 
@@ -122,7 +122,7 @@ The first two name the project `tmx-hr` and the third `tmx-hr-local`, so `--remo
 
 #### Server setup, once
 
-1. Clone the repo on the VPS. The deploy expects it at `~/tmx-hr`; set the repository variable `VPS_DEPLOY_PATH` if it's elsewhere. Only `backend/docker-compose-production.yml` and `backend/.env` are read from it. The app comes from the image.
+1. Clone the repo on the server. The deploy expects it at `~/tmx-hr`; set the repository variable `VPS_DEPLOY_PATH` if it's elsewhere. Only `backend/docker-compose-production.yml` and `backend/.env` are read from it. The app comes from the image.
 2. Confirm the Postgres network is `postgres_network` (`docker network ls`) and find the Postgres container's name on it (`docker network inspect postgres_network`).
 3. Create a role and a database for TMX HR on that Postgres. See [database.md](database.md#deployed-environments). `migrate deploy` creates tables, not databases.
 4. Create `backend/.env` from [.env.example](../.env.example) with `NODE_ENV=production`, `PORT`, `FRONTEND_URL` set to the Vercel domain, `DATABASE_URL` using the container's name and port 5432 (for example `postgresql://tmx_hr:<password>@postgres_db:5432/tmx_hr`), `TRUST_PROXY=1`, `RESEND_API_KEY` and `EMAIL_FROM`.
@@ -208,7 +208,7 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
@@ -216,8 +216,8 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 | Health check library | `@nestjs/terminus` 11 | The standard response shape, and what the [`micro-use-health-checks`](../.agents/skills/nestjs-best-practices/rules/micro-use-health-checks.md) rule recommends. The 12.x releases are for NestJS 12. | Requested |
 | Probes | Separate liveness and readiness | A database outage shouldn't restart the API. | Build default |
 | Heap limit for liveness | 512 MiB | Catches a leak without restarting a healthy process. The container's memory limit is 512 MiB too; raise both together. | Build default |
-| Hosting | A Docker image on GHCR, run with Docker Compose on the TokenMinds VPS, deployed by GitHub Actions over SSH | The pipeline mmaon-polymarket already runs, so there's one way to deploy. The frontend stays on Vercel. | Requested |
-| Production database | The Postgres already on the VPS, joined over `postgres_network` | One database server for the team's apps. The network is external to this stack, so a `docker compose down` here can't take it down. | Requested |
+| Hosting | A Docker image on GHCR, run with Docker Compose on a Linux server, deployed by GitHub Actions over SSH | It matches a pipeline the maintainers already run, so there's one way to deploy. The frontend stays on Vercel. | Requested |
+| Production database | A Postgres already running on that server, joined over an external Docker network | One database server for everything on the host. The network is external to this stack, so a `docker compose down` here can't take it down. | Requested |
 | Uploaded files in production | A named Docker volume, `tmx_hr_storage`, mounted at `STORAGE_DIR` | Survives redeploys with nothing else to set up. A bucket behind `FileStorage` stays possible later. | Build default |
 | Ports in Docker | `PORT` is both the container's port and the published host port | One number means one thing, and nothing in the app has to force a port in production. | Build default |
 | Container healthcheck | `/api/health/ready` | Docker doesn't restart unhealthy containers, so the status is for reading, and "can it serve" is the useful answer. | Build default |
@@ -230,11 +230,11 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 | Splitting CI from deploy | Two workflows: `ci.yml` checks, `deploy.yml` ships | They answer to different rules. Checks should run everywhere, including on a fork, with a read-only token and no secrets; deploys should run in one place, one at a time, and never be cancelled halfway. Keeping them in one file forced `if: github.event_name != 'pull_request'` onto every job. | Build default |
 | The database for tests in CI | A `postgres:17-alpine` service container per run, with a `pg_isready` health check | A real Postgres, thrown away with the runner, and nothing to clean up. The suites create rows behind a random prefix and delete only those, so an empty database is all they need. A `prisma dev` instance inside the job would be a second way to run the same tests. | Build default |
 | Deploying from a fork | Both deploy jobs carry `if: github.repository == 'TokenMinds-co/tmx-hr'` | A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. A fork that wants its own deploy edits one string. | Build default |
-| A compose stack for people outside the team | [docker-compose.local.yml](../docker-compose.local.yml): Postgres and the API, its own project name, network and volumes, no `.env` required | The other two files attach to an external `postgres_network` and define no database, so `docker compose up` fails immediately for anyone without that container. Postgres is published on 127.0.0.1:5434 so it can't collide with a Postgres already on 5432. | Build default |
+| A compose stack for people with nothing set up | [docker-compose.local.yml](../docker-compose.local.yml): Postgres and the API, its own project name, network and volumes, no `.env` required | The other two files attach to an external `postgres_network` and define no database, so `docker compose up` fails immediately for anyone without that container. Postgres is published on 127.0.0.1:5434 so it can't collide with a Postgres already on 5432. | Build default |
 
 ## Open decisions
 
-- The API's public hostname, and the reverse-proxy rule on the VPS that forwards it to `PORT`.
+- The API's public hostname, and the reverse-proxy rule on the server that forwards it to `PORT`.
 - Gating deploys behind an approval, with a `production` environment and a required reviewer.
 - A rollback job, instead of the manual `docker compose up` above.
 - Structured JSON logs, for whatever log service the hosting uses. See [`devops-use-logging`](../.agents/skills/nestjs-best-practices/rules/devops-use-logging.md).
@@ -246,6 +246,5 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 - [configuration.md](configuration.md), [database.md](database.md), [api-conventions.md](api-conventions.md), [testing.md](testing.md)
 - [Dockerfile](../Dockerfile), [docker-compose-production.yml](../docker-compose-production.yml), [docker-compose.yml](../docker-compose.yml), [docker-compose.local.yml](../docker-compose.local.yml)
 - [.github/workflows/ci.yml](../../.github/workflows/ci.yml), [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml)
-- The reference pipeline: mmaon-polymarket's `.github/workflows/backend.yml` and `docs/deployment.md`
 - Rules: [`micro-use-health-checks`](../.agents/skills/nestjs-best-practices/rules/micro-use-health-checks.md), [`devops-graceful-shutdown`](../.agents/skills/nestjs-best-practices/rules/devops-graceful-shutdown.md), [`devops-use-logging`](../.agents/skills/nestjs-best-practices/rules/devops-use-logging.md)
 - [NestJS: Health checks (Terminus)](https://docs.nestjs.com/recipes/terminus)

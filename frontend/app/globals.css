@@ -11,10 +11,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design tokens. The values come from the TMX Visibility reference app
- * (tmx-visibility-lite), renamed to shadcn/ui's semantic roles so every
- * component picks them up. docs/design-system.md maps each one back to its
- * reference name and lists the few that were darkened to pass WCAG AA.
+ * Design tokens. The values come from an existing in-house reference app,
+ * renamed to shadcn/ui's semantic roles so every component picks them up.
+ * docs/design-system.md maps each one back to its reference name and lists
+ * the few that were darkened to pass WCAG AA.
  */
 :root {
   color-scheme: light;

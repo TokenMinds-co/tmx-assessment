@@ -1,6 +1,6 @@
 # Database
 
-**Status:** In progress · **Last updated:** 2026-09-16
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -8,16 +8,16 @@ The database engine, ORM, schema, migrations, seed data and transactions. The do
 
 ## Current state
 
-- **Prisma ORM 7.10 with PostgreSQL.** Local development uses a local Prisma Postgres instance (`prisma dev`). Production uses the Postgres 17 container already on the TokenMinds VPS, over its `postgres_network`. See [Deployed environments](#deployed-environments).
+- **Prisma ORM 7.10 with PostgreSQL.** Local development uses a local Prisma Postgres instance (`prisma dev`). Production uses your own Postgres 17 — in the reference setup, a container already running on the same server, reached over a shared Docker network. See [Deployed environments](#deployed-environments).
 - **Files:** the schema is [prisma/schema.prisma](../prisma/schema.prisma), CLI config is [prisma.config.ts](../prisma.config.ts), and migrations are in [prisma/migrations/](../prisma/migrations/).
 - **Prisma Client is generated** into `src/generated/prisma/`. That folder is gitignored and regenerated on every `pnpm install`.
 - **[`PrismaService`](../src/prisma/prisma.service.ts)** is the app's one client, provided globally by `PrismaModule`. It connects over TCP with the `@prisma/adapter-pg` driver adapter.
 - **Tables:** `users`, `sessions` and `auth_tokens` for [authentication](authentication.md), created by the first migration, `20260915032122_init_auth`. Then `assessments`, `assessment_sections`, `questions`, `question_options`, `score_bands`, `media_assets`, `candidates`, `assessment_invitations`, `assessment_attempts` and `attempt_answers` for [assessments](assessments.md#data-model), created by `20260915070113_init_assessments`.
-- **Seed data:** the four prefilled tests, loaded with `pnpm db:seed`. See [Seed data](#seed-data).
+- **Seed data:** the five prefilled tests, loaded with `pnpm db:seed`. See [Seed data](#seed-data).
 
 ## Requirements
 
-- Production uses the **Postgres already running on the TokenMinds VPS**, shared with the team's other apps (2026-09-16). Local development stays on Prisma Postgres.
+- Production uses a **Postgres that already runs on the deployment server**, shared with whatever else is hosted there (2026-09-16). Local development stays on Prisma Postgres.
 
 ## How it works
 
@@ -36,7 +36,7 @@ The instance keeps its data between restarts. It listens on ports 51216 to 51219
 
 ### Deployed environments
 
-The API runs in Docker on the VPS and joins the Postgres container's network, `postgres_network`. See [operations.md](operations.md#deployment).
+The API runs in Docker on the server and joins the Postgres container's network, `postgres_network`. See [operations.md](operations.md#deployment).
 
 1. On that Postgres, create a role and a database for TMX HR, once:
 
@@ -99,11 +99,11 @@ Re-running won't repair a database that was seeded from the wrong machine. Witho
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
-| Production database | The Postgres 17 container already on the TokenMinds VPS, joined over `postgres_network` | One database server for the team's apps, and the layout mmaon-polymarket uses. Replaces the earlier choice of Prisma Postgres for production (2026-09-16). | Requested |
+| Production database | A Postgres 17 container already on the deployment server, joined over an external Docker network | One database server for everything on that host, and the layout the maintainers' other deploys use. Replaces the earlier choice of Prisma Postgres for production (2026-09-16). | Requested |
 | Local development database | Local Prisma Postgres (`prisma dev`), no Docker | It's Postgres too, and it comes with the `prisma` package, so there's nothing else to install. | Build default |
 | Prisma version | 7.10, not 8.0 | npm's `latest` tag currently points at an 8.0 release candidate. The Prisma agent skills in this repo describe 7.x. | Build default |
 | How the app connects | `@prisma/adapter-pg` over a direct TCP connection | The setup the `prisma-postgres` skill recommends for Node.js servers. | Build default |

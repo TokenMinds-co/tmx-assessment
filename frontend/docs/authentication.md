@@ -79,7 +79,7 @@ Staff screens fetch in the browser with TanStack Query. A 401 from any query or 
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

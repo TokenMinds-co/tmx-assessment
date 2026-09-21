@@ -52,7 +52,7 @@ When one of these ships, remove `soon` from its row in `nav-items.ts`.
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

@@ -10,44 +10,60 @@ web
 
 ## Users
 
-- **Primary: HR and recruiters** at TokenMinds, at a desk during the working day. They run the pipeline: vet applicants, move candidates between stages, send assessments and write screening-call reports. Confirmed by the user on 2026-09-15.
+- **Primary: recruiters and HR staff** at whichever company runs this app, at a desk during the working day. They build tests, send them to candidates and read the results. When the recruitment pipeline is built they will run that too: vetting applicants, moving them between stages and writing up screening calls.
 - **Secondary: hiring managers,** who drop in to review candidates and scores.
-- **Candidates** never sign in. They open an invitation link and take the tests assigned to them.
+- **Candidates** never sign in. They open a link from an email and take the tests assigned to them, on whatever device they have; the runner is responsive.
 
 ## Product Purpose
 
-TMX HR is TokenMinds' internal HR app. It brings recruitment into one place (today it is split across LinkedIn, a monday.com form and Calendly) and screens candidates with built-in assessments before they reach a trial day.
+TMX HR is an open-source recruitment app. Its built-in assessments let a team screen candidates on written, timed, scored tests before spending interview time on them.
 
-About 80% of candidates who reach a trial day turn out to be a poor fit, and each trial day costs the small team onboarding, meetings and supervision. Success means fewer failed trial days and one place that shows where every candidate stands.
+Success is a screening step that runs itself: the tests go out in one email, the server keeps the clock and scores the answers, and staff open a result they can compare across candidates instead of an impression they have to defend.
 
 ## Positioning
 
-An in-house replacement for TestGorilla, which was too expensive, built around the team's own recruitment stages instead of separate links.
+Screening tests that belong to the team running them. The questions, the scoring model and the candidates' answers live in this app's own database, tests are edited in the same place the results are read, and the whole thing is self-hosted.
 
 ## Operating Context
 
-- Jobs are posted on LinkedIn. Applicants fill in a form (location, notice period, salary expectations), the team vets it, then books a screening call. Depending on the role, the candidate then gets an assessment, a trial day, or both.
-- Recruitment stages, status categories and the person who owns each stage change over time.
+- Staff work in a browser, signed in, alongside whatever else the company uses to post jobs and talk to applicants. This app is where tests and results live.
+- **Tests can go out at any point in a hiring process** — straight after an application, or before or after a first call. Staff pick which tests to send from the published library.
+- **A candidate gets one link covering up to five tests** and comes back to it: it stays open until it expires, 14 days by default, and a part-finished set can be resumed.
+- **Email is the only channel to candidates.** With no email provider key set, messages print to the server log instead of being sent, which is also how someone tries the app out.
+- **Recruitment stages, status categories and the person who owns each stage change over time.** The pipeline that uses them is designed but not built.
 
 ## Capabilities and Constraints
 
-- **First milestone:** five general tests (motivation, communication, attention to detail, critical thinking and English), 15–20 minutes each, multiple choice with a scoring model. The total per candidate should stay around 30–40 minutes. An LLM writes the questions from test specs.
-- **Tests can be sent at any stage.**
+- **Built:** staff sign-in and invitations; building, importing, previewing and publishing tests; sending them; the timed candidate runner; scoring; the results screen; a dashboard of real numbers.
+- **Not built:** the recruitment pipeline (jobs, stages, applications). There is no job, stage or application data anywhere.
+- **Five ready-made tests:** motivation, communication, attention to detail, critical thinking and English B1, 8 to 15 minutes each. A candidate's total should stay around 30–40 minutes, so staff choose which to send.
+- **Two scoring methods:** right answers, and alignment against a role profile, which flags a gap of two or more points for staff. A test uses one or the other, never both.
+- **Question types:** single choice, true/false, rating scale and ordered choice scale. Questions can carry audio, a passage or a scenario.
+- **The server owns the clock and the score.** The browser shows a countdown corrected against the server's time; it never decides an outcome.
+- **Candidates see a thank-you screen, never a score,** and never an answer key.
+- **Staff sign in with email and password.** No public sign-up: accounts are invited by an admin.
 - **Stages, statuses and stage owners are data,** never hardcoded.
-- **Staff sign in with email and password.** No public sign-up. Confirmed by the user on 2026-09-15.
-- **Undecided:** pass marks and who reviews scores; whether the app replaces monday.com and Calendly or syncs with them.
+- **Light theme only.**
+- **Undecided:** pass marks and who reviews scores; whether a candidate can retake a test; extra time for candidates who need it.
 
 ## Brand Commitments
 
-- The product name is **TMX HR**.
-- It uses the TMX brand from TMX Visibility (`tmx-visibility-lite`): the TMX wordmark and mark, the violet palette and sidebar gradient, and Inter. The user made this binding on 2026-09-15. Assets are in [public/brand/](public/brand/).
+- The product name is **TMX HR**, and it is also the default company name candidates see.
+- The interface uses the violet TMX theme: the tokens in [app/globals.css](app/globals.css), the sidebar gradient, the gradient primary button, Inter for UI and Geist Mono. Every token and every customized component is listed in [docs/design-system.md](docs/design-system.md).
+- Brand assets are in [public/brand/](public/brand/) (wordmark and mark), plus [app/icon.png](app/icon.png) and [app/apple-icon.png](app/apple-icon.png).
+- **The name and those images are not covered by the app's MIT licence.** A fork sets `COMPANY_NAME` and `NEXT_PUBLIC_COMPANY_NAME` and replaces the images. So candidate-facing surfaces read the company name from `COMPANY_NAME` in [lib/brand.ts](lib/brand.ts) rather than writing "TMX HR" into the markup; any new candidate screen does the same.
 
 ## Evidence on Hand
 
-- There is no real candidate, job or score data yet. Anything shown before the API exists is sample data and must be labelled as sample data.
+- **Every screen renders real API data.** Nothing in the app is invented, and there is no "Sample data" badge.
+- **Real content to design with:** the five seed tests in [../backend/seed/assessments/](../backend/seed/assessments/), with their audio in [../backend/seed/media/](../backend/seed/media/) — real question stems, options, sections, bands and time limits. Load them with `pnpm db:seed` in the backend to see the app full rather than empty.
+- **There is no job, stage or application data,** because that part isn't built. Don't design a surface that implies it exists.
+- There are no real candidates, results or testimonials to show. Anything that needs a filled-in results screen comes from sending a test to yourself.
 
 ## Product Principles
 
-1. The person moving candidates sees where each one stands at a glance.
-2. Stages, statuses and owners come from data, so the pipeline can change without a code change.
-3. Tests, results and the pipeline live in one place.
+1. The person running the hiring sees where every candidate stands at a glance.
+2. Stages, statuses and owners come from data, so a hiring process can change without a code change.
+3. Tests, results and later the pipeline live in one place, not in scattered links.
+4. A candidate gets one link, no account, and a screen that says plainly what is being asked and how long it takes.
+5. The server is the authority on time and score. The browser never decides an outcome.

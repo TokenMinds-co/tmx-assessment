@@ -16,7 +16,7 @@ The staff home page at `/`: what someone running the pipeline sees first. The pi
 
 ## Requirements
 
-Agreed with the user on 2026-09-15:
+Agreed with the maintainers on 2026-09-15:
 
 - The main users are **HR and recruiters**, who run the pipeline day to day. Hiring managers drop in to review.
 - At a glance, the dashboard shows the **pipeline by stage** and **assessment progress**, with recent scores. The pipeline half waits for the pipeline module.
@@ -38,7 +38,7 @@ The account menu already shows the signed-in user.
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

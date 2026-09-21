@@ -47,7 +47,7 @@ The HTTP setup lives in [app.setup.ts](../src/app.setup.ts). Both [main.ts](../s
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

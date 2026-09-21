@@ -2,7 +2,7 @@
 
 REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
-> **Status: authentication and assessments are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Four tests are prefilled from the team's workbooks. The API has interactive docs and health checks, and the frontend is wired to it. It deploys to the TokenMinds VPS as a Docker container through GitHub Actions. Next is the recruitment pipeline.
+> **Status: authentication, assessments and the dashboard are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Five tests are prefilled, converted from the workbooks in [seed/workbooks/](seed/workbooks/). `GET /api/dashboard` answers the staff home page in one request. The API has interactive docs and health checks, and the frontend is wired to it. It deploys to a Linux server as a Docker container through GitHub Actions. Next is the recruitment pipeline.
 
 ## Stack
 
@@ -17,8 +17,8 @@ REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product d
 
 ## Requirements
 
-- Node.js 20.19 or newer (Prisma 7 needs 20.19, NestJS 11 needs 20)
-- pnpm
+- Node.js 24, the version [`.nvmrc`](../.nvmrc) pins, CI runs and the Dockerfile builds on. The `engines` field in `package.json` also accepts 20.19+ and 22.12+, the range Prisma 7 sets.
+- pnpm 11.8.0, pinned in `packageManager` in `package.json`. `corepack enable` picks it up on its own.
 
 ## Getting started
 
@@ -47,7 +47,7 @@ All settings live in `.env`; see [configuration.md](docs/configuration.md). Whil
 Accounts are invite-only, so the first admin comes from the command line:
 
 ```bash
-pnpm auth:invite-admin --email you@tokenminds.co --name "Your Name"
+pnpm auth:invite-admin --email you@example.com --name "Your Name"
 ```
 
 It prints the invitation link, and while `RESEND_API_KEY` is empty it prints the email too. With the frontend running, open the link, choose a password, and you're signed in. After that, sign in at http://localhost:3000/login. Every endpoint is listed in [authentication.md](docs/authentication.md#endpoints).
@@ -83,7 +83,8 @@ backend/
 ├── prisma.config.ts        # Prisma CLI config
 ├── seed/
 │   ├── assessments/        # The prefilled tests, in the canonical JSON format
-│   └── media/              # Their audio clips
+│   ├── media/              # Their audio clips
+│   └── workbooks/          # The spreadsheets they were converted from, one per slug
 ├── src/
 │   ├── main.ts             # Bootstrap: creates the app, listens on PORT, logs the URLs
 │   ├── app.setup.ts        # HTTP setup (CORS, validation, docs), shared with the e2e tests
@@ -105,18 +106,19 @@ backend/
 ├── test/                   # E2E tests and their helpers
 ├── docs/                   # Area docs and CHANGELOG.md
 ├── Dockerfile              # The production image; CI builds it from this folder
-├── docker-compose-production.yml  # Runs the image on the VPS, on its Postgres network
+├── docker-compose.local.yml       # Postgres and the API together; the one that works on a fresh machine
+├── docker-compose-production.yml  # Runs the GHCR image against a Postgres already on the host
 ├── docker-compose.yml      # The same stack, built from this folder, for checking the image
-└── .agents/skills/         # Agent skills for NestJS and Prisma
+└── .agents/skills/         # Agent skills for NestJS and Prisma (not tracked in git; see below)
 ```
 
-The pipeline itself is [.github/workflows/backend.yml](../.github/workflows/backend.yml) at the repository root.
+The workflows live at the repository root: [.github/workflows/ci.yml](../.github/workflows/ci.yml) runs the checks and [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) ships the image.
 
 New code goes into feature modules, one per domain (like `src/assessments/`, or `src/jobs/` next), following the [`arch-feature-modules`](.agents/skills/nestjs-best-practices/rules/arch-feature-modules.md) rule. Routes need a session by default; see [authentication.md](docs/authentication.md#protecting-routes). Document every endpoint for Swagger; see [api-conventions.md](docs/api-conventions.md#api-docs).
 
 ## Deployment
 
-Every push to `main` that touches `backend/` builds the Docker image, pushes it to GitHub Container Registry and deploys it to the VPS; pull requests get a build and lint check. The server setup, the GitHub secrets, and how to run the first-admin and seed commands in the container are in [operations.md](docs/operations.md#deployment).
+Every push to `main` that touches `backend/` builds the Docker image, pushes it to GitHub Container Registry and deploys it to the server over SSH. The deploy is guarded so a fork never tries to run it. Checks are a separate workflow that runs on every pull request. The server setup, the GitHub secrets, and how to run the first-admin and seed commands in the container are in [operations.md](docs/operations.md#deployment).
 
 ## Docs
 
@@ -125,7 +127,7 @@ Every push to `main` that touches `backend/` builds the Docker image, pushes it 
 | API conventions | [api-conventions.md](docs/api-conventions.md) | In progress |
 | Authentication | [authentication.md](docs/authentication.md) | In progress |
 | Configuration | [configuration.md](docs/configuration.md) | In progress |
-| Dashboard | [dashboard.md](docs/dashboard.md) | In progress |
+| Dashboard | [dashboard.md](docs/dashboard.md) | In progress (the endpoint is built) |
 | Database | [database.md](docs/database.md) | In progress |
 | Email | [email.md](docs/email.md) | In progress |
 | Operations | [operations.md](docs/operations.md) | In progress |
@@ -138,4 +140,10 @@ Changes are logged in [CHANGELOG.md](docs/CHANGELOG.md). To add or update a doc,
 
 ## Agent skills
 
-`.agents/skills/` holds agent skills for NestJS and Prisma, pinned in `skills-lock.json`. The area docs link to the rules that apply. Don't edit these files by hand; the skills installer manages them.
+`.agents/skills/` holds agent skills for NestJS and Prisma. **The folder is not tracked in git**, so a fresh clone doesn't have it; only `skills-lock.json` is, which pins each skill's source and a hash of its contents. To restore them, run this once in `backend/` (and again in `frontend/` for that package's skills):
+
+```bash
+pnpm dlx skills experimental_install
+```
+
+You don't need them to build or test anything; they only matter if you work with a coding agent. The area docs link to the rules that apply, so those links resolve only after the install. Don't edit these files by hand; the installer overwrites them and the lockfile's hashes stop matching.

@@ -13,7 +13,7 @@ Not started. The dashboard used to preview candidates per stage and per open rol
 ## Requirements
 
 - Staff can add, rename and reorder stages and status categories, and change who owns each stage.
-- Candidate details include location, notice period and salary expectations.
+- Candidate details include the application details from the interest form, such as location and notice period.
 - Candidates don't apply in this app. They fill in a Notion form, and the backend imports each response.
 - Call reports from screening calls are stored on the candidate.
 
@@ -27,7 +27,7 @@ Not started. The dashboard used to preview candidates per stage and per open rol
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Not started. The dashboard used to preview candidates per stage and per open rol
 
 - The default view: board or table.
 - Whether stages can be changed by drag and drop.
-- Whether this replaces the monday.com board from day one, or runs alongside it for a while.
+- Whether this replaces the external board from day one, or runs alongside it for a while.
 - Which candidates count as active, for example whether rejected candidates drop out of the counts.
 - Whether the dashboard gets a pipeline card back once this module exists, and what it shows.
 

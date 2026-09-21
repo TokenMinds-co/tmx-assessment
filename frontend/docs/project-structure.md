@@ -48,7 +48,7 @@ proxy.ts       # Sends signed-out visitors to /login; /take/ is public (see auth
 
 ## Requirements
 
-Agreed with the user on 2026-09-15:
+Agreed with the maintainers on 2026-09-15:
 
 - A component that only one page uses goes in a `_components/` folder next to that page.
 - A component that more than one page uses goes in `components/shared/`.
@@ -63,7 +63,7 @@ The placement rules, with examples, are in [AGENTS.md](../AGENTS.md#where-compon
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

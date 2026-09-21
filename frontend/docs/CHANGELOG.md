@@ -8,6 +8,10 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Added
 
+- The dashboard at `/` reads real data from `GET /api/dashboard`, in one query, with the three states a real request needs: skeleton cards in the same grid as the real ones while it loads, a destructive `Alert` with the API's message and a "Try again" button when it fails, and an `Empty` with a button to `/assessments` when nothing has been sent yet — a fresh install would otherwise show bars that all read zero, which looks broken rather than new. See [dashboard.md](dashboard.md).
+- `lib/api/dashboard.ts` and the `dashboardKeys` factory in `lib/query-keys.ts`, so the dashboard's one query is keyed like every other. It uses `staleTime: 0`: candidates move these counts server-side at any moment, so no staff action in this app could invalidate them, and a fresh read on every visit is the cheapest correct answer. See [api-client.md](api-client.md) and [query-keys.md](query-keys.md).
+- Each row in the Recent results card links to `/assessments/invitations/<id>`. The row summarises one send, and that page already holds the detail behind it. See [dashboard.md](dashboard.md).
+- Frontend CI: the `frontend` job in `.github/workflows/ci.yml` runs `pnpm lint` and `pnpm build` with `API_URL` set, on every pull request and every push to `main`, so a page that no longer compiles fails before `main` rather than on Vercel.
 - The question CSV import dialog opens with the template's example rows in a table, so the columns are clear without downloading the template. See [assessments.md](assessments.md).
 - Staff sign-in wired to the backend: sign in, sign out, forgot and reset password, and accepting an invitation. The forms show the API's errors, and every submit button shows a busy state while its request runs. See [authentication.md](authentication.md).
 - Protected staff pages: `proxy.ts` sends signed-out visitors to `/login?next=…`, the `(app)` layout confirms the session with `GET /api/auth/me` (`lib/session.ts`), and signing in returns to the page that asked for it. See [authentication.md](authentication.md#protecting-staff-pages).
@@ -19,7 +23,7 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 - TMX HR logo and favicon, built from the TMX brand artwork.
 - App shell: a gradient sidebar that collapses and becomes a sheet on phones, and a topbar with a breadcrumb and an account menu. See [design-system.md](design-system.md#app-shell).
 - Staff sign-in screens, UI only: `/login`, `/forgot-password`, `/reset-password` and `/accept-invite`, with the backend's 12 to 128 character password rule. See [authentication.md](authentication.md).
-- A "Decisions" section in the area docs, recording each decision, why, and whether the team asked for it.
+- A "Decisions" section in the area docs, recording each decision, why, and whether the maintainers asked for it.
 - Dashboard at `/` with the pipeline by stage and assessment progress, showing labelled sample data. See [dashboard.md](dashboard.md).
 - `PRODUCT.md`, the product context for the `impeccable` design skill.
 - `NEXT_PUBLIC_APP_VERSION`, set in `next.config.ts` from `package.json`. See [configuration.md](configuration.md).
@@ -35,6 +39,10 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Changed
 
+- The dashboard page calls `requireUser()` itself instead of leaning on the `(app)` layout's check. A page that loads staff data confirms the session before it reads anything, so the rule is the same on every page rather than a property of where it happens to sit. See [authentication.md](authentication.md#protecting-staff-pages).
+- The Assessments card counts **links**, not candidates, and says so: the backend counts the links sent out, and a link that expired with tests unfinished counts as expired whatever the candidate had done. A test nobody has completed shows an em dash, not a zero, because no score and a score of zero are different facts. See [dashboard.md](dashboard.md).
+- `NEXT_PUBLIC_COMPANY_NAME` sets the company name candidates see — the page titles, the wordmark's alt text and the start page — read through `lib/brand.ts` and defaulting to `TMX HR`. It was hardcoded, so a fork would have greeted candidates under someone else's name. Next.js inlines it at build time, so changing it needs a rebuild, and the wordmark image is a separate file to replace. Keep it the same as the backend's `COMPANY_NAME`. See [configuration.md](configuration.md) and [design-system.md](design-system.md#candidate-pages).
+- Example email addresses in the docs are `example.com`, so nothing invites a reader to mail a real inbox.
 - The account menu shows the signed-in user, and "Sign out" ends the session.
 - The reset and invitation pages show their "doesn't work" card when the API turns a link down, not only when the token is missing.
 - Docs: candidates apply through a Notion form, so the app has no application page. See [recruitment-pipeline.md](recruitment-pipeline.md).
@@ -49,6 +57,8 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ### Removed
 
+- The Pipeline card from the dashboard. It showed candidates per stage and per open role, and there is no Job model and no stage data to draw it from, so it could only ever have shown invented numbers. Its code is in git history, and the decisions it settled are kept in [recruitment-pipeline.md](recruitment-pipeline.md) so a real one can start from them.
+- The "Sample data" badge, along with `lib/sample-data.ts` and `lib/dashboard-types.ts`. Every screen now renders real API data, and the types come from the API modules in `lib/api/`. Nothing invented is left in the app, so nothing needs labelling as invented. See [dashboard.md](dashboard.md).
 - `SAMPLE_USER` from `lib/sample-data.ts`: the account menu shows the real user.
 - The `create-next-app` starter page, its SVGs and `favicon.ico`.
 

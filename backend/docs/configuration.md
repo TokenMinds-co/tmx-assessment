@@ -30,10 +30,10 @@ Environment variables, how config is loaded and checked, and ports.
 | `FRONTEND_URL` | Yes | | The frontend's origin, such as `http://localhost:3000`. Used for CORS, the Origin check and links in emails. | [api-conventions.md](api-conventions.md) |
 | `CORS_ORIGINS` | No | Not set | Extra origins CORS allows, comma-separated, such as a staging frontend. `FRONTEND_URL` is always allowed. | [api-conventions.md](api-conventions.md) |
 | `COMPANY_NAME` | No | `TMX HR` | Your company's name, as candidates see it in their assessment emails: the sender line ("Sam from Acme"), the subject and the name above the heading. Staff emails use the app's own name. The frontend has its own `NEXT_PUBLIC_COMPANY_NAME`; set both to the same value. | [email.md](email.md) |
-| `DATABASE_URL` | Yes | | Postgres connection string. Locally the Prisma Postgres instance; in production the VPS's Postgres, over `postgres_network`. | [database.md](database.md) |
+| `DATABASE_URL` | Yes | | Postgres connection string. Locally the Prisma Postgres instance; in production your production Postgres, reached over the network the compose file joins. | [database.md](database.md) |
 | `SESSION_TTL_DAYS` | No | `7` | Days without use before a session ends (1 to 30) | [authentication.md](authentication.md) |
 | `COOKIE_DOMAIN` | No | Not set | Cookie domain. Set a parent domain only if the frontend is on a sibling subdomain. | [authentication.md](authentication.md) |
-| `TRUST_PROXY` | No | `0` | Number of reverse proxies in front of the API. `1` on the VPS, behind its reverse proxy. | [api-conventions.md](api-conventions.md) |
+| `TRUST_PROXY` | No | `0` | Number of reverse proxies in front of the API. `1` in production, behind a reverse proxy. | [api-conventions.md](api-conventions.md) |
 | `RESEND_API_KEY` | In production | Not set | Resend API key. When it's empty, emails are printed to the terminal. | [email.md](email.md) |
 | `EMAIL_FROM` | No | `TMX HR <onboarding@resend.dev>` | The sender. Its domain must be verified in Resend. | [email.md](email.md) |
 | `STORAGE_DIR` | No | `./storage` | The folder for uploaded files, such as question audio. A relative path starts at the folder the API runs in. Keep it out of `dist/`, which every build empties. The default folder is gitignored. In Docker it's `/app/storage`, a named volume. | [assessments.md](assessments.md#media) |
@@ -44,7 +44,7 @@ To add a variable: add it to `EnvironmentVariables` with its checks, to `.env.ex
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
@@ -52,13 +52,13 @@ To add a variable: add it to `EnvironmentVariables` with its checks, to `.env.ex
 | The company name candidates see | `COMPANY_NAME`, defaulting to `TMX HR` | It was hardcoded, so a fork would email candidates under someone else's name. The default matches the app's own name and the wordmark, so a fresh install reads coherently. | Requested |
 | How config is checked | A class checked with `class-validator` | It's the same library the request DTOs use, so there's no Joi or Zod to learn. | Build default |
 | `@nestjs/config` version | 4.x, not 12.x | 12.x ships as ES modules only and is meant for NestJS 12. Jest and the CommonJS build of this NestJS 11 app can't load it. Revisit when we upgrade NestJS. | Build default |
-| Where secrets live in production | `backend/.env` on the VPS, gitignored, read by the compose file | The deploy resets the clone and `.env` survives. Nothing secret is in the image or in GitHub. | Build default |
+| Where secrets live in production | `backend/.env` on the server, gitignored, read by the compose file | The deploy resets the clone and `.env` survives. Nothing secret is in the image or in GitHub. | Build default |
 | Where uploaded files live in production | A named Docker volume mounted at `STORAGE_DIR` | See [operations.md](operations.md#the-compose-files). | Build default |
 
 ## Open decisions
 
 - The LLM API key, once question generation starts (see [question-generation.md](question-generation.md)).
-- Whether uploads should move to a bucket behind the `FileStorage` interface (see [assessments.md](assessments.md#media)), if the VPS's disk ever becomes the constraint.
+- Whether uploads should move to a bucket behind the `FileStorage` interface (see [assessments.md](assessments.md#media)), if the server's disk ever becomes the constraint.
 
 ## References
 

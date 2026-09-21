@@ -10,7 +10,7 @@ Test templates and their questions, question audio, candidates, sending tests to
 
 - **Built and covered by tests.** Staff build tests, import and export them, preview them, send them to candidates by email and read the results. Candidates take them through their link. The frontend is wired to every endpoint (see the frontend's [assessments.md](../../frontend/docs/assessments.md)).
 - **Code:** [src/assessments/](../src/assessments/) (templates, questions, sending, the candidate API, scoring), [src/candidates/](../src/candidates/), [src/media/](../src/media/) (uploads) and [src/storage/](../src/storage/) (where files are kept). The rules that don't touch the database, such as scoring, question order and the CSV format, are plain functions in [src/assessments/canonical/](../src/assessments/canonical/).
-- **Five prefilled tests** in [seed/assessments/](../seed/assessments/), converted from the team's workbooks, with their audio in [seed/media/](../seed/media/):
+- **Five prefilled tests** in [seed/assessments/](../seed/assessments/), converted from the spreadsheets in [seed/workbooks/](../seed/workbooks/) — one `.xlsx` per test, under the same slug as its JSON — with their audio in [seed/media/](../seed/media/):
 
   | Test | Questions | Time | Scoring | Audio clips |
   | --- | --- | --- | --- | --- |
@@ -20,7 +20,7 @@ Test templates and their questions, question audio, candidates, sending tests to
   | English B1 (Intermediate) | 16 | 10 min | Right answers | 4 |
   | Motivation | 20 | 15 min | Alignment with the role profile | 0 |
 
-  Load them with `pnpm db:seed` (see [database.md](database.md#seed-data)). [seed-files.spec.ts](../src/assessments/canonical/seed-files.spec.ts) checks each file against its workbook, so add a row there when a test joins the seed.
+  Load them with `pnpm db:seed` (see [database.md](database.md#seed-data)). [seed-files.spec.ts](../src/assessments/canonical/seed-files.spec.ts) checks every JSON file against the question count, time and audio read off its workbook in [seed/workbooks/](../seed/workbooks/), so add a row there when a test joins the seed. That check is why the workbooks are kept: they are the source the tests were transcribed from, and the only way to tell a deliberate edit from a typo.
 - **Limits** are in [assessments.constants.ts](../src/assessments/assessments.constants.ts) and [media.constants.ts](../src/media/media.constants.ts), along with `FINISHED_STATUSES`, the two attempt statuses that count as over.
 - **`AssessmentsModule` exports `AssessmentsService` and `AttemptsService`,** so another area can reuse these numbers and the overdue check instead of copying the rules; the [dashboard](dashboard.md) is the first to do so.
 
@@ -29,9 +29,9 @@ Test templates and their questions, question audio, candidates, sending tests to
 - Five general skills tests: **motivation, communication, attention to detail, critical thinking and English**.
 - Each test is **timed**, uses **multiple-choice or scale questions**, and has a **scoring model**. The plan was 15–20 minutes per test; the five workbooks set 8 to 15.
 - A candidate's total should stay around **30–40 minutes**, so staff choose which tests to send.
-- Tests can be sent **at any stage**: right after the application (once salary and location fit), or before or after the first call.
+- Tests can be sent **at any stage**: right after the application (once the screening criteria fit), or before or after the first call.
 - All of a candidate's tests are in **one place** in this app, not in separate links.
-- Agreed on 2026-09-15:
+- Agreed with the maintainers on 2026-09-15:
   - **One structure for every test.** The workbooks are loaded as prefilled templates, and staff add more tests by CSV import or by hand.
   - **Candidates don't re-enter their details.** Each gets a unique link by email, and one candidate can get more than one test.
   - **Staff can preview a test** before sending it.
@@ -276,7 +276,7 @@ Attempt statuses are `NOT_STARTED`, `IN_PROGRESS`, `SUBMITTED` and `EXPIRED` (ti
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

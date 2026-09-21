@@ -2,7 +2,9 @@
 
 ## Before every request: check the project skills
 
-This project has agent skills installed in `.agents/skills/` and tracked in `skills-lock.json`. Each skill is a folder whose `SKILL.md` holds the rules and workflow for one kind of task. Check them before you act on any request, including small edits, bug fixes, code reviews and questions about the code:
+This project has agent skills in `.agents/skills/`, pinned by `skills-lock.json`. Each skill is a folder whose `SKILL.md` holds the rules and workflow for one kind of task. Check them before you act on any request, including small edits, bug fixes, code reviews and questions about the code:
+
+**If `.agents/skills/` isn't there, restore it first.** The folder is not tracked in git — only the lockfile is — so a fresh clone has no skills. Run `pnpm dlx skills experimental_install` once in this package, and once in `backend/` for its own skills; each reads that package's `skills-lock.json` and restores into its `.agents/skills/`. Until then the skill links below, and in the area docs, don't resolve.
 
 1. **Match.** Compare the request with the [skill index](#skill-index) below. Once per session, also list `.agents/skills/`; for any folder the index doesn't mention, read the frontmatter of its `SKILL.md` and treat it as part of the index.
 2. **Load.** Before writing any code, read the whole `SKILL.md` of every skill that matches. After that, open only the rule and reference files that apply to the task, not every file in the skill.

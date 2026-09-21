@@ -9,7 +9,7 @@ The UI component library, design tokens, theming, typography, icons, brand asset
 ## Current state
 
 - **shadcn/ui is set up** ([components.json](../components.json)): style `radix-vega`, Radix primitives, lucide icons. Components live in [components/ui/](../components/ui/), with kebab-case file names as the shadcn CLI writes them.
-- **The TMX theme** from TMX Visibility (`tmx-visibility-lite`) is in [app/globals.css](../app/globals.css): colors, fonts, type scale, radii, shadows and gradients, mapped onto shadcn's semantic tokens.
+- **The TMX theme** is in [app/globals.css](../app/globals.css): colors, fonts, type scale, radii, shadows and gradients, mapped onto shadcn's semantic tokens. It was matched to an existing in-house app, which the rest of this doc calls **the reference**.
 - **Brand assets** are in [public/brand/](../public/brand/). The favicon is [app/icon.png](../app/icon.png), plus [app/apple-icon.png](../app/apple-icon.png).
 - **Shared UI built on top** is in [components/shared/](../components/shared/): the TMX HR logo, the app shell, the sign-in card, and the assessment pieces such as the test runner, the status badges and the score summary. Where components go is in [project-structure.md](project-structure.md).
 - **Motion** uses `motion` (13.2), with the test runner's timings in one file (see [Motion](#motion)). **Toasts** use sonner.
@@ -17,9 +17,9 @@ The UI component library, design tokens, theming, typography, icons, brand asset
 
 ## Requirements
 
-Agreed with the user on 2026-09-15:
+Agreed with the maintainers on 2026-09-15:
 
-- Use the TMX Visibility theme: its colors, font, layout and buttons.
+- Use the reference app's theme: its colors, font, layout and buttons.
 - Name the app **TMX HR** and update the logo to match.
 - Build on **shadcn/ui themed to TMX**, rather than copying the reference app's hand-rolled components.
 
@@ -114,7 +114,7 @@ Two more contrast fixes live in components. Inputs use the `rule-2` border inste
 
 ### Brand and logo
 
-- **TMX HR lockup** ([components/shared/tmx-hr-logo.tsx](../components/shared/tmx-hr-logo.tsx)), used on the sign-in pages: the TMX wordmark artwork, then "HR" set in Inter at the same cap height, in the logo's ink color. The wordmark ([public/brand/tmx-wordmark.png](../public/brand/tmx-wordmark.png)) is cropped from the TMX Visibility logo, so the artwork is the brand's own and only "HR" is type.
+- **TMX HR lockup** ([components/shared/tmx-hr-logo.tsx](../components/shared/tmx-hr-logo.tsx)), used on the sign-in pages: the TMX wordmark artwork, then "HR" set in Inter at the same cap height, in the logo's ink color. The wordmark ([public/brand/tmx-wordmark.png](../public/brand/tmx-wordmark.png)) is cropped from the brand's existing logo artwork, so only "HR" is type.
 - **Mark** ([public/brand/tmx-mark.png](../public/brand/tmx-mark.png)): the white TMX tile, shown at 36px in the sidebar next to "TMX HR".
 - **Favicon:** the TMX mark, copied from the reference. The Next.js `favicon.ico` is gone.
 
@@ -133,7 +133,7 @@ Two differences from the reference shell: the whole page scrolls (the rail is fi
 ### Candidate pages
 
 - **No app shell.** The `(candidate)` layout is just the page background, and each page draws its own header.
-- **The TokenMinds wordmark** ([candidate-brand.tsx](../components/shared/candidate-brand.tsx)), not the TMX HR lockup, because candidates don't know the internal app.
+- **The company wordmark** ([candidate-brand.tsx](../components/shared/candidate-brand.tsx)), not the TMX HR lockup, because candidates know the company they applied to, not the internal app. The name beside it comes from `COMPANY_NAME` in [lib/brand.ts](../lib/brand.ts), which reads `NEXT_PUBLIC_COMPANY_NAME` and falls back to `TMX HR`; it is the wordmark's alt text and the candidate pages' titles. The artwork itself is a file — replace [public/brand/tmx-wordmark.png](../public/brand/tmx-wordmark.png) to match the name you set. See [configuration.md](configuration.md).
 - **The test runner** ([assessment-runner.tsx](../components/shared/assessment-runner.tsx)) has a sticky white header with the test's name and a countdown pill, a 4px progress line in the brand violet under it, one question per screen in a column up to 42rem wide, and a fixed footer with the save status, "3 of 16", and previous and next buttons. Options are large rows lettered A to F, or numbered buttons on a rating scale with the end labels beneath; the chosen one gets the soft violet fill and a check.
 - **The countdown pill** ([runner-timer.tsx](../components/shared/runner-timer.tsx)) turns to the warning colors in the last minute.
 - **A link that doesn't work** gets one card with a warning icon, a title and a plain explanation.
@@ -190,11 +190,11 @@ There is no dark theme. `dark:` classes only apply under a `.dark` class, which 
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
-| Visual design | The TMX Visibility theme: its colors, font (Inter), type scale, layout and buttons | | Requested |
+| Visual design | The reference app's theme: its colors, font (Inter), type scale, layout and buttons | | Requested |
 | Product name | TMX HR | | Requested |
 | Logo | The TMX wordmark artwork, then "HR" set in Inter | Keeps the brand's own artwork, and there's no vector source to redraw it from | Build default |
 | Component system | shadcn/ui, themed to TMX | Keeps the plan in AGENTS.md, and later screens get ready-made tables, dialogs and menus | Requested |
@@ -208,7 +208,8 @@ There is no dark theme. `dark:` classes only apply under a `.dark` class, which 
 | The runner's motion | Inspired by Typeform: the next question rises from below, going back drops the previous one from above, with a short blur, and a choice blinks before the runner moves on | | Requested |
 | Motion timings | All in `runner-motion.ts`. Reduced motion fades only. | One place to tune them, and nothing moves for people who ask the OS for less motion. | Build default |
 | Toasts | sonner, fixed to light, without `next-themes` | shadcn's toast component. The app has one theme. | Build default |
-| Candidate pages' brand | The TokenMinds wordmark, not TMX HR | Candidates know the company, not the internal app. | Build default |
+| Candidate pages' brand | The company wordmark, not the TMX HR lockup | Candidates know the company they applied to, not the internal app. | Build default |
+| The company name candidates see | `NEXT_PUBLIC_COMPANY_NAME`, read through [lib/brand.ts](../lib/brand.ts) and defaulting to `TMX HR` | It was hardcoded, so a fork would greet candidates under someone else's name. The wordmark is still an image to replace, but everything set in type follows the variable. Keep it the same as the backend's `COMPANY_NAME`, which names the company in candidates' emails. | Requested |
 | Unsaved changes | A save bar that appears only while a form has changes | Saving stays explicit, and unsaved edits are hard to miss. | Build default |
 | Design doc | This file, with no root `DESIGN.md` | One doc per area, as the root README asks | Build default |
 
@@ -224,4 +225,4 @@ There is no dark theme. `dark:` classes only apply under a `.dark` class, which 
 - [`shadcn` skill](../.agents/skills/shadcn/SKILL.md)
 - [`tailwind-design-system` skill](../.agents/skills/tailwind-design-system/SKILL.md)
 - [`impeccable` skill](../.agents/skills/impeccable/SKILL.md)
-- Reference app: `tmx-visibility-lite/frontend` (`app/globals.css`, `src/components/ui/` and `src/components/layout/`)
+- [configuration.md](configuration.md) (`NEXT_PUBLIC_COMPANY_NAME`)

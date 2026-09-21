@@ -8,9 +8,13 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ### Added
 
-- CI/CD for the backend, in `.github/workflows/backend.yml`: every PR that touches `backend/` gets a build, ESLint and a Docker build; every push to `main` builds the image, pushes it to GitHub Container Registry and deploys it to the TokenMinds VPS over SSH, then waits for `/api/health/ready`. See [operations](operations.md#deployment).
+- `GET /api/dashboard`, the staff home page in one request: how the links sent to candidates are going (not started, in progress, completed), how many expired, a row per test with its time limit, completed attempts and average score, and the candidates who finished something most recently. Any staff member may read it; there is nothing on it that only admins should see. One call rather than four, so the page has no half-loaded state. See [dashboard](dashboard.md).
+- Tests for it: [dashboard.service.spec.ts](../src/dashboard/dashboard.service.spec.ts) walks a link through every status it can hold and checks which number it lands in, and [dashboard.e2e-spec.ts](../test/dashboard.e2e-spec.ts) sends one test six ways — untouched, started, finished, expired, revoked and finished-then-revoked — and checks the numbers that come back. See [testing](testing.md).
+- `docker-compose.local.yml`: Postgres and the API in one stack, with its own project name, network and volumes, and no `.env` to write first. The other two compose files attach to an external Postgres network, so `docker compose up` failed immediately for anyone who didn't already have that container. This is the one that works on a fresh machine. See [operations](operations.md#everything-in-docker).
+- `.github/workflows/ci.yml`, the checks, separate from the deploy: `backend` (build, ESLint without `--fix`, `pnpm test`), `backend-e2e` (`pnpm db:deploy` and `pnpm test:e2e` against a `postgres:17-alpine` service container), `backend-image` (a Docker build that isn't pushed) and `frontend` (lint and build). It reads no secrets, so it runs on a fork, and it has no path filter, so every job reports on every pull request — a check skipped by a path filter never reports, and a required check that never reports blocks a PR forever. See [testing](testing.md) and [operations](operations.md#ci-and-deploy-are-two-workflows).
+- Deployment for the backend, in `.github/workflows/deploy.yml`: every push to `main` that touches `backend/` builds the image, pushes it to GitHub Container Registry and deploys it to the server over SSH, then waits for `/api/health/ready`. See [operations](operations.md#deployment).
 - A `Dockerfile` (two stages, runs as `node`, applies migrations on start), `docker-compose-production.yml` (joins the server's `postgres_network`, keeps uploads on a named volume) and `docker-compose.yml`, the same stack built from the folder, for checking the image before it ships.
-- A fifth prefilled test, Attention to Detail (Textual): 15 single-choice questions over matching information, comparing statements for differences and checking consistency, 12 minutes, converted from the team's workbook. See [assessments](assessments.md).
+- A fifth prefilled test, Attention to Detail (Textual): 15 single-choice questions over matching information, comparing statements for differences and checking consistency, 12 minutes, converted from its workbook. See [assessments](assessments.md).
 - Staff authentication: email and password sign-in, server-side sessions in an httpOnly cookie, invite-only accounts with `ADMIN` and `MEMBER` roles, password change, and forgot and reset password. Every route needs a session unless it's marked `@Public()`. See [authentication](authentication.md).
 - `pnpm auth:invite-admin` to invite the first admin from the command line.
 - Email through Resend, printed to the terminal in development when no API key is set. See [email](email.md).
@@ -18,7 +22,7 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 - Checked environment config with `@nestjs/config`, and `.env.example`. See [configuration](configuration.md).
 - API conventions: the `/api` prefix, JSON-only bodies, global validation, CORS for the frontend, an Origin check against CSRF, and rate limits. See [API conventions](api-conventions.md).
 - Unit tests for config, passwords, tokens and email templates; e2e tests for every auth flow against the local database. See [testing](testing.md).
-- A "Decisions" section in the area docs, recording what was decided, why, and whether the team asked for it.
+- A "Decisions" section in the area docs, recording what was decided, why, and whether the maintainers asked for it.
 - Project docs: [README](../README.md) and area docs for [API conventions](api-conventions.md), [authentication](authentication.md), [configuration](configuration.md), [database](database.md), [email](email.md), [recruitment pipeline](recruitment-pipeline.md), [assessments](assessments.md), [question generation](question-generation.md) and [testing](testing.md).
 - API docs: Swagger UI at `/api/docs` and the OpenAPI document at `/api/docs/json`, served outside production. See [API conventions](api-conventions.md#api-docs).
 - Health checks at `/api/health/live` and `/api/health/ready`, built with `@nestjs/terminus`. See [operations](operations.md).
@@ -33,15 +37,21 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 - Media at `/api/media`: admin uploads of question audio and images up to 10 MiB, with the type read from the file, served publicly with Range support. Files are kept on local disk behind a `FileStorage` interface. See [assessments](assessments.md#media).
 - `STORAGE_DIR`, the folder for uploaded files. See [configuration](configuration.md).
 - The assessments migration (`20260915070113_init_assessments`), four prefilled tests in `seed/` with their audio, and `pnpm db:seed` to load them. See [database](database.md#seed-data).
-- The candidate's assessment email, which carries the TokenMinds name. See [email](email.md).
+- The candidate's assessment email, which carries the company's name. See [email](email.md).
 - `@AdminOnly()`, which limits a route to admins and documents the 403.
 - Unit tests for the question rules, question CSV, question order, scoring, what candidates are sent, the seed files, CSV, media types and local storage; e2e tests for media, the test library, and sending and taking tests. See [testing](testing.md).
 
 ### Changed
 
+- `AssessmentsModule` exports `AssessmentsService` and `AttemptsService`, and the two attempt statuses that count as over moved into `FINISHED_STATUSES` in [assessments.constants.ts](../src/assessments/assessments.constants.ts). The dashboard now counts by the same rules as the Sent tab instead of a second copy of them, so the two screens can't drift. See [assessments](assessments.md) and [dashboard](dashboard.md).
+- `COMPANY_NAME` sets the name candidates see in their assessment emails — the sender line, the subject and the name above the heading — instead of it being hardcoded, which would have had a fork emailing candidates under someone else's name. It defaults to `TMX HR`; the frontend's `NEXT_PUBLIC_COMPANY_NAME` is its twin. See [configuration](configuration.md) and [email](email.md).
+- Example email addresses in the docs and the README are `example.com`, so nothing invites a reader to mail a real inbox.
+- CI and deploy are two workflows instead of one. They answer to different rules: checks should run everywhere, including on a fork, with a read-only token and no secrets, and deploys should run in one place, one at a time, and never be cancelled halfway. Both deploy jobs carry a repository guard, so a fork — which has no server, no package and none of the secrets — never tries to deploy, and the `deploy` job asks for `packages: read`, without which the server's `docker pull` fails on the image the same run just pushed. See [operations](operations.md#ci-and-deploy-are-two-workflows).
+- The source workbooks the prefilled tests were converted from live in `seed/workbooks/`, one file per test under the same slug as its JSON. [seed-files.spec.ts](../src/assessments/canonical/seed-files.spec.ts) checks each seed file against its workbook's question count, time and audio, so the two can't quietly disagree. `.dockerignore` leaves the folder out of the build context: the runtime never reads it. See [assessments](assessments.md).
+- The package is `tmx-hr-backend` and licensed MIT, with a description and a repository field, ready to be published as open source.
 - Documented that the seed must run on the machine the app runs on, because it writes question audio to that machine's `STORAGE_DIR`, with the command for the deployed container. See [database](database.md#seed-data) and [operations](operations.md#once-its-running).
 - `prisma` and `dotenv` are regular dependencies now, since the image runs `prisma migrate deploy` after a production-only install. `packageManager` pins pnpm 11.8.0 for corepack, CI and the image.
-- Docs: production uses the Postgres already on the VPS instead of Prisma Postgres. See [database](database.md#deployed-environments) and [operations](operations.md#deployment).
+- Docs: production uses a Postgres already running on the deployment server instead of Prisma Postgres. See [database](database.md#deployed-environments) and [operations](operations.md#deployment).
 - The default port is now 4000 instead of 3000, so the backend and the frontend dev server can run side by side.
 - The scaffold's `GET /` is now `GET /api`, and it's public. It's hidden from the API docs.
 - CORS now lists its allowed methods and headers, and lets browsers cache preflight answers for 10 minutes.
@@ -53,6 +63,10 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 - The build leaves out `*.fixtures.ts` files, which only tests use.
 - The e2e test app keeps uploads in a temporary folder instead of `STORAGE_DIR`. See [testing](testing.md).
 - Docs: the area docs describe the built assessments: [assessments](assessments.md), [candidate links](authentication.md#candidate-links), [API conventions](api-conventions.md) (multipart uploads, paging and downloads), [configuration](configuration.md), [database](database.md), [email](email.md) and [testing](testing.md).
+
+### Fixed
+
+- The deploy secrets table in [operations](operations.md#server-setup-once) listed four secret names the workflow never read. Anyone following it would have set up four secrets and watched the deploy fail on the three it actually wants. The table now names exactly what `deploy.yml` reads.
 
 ## [0.0.1] - 2026-09-15
 

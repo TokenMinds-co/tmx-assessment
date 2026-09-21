@@ -25,10 +25,10 @@ The staff screens for the test library, the test editor, sending tests and readi
 
 ## Requirements
 
-- Five tests: motivation, communication, attention to detail, critical thinking and English. All five come prefilled from the team's workbooks.
+- Five tests: motivation, communication, attention to detail, critical thinking and English. All five come prefilled, converted from the source workbooks in the backend's [seed/workbooks/](../../backend/seed/workbooks/).
 - Each test is timed and scored. A candidate's total should stay around 30–40 minutes.
 - All of a candidate's tests are in one place, behind one link.
-- Agreed on 2026-09-15:
+- Agreed with the maintainers on 2026-09-15:
   - Candidates don't re-enter their details. Each gets a unique link by email, and can get more than one test.
   - Staff can preview a test.
   - Candidates take tests in a responsive, animated runner with one question per screen, inspired by Typeform.
@@ -88,7 +88,7 @@ The staff screens for the test library, the test editor, sending tests and readi
 
 ## Decisions
 
-"Requested" means the team asked for it. "Build default" means it was chosen while building and is open to change.
+"Requested" means the maintainers asked for it. "Build default" means it was chosen while building and is open to change.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |

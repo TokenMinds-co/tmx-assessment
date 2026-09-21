@@ -1,6 +1,6 @@
 # Question generation
 
-**Status:** Not started · **Last updated:** 2026-09-16
+**Status:** Not started · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -8,11 +8,11 @@ Using an LLM to write the questions, options and answer keys for each test from 
 
 ## Current state
 
-Not started, and no LLM provider is chosen. The team's workbooks for all five tests have arrived and are now the seeded tests in `backend/seed/assessments/` (see [assessments.md](assessments.md)), so they don't need generating. Generation could still write more questions for any of them.
+Not started, and no LLM provider is chosen. All five tests were written by hand in the workbooks under [seed/workbooks/](../seed/workbooks/) and are already seeded from `backend/seed/assessments/` (see [assessments.md](assessments.md)), so they don't need generating. Generation could still write more questions for any of them.
 
 ## Requirements
 
-- Questions are generated with an LLM from the test details in the TestGorilla library.
+- Questions are generated with an LLM from a written specification of each test.
 - The output must fit the test format in [assessments.md](assessments.md): multiple choice, 15–20 minutes per test, with a scoring model.
 
 ## Proposed approach

@@ -25,8 +25,9 @@ from its own folder.
 
 You need:
 
-- **Node.js 20.19 or newer.** That's the floor Prisma 7 sets; the frontend needs 20.9 and CI
-  runs Node 24, so develop on 24 if you have a choice.
+- **Node.js 24.** That's what [`.nvmrc`](.nvmrc) pins and what CI runs. The `engines` field in
+  both packages also accepts 20.19+ and 22.12+, which is the range Prisma 7 supports, but
+  develop on 24 if you have a choice.
 - **pnpm 11.8.0**, pinned in `packageManager` in both `package.json` files. `corepack enable`
   picks up the pinned version on its own.
 
