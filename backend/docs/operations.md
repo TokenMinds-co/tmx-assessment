@@ -12,7 +12,9 @@ How the API runs in an environment: the startup log, health checks, shutdown, lo
 - **Health checks:** [src/health/](../src/health/), built with `@nestjs/terminus`. `/api/health/live` and `/api/health/ready`.
 - **Shutdown:** shutdown hooks are on, so on `SIGTERM` Nest stops the HTTP server and Prisma closes its connections.
 - **Logs:** Nest's built-in logger, plain text on stdout.
-- **Deployment:** the API ships as a Docker image, built by [.github/workflows/backend.yml](../../.github/workflows/backend.yml) on every push to `main`, pushed to GitHub Container Registry (GHCR) and started on the TokenMinds VPS with [docker-compose-production.yml](../docker-compose-production.yml). Pull requests get a build and lint check. See [Deployment](#deployment).
+- **Deployment:** the API ships as a Docker image, built by [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) on every push to `main`, pushed to GitHub Container Registry (GHCR) and started on the TokenMinds VPS with [docker-compose-production.yml](../docker-compose-production.yml). See [Deployment](#deployment).
+- **CI:** [.github/workflows/ci.yml](../../.github/workflows/ci.yml) is a separate workflow that checks both apps on every pull request and every push to `main`, and needs no secrets, so it runs on a fork. See [CI and deploy are two workflows](#ci-and-deploy-are-two-workflows).
+- **Compose files:** three, for three situations: [docker-compose.local.yml](../docker-compose.local.yml) (self-contained, brings its own Postgres), [docker-compose.yml](../docker-compose.yml) (production shape, image built here) and [docker-compose-production.yml](../docker-compose-production.yml) (production, image pulled from GHCR). See [The compose files](#the-compose-files).
 
 ## Requirements
 
@@ -55,13 +57,31 @@ To check another dependency later (a queue, the LLM provider), add a Terminus in
 
 ### Deployment
 
-The frontend deploys itself through Vercel from its own folder. The backend is a Docker image: [.github/workflows/backend.yml](../../.github/workflows/backend.yml) builds it, pushes it to GHCR and starts it on the TokenMinds VPS over SSH. The workflow only runs when `backend/**` or the workflow itself changes, so a frontend-only or docs-only push never redeploys the API.
+The frontend deploys itself through Vercel from its own folder. The backend is a Docker image: [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) builds it, pushes it to GHCR and starts it on the TokenMinds VPS over SSH. The workflow only runs when `backend/**` or the workflow itself changes, so a frontend-only or docs-only push never redeploys the API.
 
-| Trigger | What runs |
+#### CI and deploy are two workflows
+
+Checks and deploys are separate files, because they answer to different rules: checks should run everywhere, including on a fork, and deploys should run in one place only.
+
+| Workflow | Runs on | What it does |
+| --- | --- | --- |
+| [ci.yml](../../.github/workflows/ci.yml) | Every pull request, and every push to `main` | Checks both apps. Nothing is pushed or deployed, and it reads no secrets. |
+| [deploy.yml](../../.github/workflows/deploy.yml) | A push to `main` touching `backend/**` or the workflow, and **Run workflow** in the Actions tab | Builds the image, pushes it to GHCR, deploys it over SSH, verifies it answers |
+
+`ci.yml` has four jobs. The job id is the check name branch protection sees, so none of them sets a `name:`.
+
+| Job | What it runs |
 | --- | --- |
-| A PR to `main` that touches the backend | Install, `nest build`, ESLint (without `--fix`, so a fixable problem still fails), and a Docker build that isn't pushed |
-| A push to `main` that touches the backend | Build the image, push it to GHCR, deploy it over SSH, verify it answers |
-| **Run workflow** in the Actions tab | The same as a push, without a commit |
+| `backend` | `pnpm install --frozen-lockfile`, `pnpm build`, ESLint without `--fix` (so a fixable problem still fails), `pnpm test` |
+| `backend-e2e` | The same install, then `pnpm db:deploy` and `pnpm test:e2e` against a `postgres:17-alpine` service container |
+| `backend-image` | The Docker build, with `push: false` |
+| `frontend` | `pnpm install --frozen-lockfile`, `pnpm lint`, and `pnpm build` with `API_URL` set |
+
+- **No `paths:` filter on `ci.yml`.** A workflow skipped by a path filter reports nothing, and a required check that never reports blocks a PR forever. Every job runs on every PR instead; the ones with nothing to do finish in a minute off the cache. `deploy.yml` keeps its filter, because a skipped deploy is exactly what a docs-only push should get.
+- **`ci.yml` cancels in-progress runs, `deploy.yml` does not.** Cancelling a check wastes a few runner-minutes and the next push re-runs it. Cancelling a deploy can leave the server between two images.
+- **The trigger is `pull_request`, never `pull_request_target`.** A PR from a fork runs with a read-only token and no access to this repository's secrets. `pull_request_target` would hand the fork's code those secrets.
+- **`backend-e2e` sets only what the app has no default for:** `DATABASE_URL` (the service container) and `FRONTEND_URL`, plus `NODE_ENV=test`. Everything else in [env.validation.ts](../src/config/env.validation.ts) has a default. `RESEND_API_KEY` is left unset on purpose, so nothing can reach Resend; the suites swap in an in-memory transport anyway. See [testing.md](testing.md).
+- **Both deploy jobs are guarded with `if: github.repository == 'TokenMinds-co/tmx-hr'`.** A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. The guard is on each job, because an `if` on one job doesn't stop another. A fork that wants its own deploy changes that string to its own repository and adds the three secrets below.
 
 #### The image
 
@@ -81,10 +101,19 @@ Every build pushes two tags: the commit's 7-character SHA, which the deploy pins
 
 #### The compose files
 
+Three files, for three situations.
+
+| File | Postgres | Image | For |
+| --- | --- | --- | --- |
+| [docker-compose-production.yml](../docker-compose-production.yml) | Already on the host, joined over an external network | Pulled from GHCR | The deploy |
+| [docker-compose.yml](../docker-compose.yml) | Already on the host, joined over an external network | Built from `backend/` | Checking the image before it ships |
+| [docker-compose.local.yml](../docker-compose.local.yml) | Its own, in the stack | Built from `backend/` | Running the whole thing on a laptop with nothing set up |
+
 - **[docker-compose-production.yml](../docker-compose-production.yml)** runs one service, `backend`, from the GHCR image. Postgres is the instance already on the server: the file joins its `postgres_network` and reads `DATABASE_URL` from `.env`. The network is `external: true`, so Compose attaches to it and never creates or removes it, and `docker compose down` here can't take the database with it. Uploads (`STORAGE_DIR`) live on a named volume, `tmx_hr_storage`, which survives redeploys. Only `docker compose down -v` deletes it, and with it every upload.
 - **[docker-compose.yml](../docker-compose.yml)** is the same stack, except the image is built from the folder instead of pulled. It joins `postgres_network` too and reads `DATABASE_URL` from `.env`. It's for checking the image before it ships; development uses `pnpm start:dev`.
+- **[docker-compose.local.yml](../docker-compose.local.yml)** is self-contained: Postgres and the API, no external network, no `.env` needed. See [Everything in Docker](#everything-in-docker).
 
-Both files name the project `tmx-hr`, so `--remove-orphans` never touches another project deployed from a folder that's also called `backend`.
+The first two name the project `tmx-hr` and the third `tmx-hr-local`, so `--remove-orphans` never touches another project deployed from a folder that's also called `backend`, and the local stack and the production-shaped one can't recreate or remove each other's containers.
 
 #### Ports and health
 
@@ -101,13 +130,16 @@ Both files name the project `tmx-hr`, so `--remove-orphans` never touches anothe
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| Secret | `VPS_HOST` | Server hostname or IP |
-| Secret | `VPS_USER` | SSH user. It must be in the `docker` group. |
-| Secret | `VPS_SSH_KEY` | Private key, the full PEM including the header line |
-| Secret | `VPS_PORT` | Optional. Defaults to 22. |
+| Secret | `VPS_STAGING_HOST` | Server hostname or IP |
+| Secret | `VPS_STAGING_USER` | SSH user. It must be in the `docker` group. |
+| Secret | `VPS_STAGING_KEY` | Private key, the full PEM including the header line |
 | Variable | `VPS_DEPLOY_PATH` | Optional. Defaults to `tmx-hr`, relative to the SSH user's home. |
 
-`GITHUB_TOKEN` is provided automatically. It pushes to GHCR and the server logs in with it, so no personal access token is involved. To gate deploys behind an approval, give the `deploy` job a `production` environment with a required reviewer.
+- **These three names are what the workflow reads.** Renaming them means editing [deploy.yml](../../.github/workflows/deploy.yml) too.
+- **There is no port secret.** The SSH port is `22`, written into the workflow. A server on another port needs that line changed.
+- **`VPS_DEPLOY_PATH` is a repository variable, not a secret** (Settings → Secrets and variables → Actions → Variables), because a path isn't sensitive and a variable is readable in the run's log. The workflow reads `${{ vars.VPS_DEPLOY_PATH || 'tmx-hr' }}`: an unset variable is an empty string, so leaving it out gives `tmx-hr`.
+- **`GITHUB_TOKEN` is provided automatically.** It pushes to GHCR and the server logs in with it, so no personal access token is involved. The workflow is `permissions: contents: read` at the top, which is the whole grant each job starts from, so `build-and-push` asks for `packages: write` and `deploy` asks for `packages: read`. Without that second line the server's `docker pull` fails with `denied` on an image the same run just pushed.
+- To gate deploys behind an approval, give the `deploy` job a `production` environment with a required reviewer.
 
 #### What a deploy does
 
@@ -148,7 +180,31 @@ docker compose up --build            # reads .env; keep NODE_ENV=development for
 curl localhost:4000/api/health/ready # 4000 = PORT in .env
 ```
 
-There's no Postgres in this stack either: it joins the `postgres_network` of a Postgres already running on the machine, so `DATABASE_URL` in `.env` must name that container (for example `postgres_db`), not `localhost`. With `NODE_ENV=production` the API requires `RESEND_API_KEY` and sets `Secure` cookies, which a browser on plain `http://localhost` won't send back.
+There's no Postgres in this stack either: it expects a Postgres container already running on the machine and attached to `postgres_network`, so `DATABASE_URL` in `.env` must name that container (for example `postgres_db`), not `localhost`. With `NODE_ENV=production` the API requires `RESEND_API_KEY` and sets `Secure` cookies, which a browser on plain `http://localhost` won't send back. If there's no such container on the machine, use the stack below instead.
+
+#### Everything in Docker
+
+[docker-compose.local.yml](../docker-compose.local.yml) runs Postgres and the API together. Nothing has to exist on the machine first, and there's no `.env` file to write:
+
+```bash
+cd backend
+docker compose -f docker-compose.local.yml up --build
+curl localhost:4000/api/health/ready
+
+# The prefilled tests and their audio
+docker compose -f docker-compose.local.yml exec backend node dist/cli/seed-assessments
+# The first staff account (the link is printed to the log)
+docker compose -f docker-compose.local.yml exec backend node dist/cli/invite-admin --email you@example.com --name "Your Name"
+
+docker compose -f docker-compose.local.yml down    # -v also deletes the data
+```
+
+- **There's no migration step.** The image's start command runs `prisma migrate deploy` before the API listens, so the schema is in place by the time the container reports ready. Seeding is a command rather than a service for the same reason in reverse: it can only run after those migrations, and it would need this stack's uploads volume mounted to write each test's audio.
+- **Postgres is published on `127.0.0.1:5434`,** not 5432, which a Postgres already on the machine would be holding. Loopback only, so it isn't reachable from the network. It's there for `psql`, Prisma Studio and GUI clients; inside the stack the API reaches the database at `postgres:5432`.
+- **The API's host port is `TMX_HR_API_PORT`,** default 4000. The container always listens on 4000, so the two can't drift. Point the frontend's `API_URL` at whatever host port you choose; the frontend isn't part of this stack and still runs with `pnpm dev`.
+- **Its own project name (`tmx-hr-local`), network, volumes and container names** (`tmx_hr_local_pg`, `tmx_hr_local_be`). It never mentions `postgres_network`, so it can't disturb a database another stack on the machine is using, and neither stack's `--remove-orphans` can reach the other's containers.
+- **`NODE_ENV` is `development`.** With `production` the API requires `RESEND_API_KEY` and sets `Secure` cookies, which a browser on plain `http://localhost` won't send back.
+- **A `.env` file is optional and layers on top.** `env_file` is marked `required: false`, so a missing file isn't an error, and anything the file does set (`RESEND_API_KEY`, `EMAIL_FROM`, `SESSION_TTL_DAYS`) applies. `NODE_ENV`, `DATABASE_URL`, `FRONTEND_URL`, `PORT` and `STORAGE_DIR` are set in the compose file itself and win over it, because Compose applies `environment` after `env_file`: the stack always talks to its own database. One thing to know: a `.env` holding a `RESEND_API_KEY` makes it send real email. Blank the key to have the links printed in `docker compose logs backend` instead.
 
 ## Decisions
 
@@ -170,7 +226,11 @@ There's no Postgres in this stack either: it joins the `postgres_network` of a P
 | `prisma` and `dotenv` as runtime dependencies | Moved from `devDependencies` | The image runs `prisma migrate deploy` after a `--prod` install, and the CLI's config imports `dotenv/config`. | Build default |
 | Node.js in the image | `node:24-alpine`, with pnpm pinned by `packageManager` | Node 24 is the current LTS and what development uses. Corepack, CI and the image read one pin. | Build default |
 | Container user | `node`, not root | Standard hardening. The only folder it writes is the uploads volume. | Build default |
-| What CI runs on a PR | Build, lint and a Docker build, no tests | Needs no database, and catches a Dockerfile that no longer builds before it reaches `main`. Tests in CI are an open decision in [testing.md](testing.md). | Build default |
+| What CI runs on a PR | Backend build, lint, unit tests and e2e tests; frontend lint and build; a Docker build that isn't pushed | Everything that can fail before `main` fails in the PR, including a Dockerfile that no longer builds and a frontend that no longer compiles. | Build default |
+| Splitting CI from deploy | Two workflows: `ci.yml` checks, `deploy.yml` ships | They answer to different rules. Checks should run everywhere, including on a fork, with a read-only token and no secrets; deploys should run in one place, one at a time, and never be cancelled halfway. Keeping them in one file forced `if: github.event_name != 'pull_request'` onto every job. | Build default |
+| The database for tests in CI | A `postgres:17-alpine` service container per run, with a `pg_isready` health check | A real Postgres, thrown away with the runner, and nothing to clean up. The suites create rows behind a random prefix and delete only those, so an empty database is all they need. A `prisma dev` instance inside the job would be a second way to run the same tests. | Build default |
+| Deploying from a fork | Both deploy jobs carry `if: github.repository == 'TokenMinds-co/tmx-hr'` | A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. A fork that wants its own deploy edits one string. | Build default |
+| A compose stack for people outside the team | [docker-compose.local.yml](../docker-compose.local.yml): Postgres and the API, its own project name, network and volumes, no `.env` required | The other two files attach to an external `postgres_network` and define no database, so `docker compose up` fails immediately for anyone without that container. Postgres is published on 127.0.0.1:5434 so it can't collide with a Postgres already on 5432. | Build default |
 
 ## Open decisions
 
@@ -184,7 +244,8 @@ There's no Postgres in this stack either: it joins the `postgres_network` of a P
 ## References
 
 - [configuration.md](configuration.md), [database.md](database.md), [api-conventions.md](api-conventions.md), [testing.md](testing.md)
-- [Dockerfile](../Dockerfile), [docker-compose-production.yml](../docker-compose-production.yml), [docker-compose.yml](../docker-compose.yml), [.github/workflows/backend.yml](../../.github/workflows/backend.yml)
+- [Dockerfile](../Dockerfile), [docker-compose-production.yml](../docker-compose-production.yml), [docker-compose.yml](../docker-compose.yml), [docker-compose.local.yml](../docker-compose.local.yml)
+- [.github/workflows/ci.yml](../../.github/workflows/ci.yml), [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml)
 - The reference pipeline: mmaon-polymarket's `.github/workflows/backend.yml` and `docs/deployment.md`
 - Rules: [`micro-use-health-checks`](../.agents/skills/nestjs-best-practices/rules/micro-use-health-checks.md), [`devops-graceful-shutdown`](../.agents/skills/nestjs-best-practices/rules/devops-graceful-shutdown.md), [`devops-use-logging`](../.agents/skills/nestjs-best-practices/rules/devops-use-logging.md)
 - [NestJS: Health checks (Terminus)](https://docs.nestjs.com/recipes/terminus)

@@ -1,13 +1,19 @@
 # Production deploy. Pulls a pre-built image from GHCR instead of building.
-# The CI deploy job sets IMAGE_NAME and IMAGE_TAG and runs `docker compose up -d`
-# (see .github/workflows/backend.yml). Postgres is the instance already on the
-# server: this file joins its network and never creates or removes it. Set
-# DATABASE_URL in .env to reach it. See docs/operations.md#deployment.
+# The deploy job sets IMAGE_NAME and IMAGE_TAG and runs `docker compose up -d`
+# (see .github/workflows/deploy.yml). Postgres is not part of this stack: it
+# expects a Postgres container already running on the host and attached to the
+# external network named below, which this file joins and never creates or
+# removes. Set DATABASE_URL in .env to reach it, by the container's name.
+# See docs/operations.md#deployment.
+#
+# For a stack that brings its own Postgres and needs no .env - a laptop, a
+# fork, a first look - use docker-compose.local.yml instead.
 #
 # Explicit project name. Without it, Compose derives the project from the
-# directory basename ("backend"), which collides with sibling repos deployed
-# from their own "backend" dir, and `--remove-orphans` would then treat THEIR
-# containers as orphans and delete them. A unique name isolates this stack.
+# directory basename ("backend"), which collides with any other project
+# deployed from a directory of that name, and `--remove-orphans` would then
+# treat THEIR containers as orphans and delete them. A unique name isolates
+# this stack.
 name: tmx-hr
 services:
   backend:
@@ -73,8 +79,11 @@ networks:
   tmx_hr_network:
     driver: bridge
     internal: false
-  # The database's network, created by the server's Postgres stack.
-  # `external: true` is load-bearing: Compose attaches to it and never creates
-  # or removes it, so `docker compose down` here cannot take the database down.
+  # The network the host's Postgres container is attached to, created by
+  # whatever stack runs that database, not by this one. `external: true` is
+  # load-bearing: Compose attaches to it and never creates or removes it, so
+  # `docker compose down` here cannot take the database down. It must already
+  # exist on the server (`docker network ls`); rename it here if yours is
+  # called something else.
   postgres_network:
     external: true

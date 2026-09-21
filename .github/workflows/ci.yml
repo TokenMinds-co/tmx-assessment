@@ -1,0 +1,223 @@
+name: CI
+
+# Checks, and nothing else. Nothing here logs into a registry, reaches a
+# server or reads a deployment secret, so it runs the same on a fork as it
+# does here. Building and deploying the image live in deploy.yml, which is
+# guarded to this repository.
+#
+# `pull_request`, never `pull_request_target`: a PR from a fork runs with a
+# read-only token and no access to this repository's secrets. Swapping in
+# `pull_request_target` would hand that fork's code the secrets, which is the
+# classic way to leak them.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Read-only for every job. No job here needs more.
+permissions:
+  contents: read
+
+# One run per branch or PR; a new push cancels the one already in flight.
+# The opposite of deploy.yml, which sets cancel-in-progress: false on purpose.
+# The difference is what a cancellation costs: cancelling a check wastes a few
+# runner-minutes and the next push re-runs it, while cancelling a deploy can
+# leave the server halfway between two images.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# No `paths:` filter, deliberately. A workflow that is skipped by a path filter
+# reports nothing at all, and a required status check that never reports blocks
+# the PR forever. So every job runs on every PR, and the ones with nothing to do
+# finish in a minute off the cache.
+#
+# Job ids are the check names branch protection sees (no `name:` on any job, so
+# the id shows as-is): backend, backend-e2e, backend-image, frontend.
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Backend: it compiles, it lints, its unit tests pass. No database needed.
+  # ---------------------------------------------------------------------------
+  backend:
+    runs-on: ubuntu-latest
+    # The backend is its own pnpm project, so every shell step runs from its
+    # folder. Action inputs below are still repo-root-relative.
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          # The version comes from `packageManager` in backend/package.json,
+          # the same pin the Dockerfile's corepack reads.
+          package_json_file: backend/package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: backend/pnpm-lock.yaml
+
+      # The postinstall generates the Prisma Client, which the build imports.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      # Without --fix (unlike `pnpm lint`): CI reports problems, it never
+      # rewrites files, and a fixable problem still fails the check.
+      - name: Lint
+        run: pnpm exec eslint "{src,apps,libs,test}/**/*.ts"
+
+      - name: Unit tests
+        run: pnpm test
+
+  # ---------------------------------------------------------------------------
+  # Backend e2e: the real app against a throwaway Postgres.
+  # ---------------------------------------------------------------------------
+  backend-e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      # A database per run, thrown away with the runner. The e2e suites create
+      # their own rows behind a random prefix and delete only those
+      # (backend/docs/testing.md), so an empty database is all they need.
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tmx_hr_test
+        ports:
+          # Published on the runner, because the steps run on the host rather
+          # than in a job container: localhost:5432 is this service.
+          - 5432:5432
+        # Without this the first step could connect before Postgres is
+        # listening; the job only starts once pg_isready succeeds.
+        options: >-
+          --health-cmd "pg_isready -U postgres -d tmx_hr_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # Exactly what the e2e run needs. `createTestApp()` boots the real
+      # AppModule, so every variable backend/src/config/env.validation.ts marks
+      # required has to be here; the rest have defaults in that file.
+      #   DATABASE_URL  - no default. Used by `prisma migrate deploy` and by
+      #                   PrismaService.
+      #   FRONTEND_URL  - no default. CORS and the links in emails.
+      # Everything else defaults: PORT, SESSION_TTL_DAYS, TRUST_PROXY,
+      # EMAIL_FROM and STORAGE_DIR. RESEND_API_KEY is required only when
+      # NODE_ENV is `production`, and is deliberately left unset: the tests
+      # swap in an in-memory mail transport and must never reach Resend.
+      # STORAGE_DIR is unused too, since the suites redirect uploads to a temp
+      # folder.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tmx_hr_test
+      FRONTEND_URL: http://localhost:3000
+      # Jest sets this itself; setting it here makes it explicit and keeps a
+      # stray `production` out. `test` also turns off rate limits, which the
+      # suites trip by signing in many times in a row. It does not prune
+      # devDependencies - only NODE_ENV=production does that.
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: backend/package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: backend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # migrate deploy, not migrate dev: it applies the committed migrations and
+      # never writes a new one, which is also what the image does on boot.
+      - name: Apply migrations
+        run: pnpm db:deploy
+
+      - name: E2E tests
+        run: pnpm test:e2e
+
+  # ---------------------------------------------------------------------------
+  # The image builds. Nothing is pushed; deploy.yml does that from main.
+  # ---------------------------------------------------------------------------
+  backend-image:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # A Dockerfile that no longer builds should fail the PR, not the deploy.
+      - name: Build image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          platforms: linux/amd64
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ---------------------------------------------------------------------------
+  # Frontend: lint and a real production build.
+  # ---------------------------------------------------------------------------
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `pnpm lint` here is plain `eslint`, with no --fix, so it already only
+      # reports.
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+        env:
+          # next.config.ts calls apiUrl() while building the rewrite, and that
+          # throws in a production build when API_URL is unset
+          # (frontend/lib/api/url.ts). Any absolute origin satisfies it; the
+          # build never calls the API.
+          API_URL: http://localhost:4000

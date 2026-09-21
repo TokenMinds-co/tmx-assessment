@@ -1,29 +1,33 @@
-name: Backend CI/CD
+name: Deploy Backend
 
+# Deploy only. Every check - build, lint, unit tests, e2e tests and a
+# no-push image build - lives in ci.yml, which runs on pull requests and on
+# forks. This workflow runs nowhere but this repository and does one thing:
+# ship main to the server.
+#
 # Path-scoped: the frontend deploys itself through Vercel, so a frontend-only
 # or docs-only push must not rebuild and redeploy the API. `backend/**` covers
-# the Dockerfile, .dockerignore and both compose files, which live there too.
+# the Dockerfile, .dockerignore and the compose files, which live there too.
 # See backend/docs/operations.md#deployment.
 on:
   push:
     branches: [main]
-    # Kept in sync by hand with the pull_request list below. GitHub's workflow
-    # parser does not resolve YAML anchors, so the duplication is unavoidable.
     paths:
       - "backend/**"
-      - ".github/workflows/backend.yml"
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend.yml"
+      # This file, so a change to the deploy itself is deployed.
+      - ".github/workflows/deploy.yml"
   # Escape hatch: redeploy the current main without an empty commit.
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: tmx-hr-backend
+
+# Read-only by default, so a job gets a registry right only by asking for it:
+# `packages: write` to push, `packages: read` to pull. A job that declares a
+# `permissions` block gets exactly what it lists and nothing else.
+permissions:
+  contents: read
 
 # One deploy at a time. Two overlapping pushes to main would otherwise race on
 # `compose up` and could leave the server running the older image.
@@ -40,63 +44,14 @@ defaults:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Pull requests: prove it compiles, lints, passes its unit tests and builds
-  # into an image. Nothing is pushed or deployed.
-  # ---------------------------------------------------------------------------
-  build-check:
-    name: Build Check
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          # The version comes from `packageManager` in backend/package.json,
-          # the same pin the Dockerfile's corepack reads.
-          package_json_file: backend/package.json
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: "pnpm"
-          cache-dependency-path: backend/pnpm-lock.yaml
-
-      # The postinstall generates the Prisma Client, which the build imports.
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
-
-      # Without --fix (unlike `pnpm lint`): CI reports problems, it never
-      # rewrites files, and a fixable problem still fails the check.
-      - name: Lint
-        run: pnpm exec eslint "{src,apps,libs,test}/**/*.ts"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # A Dockerfile that no longer builds should fail the PR, not the deploy.
-      - name: Build image (no push)
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          platforms: linux/amd64
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  # ---------------------------------------------------------------------------
   # main: build the image and push it to GHCR.
   # ---------------------------------------------------------------------------
   build-and-push:
     name: Build & Push Image
-    if: github.event_name != 'pull_request'
+    # A fork has no server, no GHCR package and none of the secrets below, so
+    # deploying from one could only fail. The guard is on both jobs, because an
+    # `if` on one job does not stop the other.
+    if: github.repository == 'TokenMinds-co/tmx-hr'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -164,9 +119,16 @@ jobs:
   # ---------------------------------------------------------------------------
   deploy:
     name: Deploy to Server
-    if: github.event_name != 'pull_request'
+    if: github.repository == 'TokenMinds-co/tmx-hr'
     needs: build-and-push
     runs-on: ubuntu-latest
+    # `packages: read` is load-bearing. The server logs into GHCR with this
+    # job's GITHUB_TOKEN, and the top-level `permissions` block above is the
+    # whole grant: without this line the token cannot pull, and `docker pull`
+    # on the server fails with "denied" on an image this very run pushed.
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: SSH deploy
         uses: appleboy/ssh-action@v1.2.0
@@ -246,9 +208,10 @@ jobs:
             echo "[deploy] done: $IMAGE_FULL:$IMAGE_TAG"
         env:
           # Path on the server holding the repo clone (compose file + .env),
-          # relative to the SSH user's home. Override with a repository
-          # variable if the clone lives elsewhere.
-          DEPLOY_PATH: "tmx-hr"
+          # relative to the SSH user's home. Set the repository variable
+          # VPS_DEPLOY_PATH if the clone lives elsewhere; an unset variable is
+          # an empty string, so `||` falls through to the default.
+          DEPLOY_PATH: ${{ vars.VPS_DEPLOY_PATH || 'tmx-hr' }}
           COMPOSE_FILE: backend/docker-compose-production.yml
           # head_ref is set only on pull_request events and holds the real
           # source branch; ref_name there would be "<PR-number>/merge", which

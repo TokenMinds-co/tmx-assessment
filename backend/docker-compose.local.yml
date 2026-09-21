@@ -1,0 +1,145 @@
+# Everything in Docker: Postgres and the API, self-contained. Nothing has to
+# exist on the machine first, and no .env file is needed.
+#
+#   cd backend
+#   docker compose -f docker-compose.local.yml up --build
+#   curl localhost:4000/api/health/ready
+#   docker compose -f docker-compose.local.yml exec backend node dist/cli/seed-assessments
+#   docker compose -f docker-compose.local.yml down      # -v also drops the data
+#
+# Migrations are not a step here: the image's start command runs
+# `prisma migrate deploy` before the API listens (see Dockerfile), so the
+# schema is in place by the time the container reports ready. Seeding is the
+# command above rather than a service, because a one-shot seeder would need
+# this stack's uploads volume mounted as well - the seed writes each test's
+# audio into STORAGE_DIR - and it can only run after those migrations.
+#
+# The other two compose files are for the deployed shape of the app and both
+# expect a Postgres container that is already running on the host
+# (docker-compose.yml, docker-compose-production.yml). This one is the
+# opposite: it owns its database. Day-to-day development is still faster
+# outside Docker with `pnpm db:start` and `pnpm start:dev` (README.md).
+#
+# Its own project name, so `docker compose down` and `--remove-orphans` here
+# can never reach the `tmx-hr` stack the other two files define, or any other
+# project. The container names are unique for the same reason: two stacks
+# cannot both be called tmx_hr_be.
+name: tmx-hr-local
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: tmx_hr_local_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tmx_hr
+      POSTGRES_PASSWORD: tmx_hr
+      POSTGRES_DB: tmx_hr
+    ports:
+      # 5434, not 5432: if you have Postgres on this machine at all, it holds
+      # 5432, and a second one would fail to bind. Published for psql, Prisma
+      # Studio and GUI clients on the host; the API does not use it, it reaches
+      # Postgres over the network below. Bound to 127.0.0.1 so the database is
+      # not exposed to anything off this machine.
+      - "127.0.0.1:5434:5432"
+    volumes:
+      # The database files. `down` keeps them, `down -v` deletes them.
+      - tmx_hr_local_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # What `depends_on: service_healthy` waits for. Postgres starts, stops
+      # and restarts once while it initialises the data directory, so a plain
+      # "container is running" check is not enough.
+      test: ["CMD-SHELL", "pg_isready -U tmx_hr -d tmx_hr"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - tmx_hr_local_network
+
+  backend:
+    # Built from this folder, not pulled: a fork has no image on GHCR.
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: tmx_hr_local_be
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        # The API's first act is `prisma migrate deploy`, which fails outright
+        # against a database that is not accepting connections yet.
+        condition: service_healthy
+    # Optional. Without a .env file this stack still runs; with one, its
+    # values (RESEND_API_KEY, EMAIL_FROM, SESSION_TTL_DAYS and the rest) are
+    # picked up. `required: false` is what keeps a missing file from being an
+    # error. One thing to know: a .env holding a RESEND_API_KEY makes this
+    # stack send real email. Blank the key to have invitations and reset links
+    # printed in `docker compose logs backend` instead.
+    env_file:
+      - path: .env
+        required: false
+    # These win over anything in .env - Compose applies `environment` after
+    # `env_file` - which is the point: this stack always talks to its own
+    # Postgres on its own network, whatever DATABASE_URL a .env inherited from
+    # another setup happens to say.
+    environment:
+      # Not `production`: that requires RESEND_API_KEY and sets Secure cookies,
+      # which a browser on plain http://localhost never sends back, so sign-in
+      # would fail. Email is printed to the container log instead of sent.
+      NODE_ENV: development
+      # `postgres` is the service name above; Docker's DNS resolves it on the
+      # network below. 5432 is the port inside that network, not the 5434
+      # published on the host.
+      DATABASE_URL: postgresql://tmx_hr:tmx_hr@postgres:5432/tmx_hr
+      # Where the frontend runs. CORS allows it and emailed links point at it.
+      FRONTEND_URL: http://localhost:3000
+      # Fixed, so the published port below always matches what the app binds.
+      PORT: 4000
+      # Uploads live on the volume below, whatever STORAGE_DIR says in .env.
+      STORAGE_DIR: /app/storage
+    volumes:
+      # Question audio and images, as in production.
+      - tmx_hr_local_storage:/app/storage
+    ports:
+      # Host port only. Set TMX_HR_API_PORT if 4000 is taken; the container
+      # side stays 4000, because PORT above is fixed. Remember to point the
+      # frontend's API_URL at the port you choose.
+      - "${TMX_HR_API_PORT:-4000}:4000"
+    healthcheck:
+      # 127.0.0.1, not localhost: localhost resolves to ::1 first in this
+      # container and the app binds IPv4, so a localhost probe is refused.
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "-T",
+          "5",
+          "http://127.0.0.1:4000/api/health/ready",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - tmx_hr_local_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  tmx_hr_local_pgdata:
+    driver: local
+  tmx_hr_local_storage:
+    driver: local
+
+networks:
+  # Created and removed with this stack. Nothing here is `external`, and this
+  # file never touches `postgres_network`, so it cannot disturb a database
+  # another stack on this machine is using.
+  tmx_hr_local_network:
+    driver: bridge

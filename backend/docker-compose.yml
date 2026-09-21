@@ -3,10 +3,13 @@
 # instead of pulled from GHCR. It's for checking the image before it ships;
 # day-to-day development uses `pnpm db:start` and `pnpm start:dev` (README.md).
 #
-# Postgres is not part of this stack. Like production, it joins the
-# `postgres_network` of a Postgres already running on this machine and reads
-# DATABASE_URL from .env, so DATABASE_URL must name that Postgres container
-# (for example postgres_db), not localhost.
+# Postgres is not part of this stack. Like production, it expects a Postgres
+# container already running on this host and attached to the external network
+# named below, and it reads DATABASE_URL from .env, so DATABASE_URL must name
+# that Postgres container (for example postgres_db), not localhost.
+#
+# If you have no such container, this file is not the one you want: use
+# docker-compose.local.yml, which brings its own Postgres and needs no .env.
 #
 #   docker compose up --build
 #   curl localhost:4000/api/health/ready    # 4000 = PORT in .env
@@ -16,7 +19,8 @@
 # back, so keep `development` for a local sign-in check.
 #
 # Explicit project name so `--remove-orphans` stays scoped to this stack and
-# never touches sibling projects that also live in a "backend" directory.
+# never touches another project deployed from a directory that is also called
+# "backend".
 name: tmx-hr
 services:
   backend:
@@ -78,7 +82,9 @@ networks:
   tmx_hr_network:
     driver: bridge
     internal: false
-  # The database's network. `external: true`: Compose attaches to it and never
-  # creates or removes it.
+  # The network the host's Postgres container is attached to. `external: true`:
+  # Compose attaches to it and never creates or removes it, so `docker compose
+  # down` here cannot take the database down. It must already exist
+  # (`docker network ls`); rename it here if yours is called something else.
   postgres_network:
     external: true
