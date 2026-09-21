@@ -6,6 +6,8 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-21
+
 ### Added
 
 - `GET /api/dashboard`, the staff home page in one request: how the links sent to candidates are going (not started, in progress, completed), how many expired, a row per test with its time limit, completed attempts and average score, and the candidates who finished something most recently. Any staff member may read it; there is nothing on it that only admins should see. One call rather than four, so the page has no half-loaded state. See [dashboard](dashboard.md).

@@ -6,6 +6,8 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-21
+
 ### Added
 
 - The dashboard at `/` reads real data from `GET /api/dashboard`, in one query, with the three states a real request needs: skeleton cards in the same grid as the real ones while it loads, a destructive `Alert` with the API's message and a "Try again" button when it fails, and an `Empty` with a button to `/assessments` when nothing has been sent yet — a fresh install would otherwise show bars that all read zero, which looks broken rather than new. See [dashboard.md](dashboard.md).

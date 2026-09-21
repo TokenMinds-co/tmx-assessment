@@ -1,6 +1,6 @@
 {
   "name": "tmx-hr-backend",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "NestJS API for TMX HR: staff authentication, assessments and candidate results, on Prisma and Postgres.",
   "author": "TokenMinds.co",
   "private": true,

@@ -1,6 +1,6 @@
 {
   "name": "tmx-hr-frontend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Next.js app for TMX HR: the staff console and the pages candidates take their tests on.",
   "author": "TokenMinds.co",
   "private": true,
