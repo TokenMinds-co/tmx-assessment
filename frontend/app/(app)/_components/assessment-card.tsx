@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { DashboardProgress, DashboardTest } from "@/lib/api/dashboard";
-import { percentOf, plural } from "@/lib/format";
+import { formatPercent, percentOf, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /**
@@ -142,8 +142,10 @@ export function AssessmentCard({
 }
 
 /**
- * A score out of 100: the violet fill on a lighter track of the same hue, then
- * the number. The API sends 0 to 1, and an em dash stands for no score yet.
+ * A score as a percentage: the violet fill on a lighter track of the same hue,
+ * then the number. The API sends 0 to 1, and `formatPercent` writes the em dash
+ * when there's no score yet. It shares that helper with the test library and
+ * the results card, so one score never reads two ways in two places.
  */
 function ScoreMeter({ score }: { score: number | null }) {
   const percent = score === null ? null : Math.round(score * 100);
@@ -163,11 +165,11 @@ function ScoreMeter({ score }: { score: number | null }) {
       </span>
       <span
         className={cn(
-          "w-7 text-right tabular-nums",
+          "w-11 text-right tabular-nums",
           percent === null ? "text-muted-foreground" : "font-semibold text-foreground",
         )}
       >
-        {percent === null ? "—" : percent}
+        {formatPercent(score)}
       </span>
     </span>
   );
