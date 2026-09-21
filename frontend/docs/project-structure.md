@@ -1,6 +1,6 @@
 # Project structure
 
-**Status:** Done · **Last updated:** 2026-09-15
+**Status:** Done · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -23,7 +23,7 @@ app/
 ├── (app)/
 │   ├── layout.tsx                      # App shell; confirms the session
 │   ├── page.tsx                        # Dashboard
-│   ├── _components/                    # The dashboard's cards
+│   ├── _components/                    # The dashboard's view and its two cards
 │   └── assessments/
 │       ├── page.tsx                    # Library and Sent tabs
 │       ├── _components/                # library-table, sent-table, the new-test and JSON import dialogs
@@ -40,7 +40,7 @@ components/
 │              # the status badges, the score summary and the candidate pages' wordmark
 └── ui/        # shadcn/ui
 hooks/         # use-mobile (from shadcn), use-countdown, use-debounced-value, use-online
-lib/           # Used across folders: form validation, dashboard types, formatting, sample data, cn(),
+lib/           # Used across folders: form validation, formatting, cn(),
 │              # the server-side session check (session.ts), the ?next= link (sign-in-redirect.ts) and the query keys (query-keys.ts)
 └── api/       # The API client, one file per domain, and serverApiFetch (see api-client.md)
 proxy.ts       # Sends signed-out visitors to /login; /take/ is public (see authentication.md)
@@ -73,7 +73,7 @@ The placement rules, with examples, are in [AGENTS.md](../AGENTS.md#where-compon
 | Where the rules live | AGENTS.md | Coding agents read it before every task | Requested |
 | Components a layout renders | `components/shared/` | A layout renders on every page below it. `app/(app)/` also holds the dashboard page, so otherwise the shell and the dashboard would share one `_components/` folder. | Build default |
 | `PageHeader` | `components/shared/` | [design-system.md](design-system.md#app-shell) makes it the header of every app page | Build default |
-| Helpers, types and constants | Next to the components that use them, or in `lib/` when those are in different folders. `lib/` and `components/` never import from `app/`. | The form validation serves four pages, and `lib/sample-data.ts` uses the dashboard types | Build default |
+| Helpers, types and constants | Next to the components that use them, or in `lib/` when those are in different folders. `lib/` and `components/` never import from `app/`. | The form validation serves four pages, and `lib/format.ts` serves most of them | Build default |
 | Importing a page's own components | A relative path (`./_components/login-form`). Everything else uses `@/`. | Shorter than `@/app/(auth)/login/_components/…`, and shows the file belongs to the page | Build default |
 | Subfolders and barrel files | Neither: `components/shared/` and each `_components/` are flat, with no `index.ts` | Ten shared files don't need grouping yet, and `vercel-react-best-practices` says to import directly ([`bundle-barrel-imports`](../.agents/skills/vercel-react-best-practices/rules/bundle-barrel-imports.md)) | Build default |
 | API client | `lib/api/`, one file per domain. It's the one subfolder in `lib/`. | The API layer gains a file per domain, as [api-client.md](api-client.md) proposed | Build default |

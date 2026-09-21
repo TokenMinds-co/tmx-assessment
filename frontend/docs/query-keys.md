@@ -1,6 +1,6 @@
 # Query keys
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -8,7 +8,7 @@ How TanStack Query keys are named and structured, where the key factories live, 
 
 ## Current state
 
-- **Every factory is in [lib/query-keys.ts](../lib/query-keys.ts):** `assessmentKeys`, `invitationKeys`, `candidateKeys` and `takeKeys`.
+- **Every factory is in [lib/query-keys.ts](../lib/query-keys.ts):** `assessmentKeys`, `invitationKeys`, `candidateKeys`, `dashboardKeys` and `takeKeys`.
 - **The pipeline's keys** (jobs, stages, candidate profiles) come with that module.
 
 ## Rules
@@ -38,6 +38,7 @@ export const assessmentKeys = {
 | `assessmentKeys` | `["assessments"]` | `lists()`, `list({ status? })`, `details()`, `detail(id)` | The library, the Sent tab's test filter, the send dialog (published tests only) and the editor |
 | `invitationKeys` | `["invitations"]` | `lists()`, `list({ page, pageSize, search?, assessmentId?, candidateId? })`, `details()`, `detail(id)` | The Sent tab and the results page |
 | `candidateKeys` | `["candidates"]` | `search(text)` | The candidate picker in the send dialog |
+| `dashboardKeys` | `["dashboard"]` | `summary()`, which is `["dashboard", "summary"]` | The dashboard at `/` |
 | `takeKeys` | `["take"]` | `overview(token)`, which is `["take", token, "overview"]` | The candidate's start page |
 
 Because keys are hierarchical, invalidating `assessmentKeys.lists()` refreshes every library list whatever its filter, and invalidating `invitationKeys.all` refreshes every Sent page and every results page.
@@ -58,6 +59,8 @@ Every change to a test answers with the whole test, so most mutations set the de
 | Resend or revoke a link | | `invitationKeys.all` |
 | A candidate finishes a test | | `takeKeys.overview(token)` |
 
+**Nothing invalidates `dashboardKeys`.** Its numbers move when candidates take tests, on the server, not when staff change something here, so there is no mutation to hang an invalidation on. The query runs with `staleTime: 0` instead and reads fresh on every visit ([dashboard.md](dashboard.md)). If sending tests ever needs to show in the counts at once, invalidate `dashboardKeys.all` from the send dialog.
+
 Planned for the recruitment pipeline:
 
 | Factory | Root key | Keys |
@@ -76,7 +79,8 @@ Update these tables when you add a factory or a mutation.
 
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
-| Where the factories live | One file, `lib/query-keys.ts` | Four small factories so far. | Build default |
+| Where the factories live | One file, `lib/query-keys.ts` | Five small factories so far. | Build default |
+| The dashboard's key | One `summary()` key under `["dashboard"]`, invalidated by nothing | The page is one read-only call, and nothing staff do in this app changes what it counts | Build default |
 | Filters in keys | The whole filter object, such as `{ status }` or the Sent list's paging and search | Every variable a query depends on is in its key, so each filter gets its own cache entry. | Build default |
 
 ## Open decisions

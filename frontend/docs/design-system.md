@@ -1,6 +1,6 @@
 # Design system
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -100,11 +100,11 @@ Two more contrast fixes live in components. Inputs use the `rule-2` border inste
 | `text-base` | 1rem | Card titles |
 | `text-md` | 1.125rem | (new step) |
 | `text-lg` | 1.25rem | |
-| `text-xl` | 1.5rem | Sign-in card titles, stage counts |
+| `text-xl` | 1.5rem | Sign-in card titles |
 | `text-2xl` | 1.875rem | Page titles |
 | `text-3xl` | 2.25rem | |
 
-- Page titles are `text-2xl font-bold`, and card titles `text-base font-semibold`. Small labels (stage names, table headers) are 10–11px, uppercase, with `tracking-wide`.
+- Page titles are `text-2xl font-bold`, and card titles `text-base font-semibold`. Small labels (table headers and the like) are 10–11px, uppercase, with `tracking-wide`.
 - `tabular-nums` only where numbers line up in a column.
 
 ### Radius and elevation
@@ -171,7 +171,7 @@ sonner's `Toaster` sits at the bottom right, mounted once in [app/providers.tsx]
 
 These follow the dataviz skill, and the palette was checked with its validator against the white card surface:
 
-- **One series** (stage counts, average scores) uses the brand violet, `chart-1`.
+- **One series** (average scores) uses the brand violet, `chart-1`.
 - **Ordered steps** (test progress: not started, in progress, completed) use a three-step violet ramp, `chart-progress-1` to `chart-progress-3` (`#ae99f9`, `#8a59f5`, `#651dcb`). It passes the validator's ordinal checks: lightness gaps of at least 0.06, and the light end at 2.41:1 on white.
 - **Marks:** bars at most 24px thick, with a 4px rounded end and a square baseline, a 2px gap between stacked segments, and meter tracks in a lighter step of the same hue.
 - **Section scores** on results pages are `chart-1` bars on a lighter violet track, with the percentage in text beside them.
@@ -179,10 +179,6 @@ These follow the dataviz skill, and the palette was checked with its validator a
 - **Text never wears a chart color.** Values sit in text colors next to a colored swatch or bar.
 - **Every chart has a text twin,** a table or a legend with the numbers, so hover tooltips add detail but never hide it.
 - **Status colors carry meaning** and always come with an icon and a label.
-
-### Sample data
-
-Screens built before the API show invented data from [lib/sample-data.ts](../lib/sample-data.ts), with a "Sample data" badge in the page header. See [dashboard.md](dashboard.md).
 
 ### Browser details
 

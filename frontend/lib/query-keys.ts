@@ -27,6 +27,11 @@ export const candidateKeys = {
   search: (text: string) => [...candidateKeys.all, "search", text] as const,
 };
 
+export const dashboardKeys = {
+  all: ["dashboard"] as const,
+  summary: () => [...dashboardKeys.all, "summary"] as const,
+};
+
 export const takeKeys = {
   all: ["take"] as const,
   overview: (token: string) => [...takeKeys.all, token, "overview"] as const,

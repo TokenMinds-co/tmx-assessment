@@ -2,7 +2,7 @@
 
 Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4 and shadcn/ui. For what the product does and why, see the [root README](../README.md).
 
-> **Status: staff sign-in and assessments work.** Staff sign in and out, reset a forgotten password and accept an invitation, and every staff page needs a live session. Staff build tests, send them to candidates and read the results, and candidates take their tests from the emailed link. The dashboard still shows labelled sample data.
+> **Status: staff sign-in and assessments work.** Staff sign in and out, reset a forgotten password and accept an invitation, and every staff page needs a live session. Staff build tests, send them to candidates and read the results, and candidates take their tests from the emailed link. The dashboard shows real numbers from the API.
 
 ## Stack
 
@@ -40,7 +40,7 @@ Pages to look at:
 | http://localhost:3000/forgot-password | Ask for a reset link |
 | http://localhost:3000/reset-password?token=preview | Choose a new password. Any token shows the form; the API checks it when you submit. |
 | http://localhost:3000/accept-invite?token=preview | Set up an invited account. Any token shows the form; the API checks it when you submit. |
-| http://localhost:3000/ | Dashboard, for signed-in staff |
+| http://localhost:3000/ | Dashboard, for signed-in staff. Send a test to see numbers on it. |
 | http://localhost:3000/assessments | Test library and sent tests, for signed-in staff. Run `pnpm db:seed` in the backend to load the prefilled tests. |
 | `/take/<token>` | A candidate's tests. Send a test to yourself to get a link; while the backend's `RESEND_API_KEY` is empty, the email is printed in its terminal. |
 
@@ -71,7 +71,7 @@ frontend/
 ├── hooks/                  # Shared hooks: use-mobile (from shadcn), countdown, debounced value, online status
 ├── lib/
 │   ├── api/                # The API client: apiFetch() and one file per domain
-│   └── …                   # Query keys, session check, sign-in redirect, form validation, formatting, dashboard types, sample data, cn()
+│   └── …                   # Query keys, session check, sign-in redirect, form validation, formatting, cn()
 ├── proxy.ts                # Sends signed-out visitors to /login; /take/ is public
 ├── public/brand/           # TMX wordmark and mark
 ├── docs/                   # Area docs and CHANGELOG.md
@@ -97,7 +97,7 @@ A component that only one page uses sits in a `_components/` folder next to that
 | Data fetching | [data-fetching.md](docs/data-fetching.md) | In progress |
 | Query keys | [query-keys.md](docs/query-keys.md) | In progress |
 | Design system | [design-system.md](docs/design-system.md) | In progress |
-| Dashboard | [dashboard.md](docs/dashboard.md) | In progress (sample data) |
+| Dashboard | [dashboard.md](docs/dashboard.md) | In progress |
 | Recruitment pipeline | [recruitment-pipeline.md](docs/recruitment-pipeline.md) | Not started |
 | Assessments | [assessments.md](docs/assessments.md) | In progress |
 

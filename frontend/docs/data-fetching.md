@@ -1,6 +1,6 @@
 # Data fetching
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -11,7 +11,7 @@ How server state is fetched, cached and updated: TanStack Query setup, server pr
 - **TanStack Query 5** (`@tanstack/react-query` 5.102.8) is installed, with `@tanstack/react-query-devtools`, which only loads in development.
 - **[app/providers.tsx](../app/providers.tsx)** creates the `QueryClient` and mounts `QueryClientProvider`, the toasts and the devtools. [app/layout.tsx](../app/layout.tsx) wraps every page in it.
 - **The key factories** are in [lib/query-keys.ts](../lib/query-keys.ts). See [query-keys.md](query-keys.md).
-- **The assessment screens and the candidate's test page** use it (see [assessments.md](assessments.md)). The dashboard still shows sample data.
+- **Every staff screen and the candidate's test page** use it: the assessment screens (see [assessments.md](assessments.md)) and the dashboard, which reads `GET /api/dashboard` in one query (see [dashboard.md](dashboard.md)). Nothing renders invented data any more.
 
 ## How it works
 
@@ -26,11 +26,12 @@ How server state is fetched, cached and updated: TanStack Query setup, server pr
 
 ### Queries
 
-- **Staff pages check the session on the server, then fetch in the browser.** The page calls `requireUser()` and renders a client component that calls `useQuery`. Nothing is prefetched into the cache yet, so there's no `HydrationBoundary`.
+- **Staff pages check the session on the server, then fetch in the browser.** The page calls `requireUser()` and renders a client component that calls `useQuery`. The dashboard follows the same shape, and for the same reason: nothing is prefetched into the cache, so there's no `HydrationBoundary` anywhere.
 - **The staff preview** loads its test on the server with `serverApiFetch()` and passes it down as a prop, without a query.
 - **Keys always come from the factories.** Queries are written where they're used, with `useQuery`; `queryOptions` isn't used yet.
 - **Where the defaults don't fit:**
   - The candidate's start page has `staleTime: 0` and doesn't refetch when the window regains focus.
+  - The dashboard has `staleTime: 0`, because candidates move its counts server-side and no mutation here could invalidate them.
   - The Sent list and the candidate search keep the previous results on screen while the next ones load (`placeholderData: keepPreviousData`). The Sent list dims them meanwhile.
   - The results page polls every 15 seconds while the link is in progress (`refetchInterval`).
   - The candidate search only runs while its list is open, 250 ms after typing stops ([use-debounced-value.ts](../hooks/use-debounced-value.ts)). The Sent list's search waits 300 ms.
@@ -54,13 +55,13 @@ How server state is fetched, cached and updated: TanStack Query setup, server pr
 | Default `staleTime` (was open) | 30 seconds | Fresh enough for a small team, without a refetch on every tab switch. | Build default |
 | Retries | Queries retry twice, never after a 4xx. Mutations don't retry. | A 4xx won't change on a retry; a dropped connection might. | Build default |
 | A 401 in the browser | Sign in again with a full page load, then come back, except on candidate pages | The session has ended. Candidates have no session. | Build default |
-| Server prefetching (was open) | None yet: server components check the session and client components fetch | The screens so far are editors and tables that change in the browser. Prefetch with `HydrationBoundary` when a first paint needs it. | Build default |
+| Server prefetching (was open) | None, on every staff screen including the dashboard: server components check the session and client components fetch | The screens are editors, tables and a summary that change in the browser, and every one already has a skeleton. Prefetch with `HydrationBoundary` when a first paint needs it. | Build default |
+| The dashboard's freshness | `staleTime: 0`, with no invalidation from anywhere | Candidates change what it counts, on the server. There is no staff mutation to invalidate from. | Build default |
 | After a change to a test | Put the API's answer in the cache, then invalidate the lists | The API answers with the whole test, so the editor never refetches it. | Build default |
 
 ## Open decisions
 
 - Moving shared queries into `queryOptions`. The library list is written out twice today, in the Library and Sent tabs.
-- Which screens should prefetch on the server once the dashboard shows real data.
 
 ## References
 

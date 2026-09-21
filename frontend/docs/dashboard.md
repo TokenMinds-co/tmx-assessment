@@ -1,6 +1,6 @@
 # Dashboard
 
-**Status:** In progress (sample data) · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -8,32 +8,31 @@ The staff home page at `/`: what someone running the pipeline sees first. The pi
 
 ## Current state
 
-- **The page** is [app/(app)/page.tsx](<../app/(app)/page.tsx>), inside the app shell.
-- **Three cards** in [app/(app)/_components/](<../app/(app)/_components/>), the page's own components: Pipeline, Assessments and Recent results.
-- **Sample data only.** The numbers come from [lib/sample-data.ts](../lib/sample-data.ts), and the page header shows a "Sample data" badge. Nothing calls the API.
+- **The page** is [app/(app)/page.tsx](<../app/(app)/page.tsx>), inside the app shell. It calls `requireUser()`, renders the header on the server and hands the numbers to a client component.
+- **[dashboard-view.tsx](<../app/(app)/_components/dashboard-view.tsx>)** loads everything in one query and owns the loading, error and empty states.
+- **Two cards** in [app/(app)/_components/](<../app/(app)/_components/>), the page's own components: Assessments and Recent results.
+- **Real data.** `GET /api/dashboard` through [lib/api/dashboard.ts](../lib/api/dashboard.ts), keyed with `dashboardKeys.summary()` ([query-keys.md](query-keys.md)). Nothing is invented any more.
+- **No Pipeline card.** It showed candidates per stage and per open role from sample data. There is no Job model and no stage data yet, so it was removed; see [recruitment-pipeline.md](recruitment-pipeline.md), and the code in git history.
 
 ## Requirements
 
 Agreed with the user on 2026-09-15:
 
 - The main users are **HR and recruiters**, who run the pipeline day to day. Hiring managers drop in to review.
-- At a glance, the dashboard shows the **pipeline by stage** and **assessment progress**, with recent scores.
+- At a glance, the dashboard shows the **pipeline by stage** and **assessment progress**, with recent scores. The pipeline half waits for the pipeline module.
 - No functionality yet: layout and design only.
 
 ## How it works
 
-- **Pipeline card** ([pipeline-card.tsx](<../app/(app)/_components/pipeline-card.tsx>)): one cell per stage, in pipeline order, showing the candidate count, its share of the pipeline, a bar and the stage owner. All bars share one scale (the largest stage), so their lengths compare across cells. Below the cells, a table breaks the same counts down by open role, which also serves as the text version of the bars. When there are more stages than fit, the row of cells scrolls sideways.
-- **Assessments card** ([assessment-card.tsx](<../app/(app)/_components/assessment-card.tsx>)): one stacked bar of the candidates who were sent tests, split into not started, in progress and completed. A legend carries every number, and each segment has a hover tooltip. Invitations that expired are counted separately, with a warning icon. A table lists each test's time limit, completed attempts and average score as a 0–100 meter.
-- **Recent results card** ([recent-results-card.tsx](<../app/(app)/_components/recent-results-card.tsx>)): the latest candidates to finish their tests, with their role, number of tests, average score and date.
-- **Stages, owners and roles are data.** The cards render whatever arrays they get, in the shapes defined in [lib/dashboard-types.ts](../lib/dashboard-types.ts). No component hardcodes a stage or status name.
+- **One query for the whole page.** [dashboard-view.tsx](<../app/(app)/_components/dashboard-view.tsx>) calls `getDashboard()` with `staleTime: 0`, because candidates move these counts on their own and no staff action in this app changes them.
+- **Three states before the cards:**
+  - **Loading:** skeleton cards in the same grid as the real ones, marked `aria-busy`.
+  - **Error:** a destructive `Alert` with the API's message and a "Try again" button, the same pattern as [library-table.tsx](<../app/(app)/assessments/_components/library-table.tsx>).
+  - **Empty:** a fresh install has sent nothing, so the page shows an `Empty` with a border, "No tests sent yet" and a button to `/assessments`, instead of bars that all read zero.
+- **Assessments card** ([assessment-card.tsx](<../app/(app)/_components/assessment-card.tsx>)): one stacked bar of the links sent to candidates, split into not started, in progress and completed. A legend carries every number, and each segment has a hover tooltip. With nothing sent yet the bar shows a muted track. Links that expired are counted separately below, with a warning icon: the backend counts links, not candidates, and a link that expired with tests unfinished counts as expired whatever the candidate had done. A table lists each test's time limit, completed attempts and average score as a 0–100 meter, hidden while there are no tests.
+- **Recent results card** ([recent-results-card.tsx](<../app/(app)/_components/recent-results-card.tsx>)): the latest candidates to finish a test, with how many of their tests are done ("2 tests", or "1 of 3 tests" while some are left), the average score and the date. Each row links to that link's results page. There is no role: the app has no Job model yet.
+- **Scores arrive as 0 to 1** and are scaled for display, as everywhere else in the app. A test nobody has completed shows an em dash, not a zero.
 - Chart colors and mark rules are in [design-system.md](design-system.md#charts).
-
-### Replacing the sample data
-
-1. Add the API queries (see [data-fetching.md](data-fetching.md) and [query-keys.md](query-keys.md)) and map the responses to the types in `lib/dashboard-types.ts`.
-2. Pass the real data into the cards from [app/(app)/page.tsx](<../app/(app)/page.tsx>), and remove the "Sample data" badge. The page must call `requireUser()` before it loads anything, since the layout's check doesn't re-run on client-side navigation (see [authentication.md](authentication.md#protecting-staff-pages)).
-3. Delete [lib/sample-data.ts](../lib/sample-data.ts).
-4. Add loading, empty (no open roles, no tests sent) and error states.
 
 The account menu already shows the signed-in user.
 
@@ -45,21 +44,22 @@ The account menu already shows the signed-in user.
 | --- | --- | --- | --- |
 | Main users | HR and recruiters; hiring managers drop in | | Requested |
 | What it shows | The pipeline by stage, and assessment progress with recent scores | | Requested |
-| Real data | None yet: invented sample data | No functionality for now | Requested |
-| Labelling | A "Sample data" badge in the page header | Nobody should mistake the numbers for real ones | Build default |
+| Real data (was: sample data) | The dashboard shows real data, from one endpoint, `GET /api/dashboard` | One call for one screen: the numbers are read together and never mutated from here | Requested |
+| The Pipeline card | Removed until the pipeline module exists | There is no Job model and no stage data to draw it from. Its code is in git history. | Requested |
 | Where it lives | `/`, the staff home page | | Build default |
-| Stage bar color | One violet for every stage, not a light-to-dark ramp | Stages are configurable, so their number isn't fixed, and a ramp stops being readable past about six steps. Position already shows the order. | Build default |
-| Counts per role | A table under the stage cells | Recruiters work role by role, and the table doubles as the text version of the bars | Build default |
+| Freshness | `staleTime: 0`, and nothing invalidates the dashboard | Candidates change these numbers server-side at any moment, so no staff mutation in this app could invalidate them. A fresh read on every visit is the cheapest correct answer. | Build default |
+| Nothing sent yet | A page-level `Empty` with a button to `/assessments`, instead of the cards | A brand-new install has no data. Zeroed bars read as a broken page; this reads as a next step. | Build default |
+| Result rows | Each links to `/assessments/invitations/<id>`, the results page for that link | The row is a summary of one send, and the results page is where the detail already lives | Build default |
 | Expired invitations | Counted beside the progress bar, with a warning icon, not as a segment | The bar shows progress. Expiring is a status. | Build default |
 | Pass or fail | Not shown | Pass marks aren't decided | Build default |
 
 ## Open decisions
 
 - The time window: everything open right now, or the last 30 days. And whether the page needs a date range filter.
-- Which candidates count as active, for example whether rejected candidates drop out of the counts.
 - Whether hiring managers get their own view.
 - How scores are colored once pass marks exist.
-- Where each card links to once the candidate, job and assessment screens exist.
+- Where the Assessments card links to once the candidate and job screens exist.
+- Whether the page should prefetch on the server once it has more than one query ([data-fetching.md](data-fetching.md)).
 
 ## References
 
@@ -67,4 +67,5 @@ The account menu already shows the signed-in user.
 - [recruitment-pipeline.md](recruitment-pipeline.md)
 - [assessments.md](assessments.md)
 - [data-fetching.md](data-fetching.md)
+- [query-keys.md](query-keys.md)
 - [PRODUCT.md](../PRODUCT.md)

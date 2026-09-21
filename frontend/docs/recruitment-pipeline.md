@@ -1,6 +1,6 @@
 # Recruitment pipeline
 
-**Status:** Not started · **Last updated:** 2026-09-15
+**Status:** Not started · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -8,7 +8,7 @@ Staff screens for jobs, candidates and stages: the pipeline board and list, the 
 
 ## Current state
 
-Not started. The dashboard already previews candidates per stage and per open role with sample data; see [dashboard.md](dashboard.md). Its stages, owners and roles are passed in as data, as the requirements below ask.
+Not started. The dashboard used to preview candidates per stage and per open role from invented data. That Pipeline card was removed when the dashboard moved to the real API, because there is no Job model and no stage data behind it; see [dashboard.md](dashboard.md). Its code is in git history (`app/(app)/_components/pipeline-card.tsx`), and the decisions it settled are kept below, so a real pipeline card can start from them.
 
 ## Requirements
 
@@ -32,12 +32,16 @@ Not started. The dashboard already previews candidates per stage and per open ro
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
 | A page where candidates apply | None. Candidates apply through a Notion form, and the backend imports the responses. Assessments are still taken in this app. | | Requested |
+| Stage bar color | One violet for every stage, not a light-to-dark ramp | Stages are configurable, so their number isn't fixed, and a ramp stops being readable past about six steps. Position already shows the order. | Build default (from the dashboard's Pipeline card) |
+| Counts per role | A table under the stage cells | Recruiters work role by role, and the table doubles as the text version of the bars | Build default (from the dashboard's Pipeline card) |
 
 ## Open decisions
 
 - The default view: board or table.
 - Whether stages can be changed by drag and drop.
 - Whether this replaces the monday.com board from day one, or runs alongside it for a while.
+- Which candidates count as active, for example whether rejected candidates drop out of the counts.
+- Whether the dashboard gets a pipeline card back once this module exists, and what it shows.
 
 ## References
 
