@@ -1,6 +1,6 @@
 # Assessments
 
-**Status:** In progress · **Last updated:** 2026-09-16
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -19,9 +19,9 @@ The staff screens for the test library, the test editor, sending tests and readi
   | `/preview/[assessmentId]` | [page.tsx](<../app/(candidate)/preview/[assessmentId]/page.tsx>) | The staff preview, opened in a new tab. Nothing is saved. |
   | `/take/[token]` | [page.tsx](<../app/(candidate)/take/[token]/page.tsx>) | The candidate's link. No sign-in. |
 
-- **Shared pieces** in [components/shared/](../components/shared/): the runner ([assessment-runner.tsx](../components/shared/assessment-runner.tsx) and the `runner-*` files), the send and resend dialogs, the candidate picker, the copyable link, the status badges, the score summary, the file drop zone, the finish mark and the TokenMinds wordmark for candidate pages.
+- **Shared pieces** in [components/shared/](../components/shared/): the runner ([assessment-runner.tsx](../components/shared/assessment-runner.tsx) and the `runner-*` files), the send and resend dialogs, the candidate picker, the copyable link, the status badges, the score summary, the file drop zone, the finish mark and the company wordmark for candidate pages.
 - **API modules:** [assessments.ts](../lib/api/assessments.ts), [invitations.ts](../lib/api/invitations.ts), [candidates.ts](../lib/api/candidates.ts), [media.ts](../lib/api/media.ts) and [take.ts](../lib/api/take.ts) in `lib/api/` (see [api-client.md](api-client.md)). Data comes through TanStack Query (see [data-fetching.md](data-fetching.md) and [query-keys.md](query-keys.md)).
-- **Assessments is a link in the navigation** now. The dashboard's assessment card still shows sample data; see [dashboard.md](dashboard.md).
+- **Assessments is a link in the navigation** now. The dashboard's assessment card shows real data from `GET /api/dashboard`; see [dashboard.md](dashboard.md).
 
 ## Requirements
 
@@ -84,7 +84,7 @@ The staff screens for the test library, the test editor, sending tests and readi
 - **Answers are saved one at a time** as the candidate goes. A question's saves go in order, so a quick change of mind can't arrive first. A save is tried up to four times after a dropped connection, a rate limit or a server error. The footer shows "Saving…", "Saved", or that the browser is offline ([use-online.ts](../hooks/use-online.ts)); answers that couldn't be saved are sent again when the connection returns, and before submitting.
 - **Audio** plays without a seek bar ([runner-audio.tsx](../components/shared/runner-audio.tsx)), once plus the test's replays. Pausing doesn't use one up. The browser keeps the count.
 - **Submitting asks first,** and lists the unanswered questions when going back is allowed. Afterwards the candidate sees a thank-you screen ([take-done.tsx](<../app/(candidate)/take/[token]/_components/take-done.tsx>)) and their next test, never a score.
-- **A link that doesn't work, an expired link and a failed load** each get their own calm message ([candidate-message.tsx](<../app/(candidate)/take/[token]/_components/candidate-message.tsx>)), matched on the API's 404 and 410. Candidate pages show the TokenMinds wordmark, not the TMX HR logo.
+- **A link that doesn't work, an expired link and a failed load** each get their own calm message ([candidate-message.tsx](<../app/(candidate)/take/[token]/_components/candidate-message.tsx>)), matched on the API's 404 and 410. Candidate pages show the company wordmark, not the TMX HR logo.
 
 ## Decisions
 

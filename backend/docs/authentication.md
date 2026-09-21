@@ -75,7 +75,7 @@ Errors use the shape in [api-conventions.md](api-conventions.md). The messages t
 - **The first admin comes from the command line:**
 
   ```bash
-  pnpm auth:invite-admin --email anchor@tokenminds.co --name "Anchor"
+  pnpm auth:invite-admin --email admin@example.com --name "Admin Name"
   ```
 
   It builds the app, runs [src/cli/invite-admin.ts](../src/cli/invite-admin.ts), emails the invitation and prints the link, so it works before Resend is set up. In a deployed environment, run `node dist/cli/invite-admin --email … --name …`.

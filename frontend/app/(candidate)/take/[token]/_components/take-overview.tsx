@@ -6,6 +6,7 @@ import { DoneMark } from "@/components/shared/done-mark";
 import { Button } from "@/components/ui/button";
 import { useCountdown } from "@/hooks/use-countdown";
 import type { TakeOverview, TakeOverviewAttempt } from "@/lib/api/take";
+import { COMPANY_NAME } from "@/lib/brand";
 import { formatClock, formatLongDate, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,9 @@ export function TakeOverviewScreen({
   const firstName = overview.candidateName.split(/\s+/)[0] ?? overview.candidateName;
   const open = overview.attempts.filter(isOpen);
   const minutes = open.reduce((sum, attempt) => sum + attempt.durationMinutes, 0);
-  const sender = overview.sentByName ? `${overview.sentByName} from TokenMinds` : "TokenMinds";
+  const sender = overview.sentByName
+    ? `${overview.sentByName} from ${COMPANY_NAME}`
+    : COMPANY_NAME;
 
   if (open.length === 0) {
     return (

@@ -66,7 +66,7 @@ export function LoginForm({ destination }: { destination: string }) {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="name@tokenminds.co"
+            placeholder="name@example.com"
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? "email-error" : undefined}
           />

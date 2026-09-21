@@ -36,12 +36,12 @@ describe('mail templates', () => {
   it('names the inviter when there is one', () => {
     const email = invitationEmail({
       name: 'Ada',
-      invitedByName: 'Anchor',
+      invitedByName: 'Sam',
       acceptUrl,
       expiresInDays: 7,
     });
 
-    expect(email.text).toContain('Anchor has invited you');
+    expect(email.text).toContain('Sam has invited you');
   });
 
   it('renders the reset and password-changed emails', () => {
@@ -62,6 +62,7 @@ describe('mail templates', () => {
 describe('assessment invitation email', () => {
   const input = {
     name: 'Ada',
+    companyName: 'Acme',
     tests: [
       { name: 'Communication', durationMinutes: 8 },
       { name: 'Motivation', durationMinutes: 15 },
@@ -69,18 +70,18 @@ describe('assessment invitation email', () => {
     startUrl: 'https://hr.example.com/take/abc_DEF-123',
     expiresAt: new Date('2026-09-29T10:00:00Z'),
     message: 'Good luck <3',
-    sentByName: 'Anchor',
+    sentByName: 'Sam',
   };
 
   it('lists every test, the total time, the link and the expiry', () => {
     const email = assessmentInvitationEmail(input);
 
-    expect(email.subject).toBe('Your TokenMinds assessments');
+    expect(email.subject).toBe('Your Acme assessments');
     expect(email.text).toContain(
       '- Communication (8 min)\n- Motivation (15 min)',
     );
     expect(email.text).toContain('about 23 minutes');
-    expect(email.text).toContain('Anchor from TokenMinds');
+    expect(email.text).toContain('Sam from Acme');
     expect(email.text).toContain(input.startUrl);
     expect(email.text).toContain('29 September 2026');
     expect(email.html).toContain('<li>Communication (8 min)</li>');
@@ -91,7 +92,7 @@ describe('assessment invitation email', () => {
     const email = assessmentInvitationEmail(input);
 
     expect(email.html).toContain('Good luck &lt;3');
-    expect(email.html).toContain('>TokenMinds</p>');
+    expect(email.html).toContain('>Acme</p>');
     expect(email.html).not.toContain('TMX HR');
   });
 
@@ -103,9 +104,9 @@ describe('assessment invitation email', () => {
       sentByName: null,
     });
 
-    expect(email.subject).toBe('Your TokenMinds assessment: Communication');
+    expect(email.subject).toBe('Your Acme assessment: Communication');
     expect(email.text).toContain(
-      'The TokenMinds team has sent you a short assessment',
+      'The Acme team has sent you a short assessment',
     );
     expect(email.text).toContain('It takes about 8 minutes');
   });

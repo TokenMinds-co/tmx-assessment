@@ -1,6 +1,6 @@
 # Authentication
 
-**Status:** In progress (staff sign-in and candidate links done) · **Last updated:** 2026-09-15
+**Status:** In progress (staff sign-in and candidate links done) · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -48,7 +48,7 @@ Two layers, following the Next.js 16 authentication guide:
 
 - **A cookie doesn't mean a session.** It can outlive one: sessions end after 7 idle days, and a reset signs everyone out. With such a cookie, proxy.ts lets the request through, the layout's check fails, and the user lands on `/login`. The sign-in page asks the API too, so there's no redirect loop.
 - **A signed-in visitor skips `/login`.** The page asks the API, then redirects to `?next=` or the dashboard. If the API can't be reached, it shows the form anyway.
-- **Layouts don't re-render on client-side navigation.** A server component, server action or route handler that loads or changes staff data must call `requireUser()` itself, not rely on the layout. The dashboard only shows sample data, so it doesn't call it yet. The assessment pages call it, then fetch their data in the browser.
+- **Layouts don't re-render on client-side navigation.** A server component, server action or route handler that loads or changes staff data must call `requireUser()` itself, not rely on the layout. The dashboard calls it, then its client component fetches the numbers in the browser. The assessment pages do the same.
 - **If the API is down,** staff pages show Next.js's default error page ("This page couldn’t load"), and signing in says "Something went wrong on our side. Try again in a moment."
 
 ### Forms
@@ -74,7 +74,7 @@ Staff screens fetch in the browser with TanStack Query. A 401 from any query or 
 ### Trying it locally
 
 1. Start the backend and the frontend, with `API_URL` in the frontend's `.env` set to the backend's address (see the [root README](../../README.md#quick-start)).
-2. In `backend/`, invite yourself: `pnpm auth:invite-admin --email you@tokenminds.co --name "Your Name"`. It prints the link. While the backend's `RESEND_API_KEY` is empty, emails, including reset links, are printed in the backend's terminal instead of sent.
+2. In `backend/`, invite yourself: `pnpm auth:invite-admin --email you@example.com --name "Your Name"`. It prints the link. While the backend's `RESEND_API_KEY` is empty, emails, including reset links, are printed in the backend's terminal instead of sent.
 3. Open the link, choose a password, and you land on the dashboard, signed in.
 
 ## Decisions

@@ -7,7 +7,7 @@ export class UserResponseDto {
   @ApiProperty({ format: 'uuid' })
   id!: string;
 
-  @ApiProperty({ format: 'email', example: 'ada@tokenminds.co' })
+  @ApiProperty({ format: 'email', example: 'ada@example.com' })
   email!: string;
 
   @ApiProperty({ example: 'Ada Lovelace' })

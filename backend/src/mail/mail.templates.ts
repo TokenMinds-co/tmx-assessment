@@ -1,6 +1,4 @@
 const APP_NAME = 'TMX HR';
-/** Candidates don't know the internal app, so their emails carry the company's name. */
-const CANDIDATE_BRAND = 'TokenMinds';
 
 export interface RenderedEmail {
   subject: string;
@@ -46,6 +44,11 @@ export interface PasswordChangedEmailInput {
 
 export interface AssessmentInvitationEmailInput {
   name: string;
+  /**
+   * Candidates don't know the internal app, so their emails carry the hiring
+   * company's name. It comes from `COMPANY_NAME`; `MailService` fills it in.
+   */
+  companyName: string;
   tests: { name: string; durationMinutes: number }[];
   startUrl: string;
   expiresAt: Date;
@@ -63,7 +66,7 @@ export function invitationEmail(input: InvitationEmailInput): RenderedEmail {
     heading: 'Activate your account',
     paragraphs: [
       `Hi ${input.name},`,
-      `${inviter} to join ${APP_NAME}, TokenMinds' internal HR app. Set a password to activate your account.`,
+      `${inviter} to join ${APP_NAME}. Set a password to activate your account.`,
     ],
     action: { label: 'Set your password', url: input.acceptUrl },
     footnote: `This link expires in ${input.expiresInDays} days. If you weren't expecting this invitation, you can ignore this email.`,
@@ -108,9 +111,10 @@ export function assessmentInvitationEmail(
     (sum, test) => sum + test.durationMinutes,
     0,
   );
+  const company = input.companyName;
   const sender = input.sentByName
-    ? `${input.sentByName} from ${CANDIDATE_BRAND}`
-    : `The ${CANDIDATE_BRAND} team`;
+    ? `${input.sentByName} from ${company}`
+    : `The ${company} team`;
 
   const closing = [
     one
@@ -124,10 +128,10 @@ export function assessmentInvitationEmail(
   }
 
   return render({
-    brand: CANDIDATE_BRAND,
+    brand: company,
     subject: one
-      ? `Your ${CANDIDATE_BRAND} assessment: ${input.tests[0]?.name ?? ''}`.trim()
-      : `Your ${CANDIDATE_BRAND} assessments`,
+      ? `Your ${company} assessment: ${input.tests[0]?.name ?? ''}`.trim()
+      : `Your ${company} assessments`,
     heading: one ? 'Your assessment is ready' : 'Your assessments are ready',
     paragraphs: [
       `Hi ${input.name},`,

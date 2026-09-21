@@ -16,7 +16,7 @@ export interface NewPasswordErrors {
 export function emailError(value: string): string | undefined {
   const email = value.trim();
   if (!email) return "Enter your email address.";
-  if (!EMAIL_PATTERN.test(email)) return "Enter a full email address, like name@tokenminds.co.";
+  if (!EMAIL_PATTERN.test(email)) return "Enter a full email address, like name@example.com.";
   return undefined;
 }
 

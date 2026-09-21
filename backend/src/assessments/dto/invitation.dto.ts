@@ -375,7 +375,7 @@ export class SentInvitationDto {
   invitation!: InvitationDetailDto;
 
   @ApiProperty({
-    example: 'https://hr.tokenminds.co/take/…',
+    example: 'https://hr.example.com/take/…',
     description:
       'The candidate’s link. Only the token’s hash is stored, so this is the one chance to copy it; resending makes a new one.',
   })

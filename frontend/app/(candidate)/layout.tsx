@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { COMPANY_NAME } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: { absolute: "Your assessment · TokenMinds" },
+  title: { absolute: `Your assessment · ${COMPANY_NAME}` },
   // The candidate's access token is in the address. Never send it to another site.
   referrer: "no-referrer",
 };

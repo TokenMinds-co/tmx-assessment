@@ -163,7 +163,7 @@ Run these on the server, from the clone:
 
 ```bash
 # The first admin (the link is emailed, and printed too)
-docker compose -f backend/docker-compose-production.yml exec backend node dist/cli/invite-admin --email you@tokenminds.co --name "Your Name"
+docker compose -f backend/docker-compose-production.yml exec backend node dist/cli/invite-admin --email you@example.com --name "Your Name"
 # The prefilled tests and their audio
 docker compose -f backend/docker-compose-production.yml exec backend node dist/cli/seed-assessments
 # Logs

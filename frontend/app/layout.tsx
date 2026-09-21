@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: { default: "TMX HR", template: "%s · TMX HR" },
-  description: "TokenMinds’ internal HR app for recruitment and candidate assessments.",
+  description: "An internal HR app for recruitment and candidate assessments.",
   // An internal tool: keep every page out of search results.
   robots: { index: false, follow: false },
 };

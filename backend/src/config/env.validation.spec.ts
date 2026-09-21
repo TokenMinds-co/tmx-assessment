@@ -17,6 +17,16 @@ describe('validateEnv', () => {
     expect(env.STORAGE_DIR).toBe('./storage');
   });
 
+  it('falls back to the app name as the company candidates see', () => {
+    expect(validateEnv(required).COMPANY_NAME).toBe('TMX HR');
+    expect(validateEnv({ ...required, COMPANY_NAME: '' }).COMPANY_NAME).toBe(
+      'TMX HR',
+    );
+    expect(
+      validateEnv({ ...required, COMPANY_NAME: 'Acme' }).COMPANY_NAME,
+    ).toBe('Acme');
+  });
+
   it('converts numeric strings to numbers', () => {
     expect(validateEnv({ ...required, PORT: '5000' }).PORT).toBe(5000);
   });
@@ -50,7 +60,7 @@ describe('validateEnv', () => {
   });
 
   it('accepts a comma-separated CORS_ORIGINS list', () => {
-    const origins = 'https://hr.tokenminds.co, http://localhost:3001';
+    const origins = 'https://hr.example.com, http://localhost:3001';
 
     expect(
       validateEnv({ ...required, CORS_ORIGINS: origins }).CORS_ORIGINS,
@@ -59,7 +69,7 @@ describe('validateEnv', () => {
 
   it('rejects CORS_ORIGINS entries that are not http(s) URLs', () => {
     expect(() =>
-      validateEnv({ ...required, CORS_ORIGINS: 'hr.tokenminds.co' }),
+      validateEnv({ ...required, CORS_ORIGINS: 'hr.example.com' }),
     ).toThrow(/CORS_ORIGINS/);
   });
 });

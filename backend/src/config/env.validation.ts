@@ -55,6 +55,14 @@ export class EnvironmentVariables {
   })
   CORS_ORIGINS?: string;
 
+  /**
+   * The hiring company's name, as candidates see it in their assessment
+   * emails. Staff emails use the app's own name instead.
+   */
+  @IsString()
+  @IsNotEmpty()
+  COMPANY_NAME: string = 'TMX HR';
+
   @IsInt()
   @Min(1)
   @Max(30)

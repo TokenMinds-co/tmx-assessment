@@ -1,6 +1,6 @@
 # Routing
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -12,7 +12,7 @@ Three route groups, each with its own layout:
 
 | Route | Group | Page | Notes |
 | --- | --- | --- | --- |
-| `/` | `(app)` | Dashboard | [app/(app)/page.tsx](<../app/(app)/page.tsx>). Signed-in staff only. Shows sample data; see [dashboard.md](dashboard.md). |
+| `/` | `(app)` | Dashboard | [app/(app)/page.tsx](<../app/(app)/page.tsx>). Signed-in staff only. Shows real data from `GET /api/dashboard`; see [dashboard.md](dashboard.md). |
 | `/login` | `(auth)` | Sign in | See [authentication.md](authentication.md). |
 | `/forgot-password` | `(auth)` | Ask for a reset link | |
 | `/reset-password?token=…` | `(auth)` | Choose a new password | Linked from the reset email. Without a token it shows the "This reset link doesn't work" state. |
@@ -25,7 +25,7 @@ Three route groups, each with its own layout:
 
 - **`(app)`** ([layout](<../app/(app)/layout.tsx>)) is the staff app shell: sidebar, topbar and page. It reads the `sidebar_state` cookie, so its pages render on each request.
 - **`(auth)`** ([layout](<../app/(auth)/layout.tsx>)) is the TMX HR logo above one centered card.
-- **`(candidate)`** ([layout](<../app/(candidate)/layout.tsx>)) has no staff shell: each page draws its own header, since the test runner needs the whole screen. Its pages are titled "Your assessment · TokenMinds" and send no referrer (`referrer: "no-referrer"`), so the token in a candidate's address never reaches another site. `/take/[token]` has its own error page.
+- **`(candidate)`** ([layout](<../app/(candidate)/layout.tsx>)) has no staff shell: each page draws its own header, since the test runner needs the whole screen. Its pages are titled "Your assessment · <the company name>" (`NEXT_PUBLIC_COMPANY_NAME`, see [configuration.md](configuration.md)) and send no referrer (`referrer: "no-referrer"`), so the token in a candidate's address never reaches another site. `/take/[token]` has its own error page.
 - **Navigation** comes from [components/shared/nav-items.ts](../components/shared/nav-items.ts). Assessments is a link. Candidates, Jobs and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
 - **Staff pages need a session.** [proxy.ts](../proxy.ts) sends signed-out visitors to `/login?next=…`, and the `(app)` layout confirms the session with the API. The four `(auth)` pages are public, and so is everything under `/take/` (`PUBLIC_PREFIXES` in proxy.ts). `/preview/[assessmentId]` sits in the `(candidate)` group for its look but still needs a session: proxy.ts redirects without the cookie, and the page calls `requireUser()`. See [authentication.md](authentication.md).
 - **`/api/*` belongs to the backend.** A rewrite in [next.config.ts](../next.config.ts) forwards it, so no page or route handler can live there. See [api-client.md](api-client.md).

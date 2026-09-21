@@ -26,7 +26,7 @@ export const IsNormalizedEmail = () =>
     ApiProperty({
       format: 'email',
       maxLength: 254,
-      example: 'ada@tokenminds.co',
+      example: 'ada@example.com',
     }),
     Transform(toNormalizedEmail),
     IsEmail({}, { message: 'Enter a valid email address.' }),
