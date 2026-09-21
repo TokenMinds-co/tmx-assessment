@@ -1,6 +1,6 @@
 # Assessments
 
-**Status:** In progress · **Last updated:** 2026-09-16
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -21,7 +21,8 @@ Test templates and their questions, question audio, candidates, sending tests to
   | Motivation | 20 | 15 min | Alignment with the role profile | 0 |
 
   Load them with `pnpm db:seed` (see [database.md](database.md#seed-data)). [seed-files.spec.ts](../src/assessments/canonical/seed-files.spec.ts) checks each file against its workbook, so add a row there when a test joins the seed.
-- **Limits** are in [assessments.constants.ts](../src/assessments/assessments.constants.ts) and [media.constants.ts](../src/media/media.constants.ts).
+- **Limits** are in [assessments.constants.ts](../src/assessments/assessments.constants.ts) and [media.constants.ts](../src/media/media.constants.ts), along with `FINISHED_STATUSES`, the two attempt statuses that count as over.
+- **`AssessmentsModule` exports `AssessmentsService` and `AttemptsService`,** so another area can reuse these numbers and the overdue check instead of copying the rules; the [dashboard](dashboard.md) is the first to do so.
 
 ## Requirements
 
@@ -313,6 +314,6 @@ Attempt statuses are `NOT_STARTED`, `IN_PROGRESS`, `SUBMITTED` and `EXPIRED` (ti
 ## References
 
 - [question-generation.md](question-generation.md)
-- [recruitment-pipeline.md](recruitment-pipeline.md)
+- [recruitment-pipeline.md](recruitment-pipeline.md), [dashboard.md](dashboard.md)
 - [authentication.md](authentication.md#candidate-links) (candidate access), [email.md](email.md), [database.md](database.md#seed-data), [configuration.md](configuration.md) (`STORAGE_DIR`), [testing.md](testing.md)
 - Frontend: [assessments.md](../../frontend/docs/assessments.md)

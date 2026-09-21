@@ -33,6 +33,8 @@ import { TakeService } from './take.service';
     AttemptsService,
     TakeService,
   ],
-  exports: [AssessmentSeedService],
+  // The dashboard counts the same numbers as the test library and the Sent
+  // list, so it reuses these two rather than repeating their rules.
+  exports: [AssessmentSeedService, AssessmentsService, AttemptsService],
 })
 export class AssessmentsModule {}

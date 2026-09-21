@@ -1,5 +1,16 @@
 /** Limits and timings for assessments. See docs/assessments.md. */
 
+import { AttemptStatus } from '../generated/prisma/enums';
+
+/**
+ * An attempt is over once it was submitted or its time ran out. Shared, so the
+ * test library and the dashboard can't disagree about what "completed" means.
+ */
+export const FINISHED_STATUSES: readonly AttemptStatus[] = [
+  AttemptStatus.SUBMITTED,
+  AttemptStatus.EXPIRED,
+];
+
 export const MAX_QUESTIONS = 100;
 export const MAX_SECTIONS = 20;
 export const MAX_BANDS = 10;

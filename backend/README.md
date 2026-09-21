@@ -91,6 +91,7 @@ backend/
 │   ├── auth/               # Sign-in, sessions, passwords, invitations, guards
 │   ├── assessments/        # Tests, questions, sending, the candidate API and scoring
 │   ├── candidates/         # Candidates, for sending tests
+│   ├── dashboard/          # The numbers on the staff home page
 │   ├── media/              # Uploading and serving question audio and images
 │   ├── storage/            # Where uploaded files are kept (local disk)
 │   ├── health/             # Liveness and readiness checks
@@ -124,6 +125,7 @@ Every push to `main` that touches `backend/` builds the Docker image, pushes it 
 | API conventions | [api-conventions.md](docs/api-conventions.md) | In progress |
 | Authentication | [authentication.md](docs/authentication.md) | In progress |
 | Configuration | [configuration.md](docs/configuration.md) | In progress |
+| Dashboard | [dashboard.md](docs/dashboard.md) | In progress |
 | Database | [database.md](docs/database.md) | In progress |
 | Email | [email.md](docs/email.md) | In progress |
 | Operations | [operations.md](docs/operations.md) | In progress |

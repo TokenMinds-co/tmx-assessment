@@ -1,6 +1,6 @@
 # API conventions
 
-**Status:** In progress · **Last updated:** 2026-09-15
+**Status:** In progress · **Last updated:** 2026-09-21
 
 ## Scope
 
@@ -8,7 +8,7 @@ How the HTTP API is shaped: routes, request validation, response and error forma
 
 ## Current state
 
-The HTTP setup lives in [app.setup.ts](../src/app.setup.ts). Both [main.ts](../src/main.ts) and the e2e tests use it, so tests run through the same pipeline as production. The routes so far are the [auth endpoints](authentication.md#endpoints), the [assessment, media and candidate endpoints](assessments.md#endpoints), the [health checks](operations.md#health-checks), and the scaffold's `GET /api`, which returns `Hello World!` and is hidden from the docs. Outside production, the API docs are at `/api/docs`.
+The HTTP setup lives in [app.setup.ts](../src/app.setup.ts). Both [main.ts](../src/main.ts) and the e2e tests use it, so tests run through the same pipeline as production. The routes so far are the [auth endpoints](authentication.md#endpoints), the [assessment, media and candidate endpoints](assessments.md#endpoints), `GET /api/dashboard` for the [staff home page](dashboard.md), the [health checks](operations.md#health-checks), and the scaffold's `GET /api`, which returns `Hello World!` and is hidden from the docs. Outside production, the API docs are at `/api/docs`.
 
 ## How it works
 

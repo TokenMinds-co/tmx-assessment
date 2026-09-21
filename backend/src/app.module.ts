@@ -11,6 +11,7 @@ import {
   NodeEnv,
   validateEnv,
 } from './config/env.validation';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { HealthModule } from './health/health.module';
 import { MediaModule } from './media/media.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -36,6 +37,7 @@ import { PrismaModule } from './prisma/prisma.module';
     HealthModule,
     MediaModule,
     AssessmentsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

@@ -7,7 +7,6 @@ import {
 import { Prisma } from '../generated/prisma/client';
 import {
   AssessmentStatus,
-  AttemptStatus,
   QuestionOrder,
   ScoringMethod,
 } from '../generated/prisma/enums';
@@ -18,7 +17,7 @@ import {
 } from '../prisma/prisma-errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { AssessmentImportService } from './assessment-import.service';
-import { TEXT_LIMITS } from './assessments.constants';
+import { FINISHED_STATUSES, TEXT_LIMITS } from './assessments.constants';
 import {
   publishProblems,
   slugify,
@@ -56,10 +55,6 @@ import { answerKey, takeQuestions, takeSettings } from './take-view';
 export const ASSESSMENT_NOT_FOUND = 'That test doesn’t exist.';
 const SENT_CANNOT_DELETE =
   'This test has been sent to candidates, so it can’t be deleted. Archive it instead.';
-const FINISHED: readonly AttemptStatus[] = [
-  AttemptStatus.SUBMITTED,
-  AttemptStatus.EXPIRED,
-];
 
 /** Starting bands for a new test. Staff adjust them on the Scoring tab. */
 const DEFAULT_BANDS: Record<ScoringMethod, [number, string][]> = {
@@ -326,7 +321,7 @@ export class AssessmentsService {
         scored: 0,
       };
       total.sentCount += row._count._all;
-      if (FINISHED.includes(row.status)) {
+      if (FINISHED_STATUSES.includes(row.status)) {
         total.completedCount += row._count._all;
         if (row._avg.score !== null) {
           total.sum += row._avg.score * row._count._all;
