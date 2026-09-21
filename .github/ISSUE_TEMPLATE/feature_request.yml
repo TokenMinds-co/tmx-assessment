@@ -1,0 +1,77 @@
+name: Feature request
+description: Suggest something TMX HR should do that it does not do yet.
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you write: the area docs under `backend/docs/` and `frontend/docs/` each end
+        with an **Open decisions** list, and their **Decisions** tables record what was already
+        chosen and why. If your idea is already there, link that line instead of restating it.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: >-
+        What is hard or impossible today, and who it affects — a recruiter, an admin, a
+        candidate, someone self-hosting the app. Describe the problem, not the feature.
+      placeholder: >-
+        A recruiter cannot tell which candidates were sent a test but never opened the link,
+        so following up means checking each send by hand.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: What you propose
+      description: What should happen instead, and roughly where it would live in the app.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: >-
+        Other ways to solve the same problem, including doing nothing or handling it outside
+        the app, and why you ruled them out.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package
+      options:
+        - backend
+        - frontend
+        - Both
+        - Docs
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to build it?
+      description: >-
+        Either answer is fine. Wait for a maintainer to agree on the approach before you start
+        — see
+        [CONTRIBUTING.md](https://github.com/TokenMinds-co/tmx-hr/blob/main/CONTRIBUTING.md).
+      options:
+        - Yes, I would open a pull request
+        - Yes, with some guidance on the approach
+        - "No, I am suggesting it"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Sketches, links to how other tools do it, edge cases you already thought of.
+    validations:
+      required: false

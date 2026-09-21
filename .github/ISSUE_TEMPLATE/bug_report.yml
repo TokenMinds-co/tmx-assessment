@@ -1,0 +1,98 @@
+name: Bug report
+description: Something in TMX HR does not work the way it should.
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Two things before you fill this in:
+
+        - **Found a security problem?** Don't file it here. Follow
+          [SECURITY.md](https://github.com/TokenMinds-co/tmx-hr/blob/main/SECURITY.md).
+        - **Don't paste real candidate data.** This app stores people's names, email
+          addresses and test answers. Replace them with invented ones in anything you
+          paste, including logs and screenshots.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, including any error message shown in the app.
+      placeholder: Sending a test to a candidate returns 500, and the candidate gets no email.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: >-
+        Numbered steps someone else can follow from a fresh checkout. If it only happens with
+        particular data, say which — described, not pasted.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package
+      description: Pick "Both" if you are not sure which side it comes from.
+      options:
+        - backend
+        - frontend
+        - Both
+        - Docs
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Node, pnpm and OS
+      description: >-
+        From `node -v` and `pnpm -v`, plus your operating system. The project needs Node 20.19
+        or newer and pnpm 11.
+      placeholder: Node 24.3.0, pnpm 11.8.0, macOS 15.5
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit or version
+      description: The commit you are on (`git rev-parse --short HEAD`), or the release tag.
+      placeholder: 7002340
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >-
+        The backend terminal output, the browser console, or the failing request and response.
+        Scrub emails, names, tokens and anything from `.env` first. This is rendered as a code
+        block, so no backticks are needed.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Screenshots, how often it happens, what you already tried.
+    validations:
+      required: false

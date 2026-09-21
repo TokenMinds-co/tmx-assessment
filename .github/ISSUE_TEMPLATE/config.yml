@@ -1,0 +1,14 @@
+# Every issue starts from one of the forms in this folder, so reports arrive with the
+# information needed to act on them.
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/TokenMinds-co/tmx-hr/security/advisories/new
+    about: >-
+      Never report a vulnerability in a public issue. This opens a private report only the
+      maintainers can see. See SECURITY.md for what to include.
+  - name: Question about the code or a design decision
+    url: https://github.com/TokenMinds-co/tmx-hr/blob/main/README.md#documentation
+    about: >-
+      Each area of the app has a doc under backend/docs/ or frontend/docs/ with a Decisions
+      table explaining what was chosen and why. Check it before filing an issue.

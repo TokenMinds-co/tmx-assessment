@@ -1,0 +1,95 @@
+# Dependency updates.
+#
+# backend/ and frontend/ are separate pnpm projects with their own lockfiles, so each one
+# needs its own npm entry pointing at its folder.
+#
+# Note on pnpm: this repo pins pnpm 11.8.0 in `packageManager`. Dependabot's support for
+# pnpm lockfiles trails new major versions, so check the first run of each npm entry: if the
+# pull requests change `package.json` but leave `pnpm-lock.yaml` alone, or the run fails to
+# resolve the lockfile at all, Dependabot cannot read this lockfile version yet. Until it
+# can, either pause those two entries or update dependencies by hand.
+#
+# Everything is grouped so a quiet week produces one pull request per ecosystem instead of
+# fifteen. Majors still arrive one at a time, because each needs its own read of the
+# changelog.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      backend-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Framework and ORM majors are deliberate migrations, not a dependency bump: NestJS
+      # majors move the whole module system, and a Prisma major means a client regeneration
+      # and a migration pass. Raise these by hand, in their own pull request.
+      - dependency-name: "@nestjs/*"
+        update-types:
+          - version-update:semver-major
+      - dependency-name: prisma
+        update-types:
+          - version-update:semver-major
+      - dependency-name: "@prisma/*"
+        update-types:
+          - version-update:semver-major
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      frontend-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # The workflows live at the repository root, so this entry uses "/".
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # The backend's Dockerfile and its compose files.
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      backend-docker:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch

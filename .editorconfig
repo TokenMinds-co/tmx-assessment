@@ -1,0 +1,39 @@
+# Editor defaults for TMX HR. https://editorconfig.org
+#
+# These match what is already in the tree: two spaces everywhere, no tabs, LF endings.
+# The authority on formatting is still each package's tooling — Prettier on the backend
+# (backend/.prettierrc: single quotes, trailing commas) and ESLint on both sides. This file
+# only stops an editor from fighting them.
+#
+# Line length is deliberately left out. Prettier reads .editorconfig, so setting
+# max_line_length here would silently change its print width and reformat the backend.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown ends a line with two trailing spaces to force a line break, so trimming them
+# would change the rendered output.
+[*.md]
+trim_trailing_whitespace = false
+
+# Tabs are not valid indentation in YAML; being explicit keeps a stray editor default out of
+# the workflows and this file's neighbours.
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Quote style, for the editors that support this property. It differs by package: the
+# backend is formatted by Prettier with singleQuote, the frontend has no Prettier and its
+# code uses double quotes. Match the file you are editing.
+[backend/**.{ts,js,mjs,cjs}]
+quote_type = single
+
+[frontend/**.{ts,tsx,js,jsx,mjs,cjs}]
+quote_type = double
