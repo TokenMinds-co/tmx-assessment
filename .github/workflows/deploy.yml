@@ -61,7 +61,7 @@ jobs:
       image_tag: ${{ steps.sha.outputs.short_sha }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # The first 7 characters of the commit, which is also what
       # docker/metadata-action's `type=sha,format=short` produces below, so the
