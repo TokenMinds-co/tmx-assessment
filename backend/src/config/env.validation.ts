@@ -61,7 +61,7 @@ export class EnvironmentVariables {
    */
   @IsString()
   @IsNotEmpty()
-  COMPANY_NAME: string = 'TMX HR';
+  COMPANY_NAME: string = 'TMX Assessment';
 
   @IsInt()
   @Min(1)
@@ -85,7 +85,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  EMAIL_FROM: string = 'TMX HR <onboarding@resend.dev>';
+  EMAIL_FROM: string = 'TMX Assessment <onboarding@resend.dev>';
 
   /**
    * The folder for uploaded files, such as question audio. A relative path

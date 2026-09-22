@@ -19,7 +19,7 @@ import type { User } from "@/lib/api/auth";
 export function Topbar({ user }: { user: Pick<User, "name" | "email"> }) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
-  const title = NAV_ITEMS.find((item) => isNavItemActive(item, pathname))?.label ?? "TMX HR";
+  const title = NAV_ITEMS.find((item) => isNavItemActive(item, pathname))?.label ?? "TMX Assessment";
 
   return (
     <header className="sticky top-0 z-30 flex h-15 shrink-0 items-center gap-2 border-b bg-card pr-2 pl-3 md:h-19.25 md:gap-4 md:pr-7.5 md:pl-8">
@@ -36,7 +36,7 @@ export function Topbar({ user }: { user: Pick<User, "name" | "email"> }) {
 
       <Breadcrumb className="min-w-0 flex-1">
         <BreadcrumbList className="flex-nowrap">
-          <BreadcrumbItem className="hidden sm:inline-flex">TMX HR</BreadcrumbItem>
+          <BreadcrumbItem className="hidden sm:inline-flex">TMX Assessment</BreadcrumbItem>
           <BreadcrumbSeparator className="hidden sm:block" />
           <BreadcrumbItem className="min-w-0">
             <BreadcrumbPage className="truncate font-semibold">{title}</BreadcrumbPage>

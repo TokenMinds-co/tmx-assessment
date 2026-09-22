@@ -21,14 +21,14 @@
 # Explicit project name so `--remove-orphans` stays scoped to this stack and
 # never touches another project deployed from a directory that is also called
 # "backend".
-name: tmx-hr
+name: tmx-assessment
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
-    container_name: tmx_hr_be
+    container_name: tmx_assessment_be
     restart: unless-stopped
     env_file:
       - .env
@@ -36,7 +36,7 @@ services:
       # Uploads live on the volume below, whatever STORAGE_DIR says in .env.
       - STORAGE_DIR=/app/storage
     volumes:
-      - tmx_hr_storage:/app/storage
+      - tmx_assessment_storage:/app/storage
     deploy:
       resources:
         limits:
@@ -63,7 +63,7 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - tmx_hr_network
+      - tmx_assessment_network
       - postgres_network
     ports:
       # The app listens on PORT (from .env, default 4000), published as-is.
@@ -75,11 +75,11 @@ services:
         max-file: "3"
 
 volumes:
-  tmx_hr_storage:
+  tmx_assessment_storage:
     driver: local
 
 networks:
-  tmx_hr_network:
+  tmx_assessment_network:
     driver: bridge
     internal: false
   # The network the host's Postgres container is attached to. `external: true`:

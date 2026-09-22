@@ -6,6 +6,11 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 ## [Unreleased]
 
+### Changed
+
+- **The app is now called TMX Assessment.** The package is `tmx-assessment-frontend`, page titles use `%s · TMX Assessment`, the sidebar, topbar breadcrumb and network-error message say it, and `NEXT_PUBLIC_COMPANY_NAME` defaults to `TMX Assessment`. See [configuration.md](configuration.md).
+- **The sign-in lockup is `components/shared/tmx-assessment-logo.tsx`** (was `tmx-hr-logo.tsx`), exporting `TmxAssessmentLogo`, and sets "Assessment" next to the TMX wordmark. Its default size drops from 34px to 26px, because at 34px the longer word makes the lockup wider than a phone screen. See [design-system.md](design-system.md#brand-and-logo).
+
 ## [0.2.0] - 2026-09-21
 
 ### Added
@@ -22,7 +27,7 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 - shadcn's `Spinner`, and `FormError` and `SubmitButton` in `components/shared/`.
 - [project-structure.md](project-structure.md), and a "Where components go" section in `AGENTS.md` with the placement rules.
 - TMX design system on shadcn/ui (style `radix-vega`, Radix primitives, lucide icons). The TMX Visibility colors, Inter, type scale, radii, shadows and gradients are mapped onto shadcn's tokens, and Button, Input, Card, Badge, Alert, Dropdown menu, Table and Sidebar are customized to match. See [design-system.md](design-system.md).
-- TMX HR logo and favicon, built from the TMX brand artwork.
+- TMX Assessment logo and favicon, built from the TMX brand artwork.
 - App shell: a gradient sidebar that collapses and becomes a sheet on phones, and a topbar with a breadcrumb and an account menu. See [design-system.md](design-system.md#app-shell).
 - Staff sign-in screens, UI only: `/login`, `/forgot-password`, `/reset-password` and `/accept-invite`, with the backend's 12 to 128 character password rule. See [authentication.md](authentication.md).
 - A "Decisions" section in the area docs, recording each decision, why, and whether the maintainers asked for it.
@@ -43,7 +48,7 @@ Notable changes to the frontend, newest first. The format follows [Keep a Change
 
 - The dashboard page calls `requireUser()` itself instead of leaning on the `(app)` layout's check. A page that loads staff data confirms the session before it reads anything, so the rule is the same on every page rather than a property of where it happens to sit. See [authentication.md](authentication.md#protecting-staff-pages).
 - The Assessments card counts **links**, not candidates, and says so: the backend counts the links sent out, and a link that expired with tests unfinished counts as expired whatever the candidate had done. A test nobody has completed shows an em dash, not a zero, because no score and a score of zero are different facts. See [dashboard.md](dashboard.md).
-- `NEXT_PUBLIC_COMPANY_NAME` sets the company name candidates see — the page titles, the wordmark's alt text and the start page — read through `lib/brand.ts` and defaulting to `TMX HR`. It was hardcoded, so a fork would have greeted candidates under someone else's name. Next.js inlines it at build time, so changing it needs a rebuild, and the wordmark image is a separate file to replace. Keep it the same as the backend's `COMPANY_NAME`. See [configuration.md](configuration.md) and [design-system.md](design-system.md#candidate-pages).
+- `NEXT_PUBLIC_COMPANY_NAME` sets the company name candidates see — the page titles, the wordmark's alt text and the start page — read through `lib/brand.ts` and defaulting to `TMX Assessment`. It was hardcoded, so a fork would have greeted candidates under someone else's name. Next.js inlines it at build time, so changing it needs a rebuild, and the wordmark image is a separate file to replace. Keep it the same as the backend's `COMPANY_NAME`. See [configuration.md](configuration.md) and [design-system.md](design-system.md#candidate-pages).
 - Example email addresses in the docs are `example.com`, so nothing invites a reader to mail a real inbox.
 - The account menu shows the signed-in user, and "Sign out" ends the session.
 - The reset and invitation pages show their "doesn't work" card when the API turns a link down, not only when the token is missing.

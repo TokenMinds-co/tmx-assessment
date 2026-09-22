@@ -1,7 +1,7 @@
-# Backend image for TMX HR. The backend is a self-contained pnpm project, so the
+# Backend image for TMX Assessment. The backend is a self-contained pnpm project, so the
 # build context is this folder:
 #
-#   docker build -t tmx-hr-backend backend/
+#   docker build -t tmx-assessment-backend backend/
 #
 # Two stages: the builder installs everything and compiles to dist/; the
 # production stage installs only runtime dependencies and copies dist/ across.

@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <AuthCard
       title="Welcome back"
-      description="Sign in to TMX HR with your work email."
+      description="Sign in to TMX Assessment with your work email."
       // Accounts are invite-only on the backend, so there's no sign-up page.
       footer="No account? Ask an admin to invite you."
     >

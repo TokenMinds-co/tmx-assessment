@@ -1,4 +1,4 @@
-// Prisma schema for the TMX HR backend. See docs/database.md for conventions.
+// Prisma schema for the TMX Assessment backend. See docs/database.md for conventions.
 
 generator client {
   provider     = "prisma-client"

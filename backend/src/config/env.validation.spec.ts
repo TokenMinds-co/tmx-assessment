@@ -1,7 +1,7 @@
 import { NodeEnv, validateEnv } from './env.validation';
 
 const required = {
-  DATABASE_URL: 'postgres://user:pass@localhost:5432/tmx_hr',
+  DATABASE_URL: 'postgres://user:pass@localhost:5432/tmx_assessment',
   FRONTEND_URL: 'http://localhost:3000',
 };
 
@@ -13,14 +13,14 @@ describe('validateEnv', () => {
     expect(env.PORT).toBe(4000);
     expect(env.SESSION_TTL_DAYS).toBe(7);
     expect(env.TRUST_PROXY).toBe(0);
-    expect(env.EMAIL_FROM).toBe('TMX HR <onboarding@resend.dev>');
+    expect(env.EMAIL_FROM).toBe('TMX Assessment <onboarding@resend.dev>');
     expect(env.STORAGE_DIR).toBe('./storage');
   });
 
   it('falls back to the app name as the company candidates see', () => {
-    expect(validateEnv(required).COMPANY_NAME).toBe('TMX HR');
+    expect(validateEnv(required).COMPANY_NAME).toBe('TMX Assessment');
     expect(validateEnv({ ...required, COMPANY_NAME: '' }).COMPANY_NAME).toBe(
-      'TMX HR',
+      'TMX Assessment',
     );
     expect(
       validateEnv({ ...required, COMPANY_NAME: 'Acme' }).COMPANY_NAME,

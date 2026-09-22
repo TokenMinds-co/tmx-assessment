@@ -27,7 +27,7 @@ export interface TestApp {
  */
 export async function createTestApp(): Promise<TestApp> {
   const mail = new InMemoryMailTransport();
-  const storageDir = join(tmpdir(), `tmx-hr-e2e-${randomUUID()}`);
+  const storageDir = join(tmpdir(), `tmx-assessment-e2e-${randomUUID()}`);
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(MAIL_TRANSPORT)
     .useValue(mail)

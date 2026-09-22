@@ -9,7 +9,7 @@ import { ApiError, apiFetch } from "@/lib/api/client";
  * The httpOnly cookie the API sets on sign-in. Page scripts can't read it, but
  * proxy.ts and server components can.
  */
-export const SESSION_COOKIE = "tmx_hr_session";
+export const SESSION_COOKIE = "tmx_assessment_session";
 
 /** How the API answers a reset or invitation link that's unknown, used or expired. */
 const INVALID_LINK_MESSAGE = "This link is invalid or has expired.";

@@ -3,14 +3,14 @@
 ## Reporting a vulnerability
 
 **Please don't open a public issue for a security problem.** A public report tells everyone
-running TMX HR about the hole at the same moment it tells us, and this app holds people's
+running TMX Assessment about the hole at the same moment it tells us, and this app holds people's
 personal data.
 
 Report it privately, either way round:
 
 - **GitHub private vulnerability reporting** (preferred). Go to the
-  [Security tab](https://github.com/TokenMinds-co/tmx-hr/security) of
-  `TokenMinds-co/tmx-hr` and choose **Report a vulnerability**. The report is visible only to
+  [Security tab](https://github.com/TokenMinds-co/tmx-assessment/security) of
+  `TokenMinds-co/tmx-assessment` and choose **Report a vulnerability**. The report is visible only to
   the maintainers, and the whole exchange stays in one place.
 - **Email tech@tokenminds.co**, if you'd rather not use GitHub or can't reach the form.
 
@@ -29,7 +29,7 @@ the data itself.
 
 ## What happens next
 
-TMX HR is maintained by a small team, so here is what we can honestly promise:
+TMX Assessment is maintained by a small team, so here is what we can honestly promise:
 
 - **An acknowledgement within a few business days.** If a week goes by with nothing, send a
   reminder — assume it got lost, not ignored.
@@ -56,7 +56,7 @@ next tagged release. We don't backport fixes to older tags.
 
 ## What this app holds
 
-TMX HR is a recruitment tool. Its database stores candidates' names and email addresses,
+TMX Assessment is a recruitment tool. Its database stores candidates' names and email addresses,
 their answers to assessment questions, and their scores, alongside staff accounts and
 sessions.
 
@@ -66,6 +66,6 @@ tests or results, staff data leaking through a public endpoint, broken access co
 assessment routes, and anything that puts personal data into logs, error responses or
 uploaded files.
 
-If you run TMX HR yourself, the same applies to your own deployment: keep `DATABASE_URL`,
+If you run TMX Assessment yourself, the same applies to your own deployment: keep `DATABASE_URL`,
 `RESEND_API_KEY` and the session cookie settings out of version control, and serve it over
 HTTPS so the session cookie's `Secure` flag does its job.

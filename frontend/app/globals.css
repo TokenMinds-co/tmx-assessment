@@ -4,7 +4,7 @@
 
 /*
  * `dark:` only applies under a `.dark` ancestor, and the app never sets one:
- * TMX HR is light only for now (docs/design-system.md). Without this line
+ * TMX Assessment is light only for now (docs/design-system.md). Without this line
  * Tailwind keys `dark:` to the OS setting, and the shadcn components' dark
  * styles would switch on while every token below stayed light.
  */

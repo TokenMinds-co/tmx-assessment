@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * The company mark on candidate pages. Candidates don't know the internal
- * app, so they see the company wordmark, not the TMX HR lockup. The alt text
+ * app, so they see the company wordmark, not the TMX Assessment lockup. The alt text
  * is `COMPANY_NAME` (see lib/brand.ts); replace the image to match it.
  *
  * `w-fit`, not `w-auto`: most candidate pages put the mark straight into a

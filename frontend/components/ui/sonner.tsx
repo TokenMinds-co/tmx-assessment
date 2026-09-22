@@ -3,7 +3,7 @@
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
-// TMX HR is light only (docs/design-system.md), so the theme is fixed rather
+// TMX Assessment is light only (docs/design-system.md), so the theme is fixed rather
 // than read from next-themes as shadcn's version does.
 const Toaster = ({ ...props }: ToasterProps) => {
   return (

@@ -1,6 +1,6 @@
-# TMX HR: Frontend
+# TMX Assessment: Frontend
 
-Web app for TMX HR, built with Next.js 16 (App Router), React 19, Tailwind CSS 4 and shadcn/ui. For what the product does and why, see the [root README](../README.md).
+Web app for TMX Assessment, built with Next.js 16 (App Router), React 19, Tailwind CSS 4 and shadcn/ui. For what the product does and why, see the [root README](../README.md).
 
 > **Status: staff sign-in and assessments work.** Staff sign in and out, reset a forgotten password and accept an invitation, and every staff page needs a live session. Staff build tests, send them to candidates and read the results, and candidates take their tests from the emailed link. The dashboard shows real numbers from the API.
 

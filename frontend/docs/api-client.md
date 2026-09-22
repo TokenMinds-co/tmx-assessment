@@ -60,7 +60,7 @@ The backend's errors are `{ statusCode, message, error }`, where `message` is a 
 | 429, a rate limit | Too many attempts. Wait a few minutes, then try again. |
 | 500, or a 5xx without a JSON message, as when the rewrite can't reach the API | Something went wrong on our side. Try again in a moment. |
 | Any other error without a message | Something went wrong. Try again. |
-| No response at all: offline, or the server-side timeout | Couldn’t reach TMX HR. Check your connection and try again. |
+| No response at all: offline, or the server-side timeout | Couldn’t reach TMX Assessment. Check your connection and try again. |
 
 ### Types
 

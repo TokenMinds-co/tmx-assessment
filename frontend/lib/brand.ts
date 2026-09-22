@@ -10,4 +10,4 @@
  * rebuild, not just a restart. Keep it the same as the backend's
  * `COMPANY_NAME`, which names the company in candidates' emails.
  */
-export const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "TMX HR";
+export const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "TMX Assessment";

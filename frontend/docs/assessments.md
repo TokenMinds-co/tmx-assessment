@@ -84,7 +84,7 @@ The staff screens for the test library, the test editor, sending tests and readi
 - **Answers are saved one at a time** as the candidate goes. A question's saves go in order, so a quick change of mind can't arrive first. A save is tried up to four times after a dropped connection, a rate limit or a server error. The footer shows "Saving…", "Saved", or that the browser is offline ([use-online.ts](../hooks/use-online.ts)); answers that couldn't be saved are sent again when the connection returns, and before submitting.
 - **Audio** plays without a seek bar ([runner-audio.tsx](../components/shared/runner-audio.tsx)), once plus the test's replays. Pausing doesn't use one up. The browser keeps the count.
 - **Submitting asks first,** and lists the unanswered questions when going back is allowed. Afterwards the candidate sees a thank-you screen ([take-done.tsx](<../app/(candidate)/take/[token]/_components/take-done.tsx>)) and their next test, never a score.
-- **A link that doesn't work, an expired link and a failed load** each get their own calm message ([candidate-message.tsx](<../app/(candidate)/take/[token]/_components/candidate-message.tsx>)), matched on the API's 404 and 410. Candidate pages show the company wordmark, not the TMX HR logo.
+- **A link that doesn't work, an expired link and a failed load** each get their own calm message ([candidate-message.tsx](<../app/(candidate)/take/[token]/_components/candidate-message.tsx>)), matched on the API's 404 and 410. Candidate pages show the company wordmark, not the TMX Assessment logo.
 
 ## Decisions
 

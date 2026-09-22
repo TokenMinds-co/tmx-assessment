@@ -96,7 +96,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: tmx_hr_test
+          POSTGRES_DB: tmx_assessment_test
         ports:
           # Published on the runner, because the steps run on the host rather
           # than in a job container: localhost:5432 is this service.
@@ -104,7 +104,7 @@ jobs:
         # Without this the first step could connect before Postgres is
         # listening; the job only starts once pg_isready succeeds.
         options: >-
-          --health-cmd "pg_isready -U postgres -d tmx_hr_test"
+          --health-cmd "pg_isready -U postgres -d tmx_assessment_test"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -121,7 +121,7 @@ jobs:
       # swap in an in-memory mail transport and must never reach Resend.
       # STORAGE_DIR is unused too, since the suites redirect uploads to a temp
       # folder.
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tmx_hr_test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tmx_assessment_test
       FRONTEND_URL: http://localhost:3000
       # Jest sets this itself; setting it here makes it explicit and keeps a
       # stray `production` out. `test` also turns off rate limits, which the

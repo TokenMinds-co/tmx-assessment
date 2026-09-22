@@ -1,6 +1,6 @@
-# TMX HR
+# TMX Assessment
 
-[![CI](https://github.com/TokenMinds-co/tmx-hr/actions/workflows/ci.yml/badge.svg)](https://github.com/TokenMinds-co/tmx-hr/actions/workflows/ci.yml)
+[![CI](https://github.com/TokenMinds-co/tmx-assessment/actions/workflows/ci.yml/badge.svg)](https://github.com/TokenMinds-co/tmx-assessment/actions/workflows/ci.yml)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
 
 An open-source recruitment app with built-in timed candidate assessments.
@@ -181,7 +181,7 @@ in the backend's terminal.
 
 ### The name candidates see
 
-Emails and the candidate pages say "TMX HR" until you change it. Set `COMPANY_NAME` in
+Emails and the candidate pages say "TMX Assessment" until you change it. Set `COMPANY_NAME` in
 `backend/.env` and `NEXT_PUBLIC_COMPANY_NAME` in `frontend/.env` to the same value; the frontend
 inlines its copy at build time, so that one needs a rebuild rather than a restart. Every variable
 is described in [backend/docs/configuration.md](backend/docs/configuration.md) and
@@ -286,7 +286,7 @@ data, in fixtures, screenshots or issue reports.
 
 ### Trademarks
 
-The MIT licence covers the code. It does **not** cover the name "TMX HR" or the logo images in
+The MIT licence covers the code. It does **not** cover the name "TMX Assessment" or the logo images in
 [`frontend/public/brand/`](frontend/public/brand/) and the icons `frontend/app/icon.png` and
 `frontend/app/apple-icon.png`. If you run a fork, set `COMPANY_NAME` and
 `NEXT_PUBLIC_COMPANY_NAME` to your own company's name and replace those images with your own —

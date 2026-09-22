@@ -1,6 +1,6 @@
-# Contributing to TMX HR
+# Contributing to TMX Assessment
 
-Thanks for taking the time. TMX HR is a recruitment app with built-in timed candidate
+Thanks for taking the time. TMX Assessment is a recruitment app with built-in timed candidate
 assessments, described in the [README](README.md). This file covers how to get it running,
 how to check your work, and what a change has to include before it can be merged.
 

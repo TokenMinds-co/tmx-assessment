@@ -24,12 +24,12 @@ Three route groups, each with its own layout:
 | `/take/[token]` | `(candidate)` | A candidate's tests | Public: the token in the path is the access. Linked from the candidate's email. |
 
 - **`(app)`** ([layout](<../app/(app)/layout.tsx>)) is the staff app shell: sidebar, topbar and page. It reads the `sidebar_state` cookie, so its pages render on each request.
-- **`(auth)`** ([layout](<../app/(auth)/layout.tsx>)) is the TMX HR logo above one centered card.
+- **`(auth)`** ([layout](<../app/(auth)/layout.tsx>)) is the TMX Assessment logo above one centered card.
 - **`(candidate)`** ([layout](<../app/(candidate)/layout.tsx>)) has no staff shell: each page draws its own header, since the test runner needs the whole screen. Its pages are titled "Your assessment · <the company name>" (`NEXT_PUBLIC_COMPANY_NAME`, see [configuration.md](configuration.md)) and send no referrer (`referrer: "no-referrer"`), so the token in a candidate's address never reaches another site. `/take/[token]` has its own error page.
 - **Navigation** comes from [components/shared/nav-items.ts](../components/shared/nav-items.ts). Assessments is a link. Candidates, Jobs and Settings are listed as "Soon" and aren't links yet, so nothing in the app leads to a 404.
 - **Staff pages need a session.** [proxy.ts](../proxy.ts) sends signed-out visitors to `/login?next=…`, and the `(app)` layout confirms the session with the API. The four `(auth)` pages are public, and so is everything under `/take/` (`PUBLIC_PREFIXES` in proxy.ts). `/preview/[assessmentId]` sits in the `(candidate)` group for its look but still needs a session: proxy.ts redirects without the cookie, and the page calls `requireUser()`. See [authentication.md](authentication.md).
 - **`/api/*` belongs to the backend.** A rewrite in [next.config.ts](../next.config.ts) forwards it, so no page or route handler can live there. See [api-client.md](api-client.md).
-- **Metadata:** page titles use the template `%s · TMX HR`, and every page is `noindex, nofollow` ([app/layout.tsx](../app/layout.tsx)).
+- **Metadata:** page titles use the template `%s · TMX Assessment`, and every page is `noindex, nofollow` ([app/layout.tsx](../app/layout.tsx)).
 
 ## Requirements
 
@@ -60,7 +60,7 @@ When one of these ships, remove `soon` from its row in `nav-items.ts`.
 | Home page | The dashboard, at `/` | It's the first thing staff need after signing in | Build default |
 | Planned pages in the nav | Listed with a "Soon" badge, not linked | Shows the shape of the app without leading to 404s | Build default |
 | Search engines | `noindex, nofollow` on every page | It's an internal tool | Build default |
-| Page titles | "Page · TMX HR" | The reference app's pattern | Build default |
+| Page titles | "Page · TMX Assessment" | The reference app's pattern | Build default |
 | Which pages need a session | Every page except `/login`, `/forgot-password`, `/reset-password`, `/accept-invite` and anything under `/take/` | Staff pages hold candidates' personal data, so a new page is protected unless someone adds it to the list | Build default |
 | A candidate's address | `/take/<token>`, with the token as the last part of the path | Candidates keep and reopen the link, so it reads as a page address. The backend builds it with `frontendPathLink()`. | Build default |
 | Referrer on candidate pages | `no-referrer` | The candidate's token is in the address. | Build default |

@@ -59,7 +59,7 @@ Errors use the shape in [api-conventions.md](api-conventions.md). The messages t
 
 ### Sessions
 
-- **Signing in creates a row in `sessions`** and puts a random 256-bit token in an httpOnly cookie called `tmx_hr_session`. The database stores only the token's SHA-256 hash.
+- **Signing in creates a row in `sessions`** and puts a random 256-bit token in an httpOnly cookie called `tmx_assessment_session`. The database stores only the token's SHA-256 hash.
 - **Cookie settings:** `HttpOnly`, `SameSite=Lax`, `Path=/`, `Secure` in production, and `Domain` only if `COOKIE_DOMAIN` is set.
 - **Idle timeout:** a session ends after `SESSION_TTL_DAYS` (default 7) without use. Using the app pushes the timeout forward, at most once an hour to limit database writes.
 - **Hard limit:** every session ends 30 days after sign-in, however active. The cookie expires at that point too, so the server alone enforces the shorter idle timeout.

@@ -10,7 +10,7 @@ import type {
  * in seed/assessments/ use it, and so do JSON import and export. Question CSV
  * rows are converted to CanonicalQuestion. See docs/assessments.md.
  */
-export const CANONICAL_FORMAT = 'tmx-hr.assessment/1';
+export const CANONICAL_FORMAT = 'tmx-assessment/1';
 
 export interface CanonicalOption {
   /** Worked out from the position: A, B… or the scale value. */

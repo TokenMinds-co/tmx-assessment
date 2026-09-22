@@ -26,7 +26,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-// TMX HR rail: 270px open, 68px collapsed, 276px as a phone sheet (docs/design-system.md).
+// TMX Assessment rail: 270px open, 68px collapsed, 276px as a phone sheet (docs/design-system.md).
 const SIDEBAR_WIDTH = "270px"
 const SIDEBAR_WIDTH_MOBILE = "276px"
 const SIDEBAR_WIDTH_ICON = "68px"

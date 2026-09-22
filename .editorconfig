@@ -1,4 +1,4 @@
-# Editor defaults for TMX HR. https://editorconfig.org
+# Editor defaults for TMX Assessment. https://editorconfig.org
 #
 # These match what is already in the tree: two spaces everywhere, no tabs, LF endings.
 # The authority on formatting is still each package's tooling — Prettier on the backend

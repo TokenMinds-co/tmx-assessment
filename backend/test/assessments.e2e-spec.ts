@@ -365,7 +365,7 @@ describe('Assessments (e2e)', () => {
       );
 
       const document = bodyOf<Record<string, unknown>>(exported);
-      expect(document.format).toBe('tmx-hr.assessment/1');
+      expect(document.format).toBe('tmx-assessment/1');
       const copy = bodyOf<AssessmentBody>(
         await admin
           .post('/api/assessments/import')

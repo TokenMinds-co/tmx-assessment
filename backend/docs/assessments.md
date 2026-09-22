@@ -147,11 +147,11 @@ The candidate endpoints are under [Candidate links](#candidate-links).
 
 ### The canonical format
 
-One JSON document per test, `"format": "tmx-hr.assessment/1"`. The seed files, `POST /api/assessments/import`, `GET /api/assessments/:id/export` and duplicating a test all use it. The types are in [canonical.types.ts](../src/assessments/canonical/canonical.types.ts) and the request DTOs in [canonical.dto.ts](../src/assessments/canonical/canonical.dto.ts).
+One JSON document per test, `"format": "tmx-assessment/1"`. The seed files, `POST /api/assessments/import`, `GET /api/assessments/:id/export` and duplicating a test all use it. The types are in [canonical.types.ts](../src/assessments/canonical/canonical.types.ts) and the request DTOs in [canonical.dto.ts](../src/assessments/canonical/canonical.dto.ts).
 
 ```json
 {
-  "format": "tmx-hr.assessment/1",
+  "format": "tmx-assessment/1",
   "slug": "example",
   "name": "Example",
   "durationMinutes": 10,

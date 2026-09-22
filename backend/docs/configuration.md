@@ -29,13 +29,13 @@ Environment variables, how config is loaded and checked, and ports.
 | `PORT` | No | `4000` | HTTP port. The startup log prints it. In Docker, the compose files publish this same port on the host. | [operations.md](operations.md#ports-and-health) |
 | `FRONTEND_URL` | Yes | | The frontend's origin, such as `http://localhost:3000`. Used for CORS, the Origin check and links in emails. | [api-conventions.md](api-conventions.md) |
 | `CORS_ORIGINS` | No | Not set | Extra origins CORS allows, comma-separated, such as a staging frontend. `FRONTEND_URL` is always allowed. | [api-conventions.md](api-conventions.md) |
-| `COMPANY_NAME` | No | `TMX HR` | Your company's name, as candidates see it in their assessment emails: the sender line ("Sam from Acme"), the subject and the name above the heading. Staff emails use the app's own name. The frontend has its own `NEXT_PUBLIC_COMPANY_NAME`; set both to the same value. | [email.md](email.md) |
+| `COMPANY_NAME` | No | `TMX Assessment` | Your company's name, as candidates see it in their assessment emails: the sender line ("Sam from Acme"), the subject and the name above the heading. Staff emails use the app's own name. The frontend has its own `NEXT_PUBLIC_COMPANY_NAME`; set both to the same value. | [email.md](email.md) |
 | `DATABASE_URL` | Yes | | Postgres connection string. Locally the Prisma Postgres instance; in production your production Postgres, reached over the network the compose file joins. | [database.md](database.md) |
 | `SESSION_TTL_DAYS` | No | `7` | Days without use before a session ends (1 to 30) | [authentication.md](authentication.md) |
 | `COOKIE_DOMAIN` | No | Not set | Cookie domain. Set a parent domain only if the frontend is on a sibling subdomain. | [authentication.md](authentication.md) |
 | `TRUST_PROXY` | No | `0` | Number of reverse proxies in front of the API. `1` in production, behind a reverse proxy. | [api-conventions.md](api-conventions.md) |
 | `RESEND_API_KEY` | In production | Not set | Resend API key. When it's empty, emails are printed to the terminal. | [email.md](email.md) |
-| `EMAIL_FROM` | No | `TMX HR <onboarding@resend.dev>` | The sender. Its domain must be verified in Resend. | [email.md](email.md) |
+| `EMAIL_FROM` | No | `TMX Assessment <onboarding@resend.dev>` | The sender. Its domain must be verified in Resend. | [email.md](email.md) |
 | `STORAGE_DIR` | No | `./storage` | The folder for uploaded files, such as question audio. A relative path starts at the folder the API runs in. Keep it out of `dist/`, which every build empties. The default folder is gitignored. In Docker it's `/app/storage`, a named volume. | [assessments.md](assessments.md#media) |
 
 An empty value (`KEY=`) counts as not set, so the default applies.
@@ -49,7 +49,7 @@ To add a variable: add it to `EnvironmentVariables` with its checks, to `.env.ex
 | Question | Decision | Why | Source |
 | --- | --- | --- | --- |
 | The backend's default port | `4000` | The Next.js dev server uses 3000, so both apps now run without flags. | Build default |
-| The company name candidates see | `COMPANY_NAME`, defaulting to `TMX HR` | It was hardcoded, so a fork would email candidates under someone else's name. The default matches the app's own name and the wordmark, so a fresh install reads coherently. | Requested |
+| The company name candidates see | `COMPANY_NAME`, defaulting to `TMX Assessment` | It was hardcoded, so a fork would email candidates under someone else's name. The default matches the app's own name and the wordmark, so a fresh install reads coherently. | Requested |
 | How config is checked | A class checked with `class-validator` | It's the same library the request DTOs use, so there's no Joi or Zod to learn. | Build default |
 | `@nestjs/config` version | 4.x, not 12.x | 12.x ships as ES modules only and is meant for NestJS 12. Jest and the CommonJS build of this NestJS 11 app can't load it. Revisit when we upgrade NestJS. | Build default |
 | Where secrets live in production | `backend/.env` on the server, gitignored, read by the compose file | The deploy resets the clone and `.env` survives. Nothing secret is in the image or in GitHub. | Build default |

@@ -14,11 +14,11 @@
 # deployed from a directory of that name, and `--remove-orphans` would then
 # treat THEIR containers as orphans and delete them. A unique name isolates
 # this stack.
-name: tmx-hr
+name: tmx-assessment
 services:
   backend:
-    image: ${IMAGE_NAME:-ghcr.io/tokenminds-co/tmx-hr-backend}:${IMAGE_TAG:-production-latest}
-    container_name: tmx_hr_be
+    image: ${IMAGE_NAME:-ghcr.io/tokenminds-co/tmx-assessment-backend}:${IMAGE_TAG:-production-latest}
+    container_name: tmx_assessment_be
     restart: unless-stopped
     env_file:
       - .env
@@ -29,7 +29,7 @@ services:
     volumes:
       # Question audio and images. `docker compose down` keeps it; only
       # `down -v` deletes it, and with it every upload.
-      - tmx_hr_storage:/app/storage
+      - tmx_assessment_storage:/app/storage
     deploy:
       resources:
         limits:
@@ -59,7 +59,7 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - tmx_hr_network
+      - tmx_assessment_network
       - postgres_network
     ports:
       # The app listens on PORT (from .env, default 4000), and the same port is
@@ -72,11 +72,11 @@ services:
         max-file: "3"
 
 volumes:
-  tmx_hr_storage:
+  tmx_assessment_storage:
     driver: local
 
 networks:
-  tmx_hr_network:
+  tmx_assessment_network:
     driver: bridge
     internal: false
   # The network the host's Postgres container is attached to, created by

@@ -1,4 +1,4 @@
-const APP_NAME = 'TMX HR';
+const APP_NAME = 'TMX Assessment';
 
 export interface RenderedEmail {
   subject: string;

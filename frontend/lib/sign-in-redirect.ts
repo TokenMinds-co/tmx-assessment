@@ -1,7 +1,7 @@
 const HOME = "/";
 const LOGIN = "/login";
 // Any fixed origin works here. It only tells a path on this site from a link elsewhere.
-const THIS_SITE = "http://tmx-hr.invalid";
+const THIS_SITE = "http://tmx-assessment.invalid";
 
 /** The sign-in page, with `next` set so that signing in comes back to `path`. */
 export function loginUrl(path: string): string {

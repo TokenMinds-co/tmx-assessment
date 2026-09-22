@@ -28,7 +28,7 @@ How the API runs in an environment: the startup log, health checks, shutdown, lo
 ### Startup log
 
 ```text
-LOG [Bootstrap] TMX HR API is running on port 4000 (development)
+LOG [Bootstrap] TMX Assessment API is running on port 4000 (development)
 LOG [Bootstrap] API:    http://localhost:4000/api
 LOG [Bootstrap] Health: http://localhost:4000/api/health/ready
 LOG [Bootstrap] Docs:   http://localhost:4000/api/docs
@@ -81,11 +81,11 @@ Checks and deploys are separate files, because they answer to different rules: c
 - **`ci.yml` cancels in-progress runs, `deploy.yml` does not.** Cancelling a check wastes a few runner-minutes and the next push re-runs it. Cancelling a deploy can leave the server between two images.
 - **The trigger is `pull_request`, never `pull_request_target`.** A PR from a fork runs with a read-only token and no access to this repository's secrets. `pull_request_target` would hand the fork's code those secrets.
 - **`backend-e2e` sets only what the app has no default for:** `DATABASE_URL` (the service container) and `FRONTEND_URL`, plus `NODE_ENV=test`. Everything else in [env.validation.ts](../src/config/env.validation.ts) has a default. `RESEND_API_KEY` is left unset on purpose, so nothing can reach Resend; the suites swap in an in-memory transport anyway. See [testing.md](testing.md).
-- **Both deploy jobs are guarded with `if: github.repository == 'TokenMinds-co/tmx-hr'`.** A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. The guard is on each job, because an `if` on one job doesn't stop another. A fork that wants its own deploy changes that string to its own repository and adds the three secrets below.
+- **Both deploy jobs are guarded with `if: github.repository == 'TokenMinds-co/tmx-assessment'`.** A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. The guard is on each job, because an `if` on one job doesn't stop another. A fork that wants its own deploy changes that string to its own repository and adds the three secrets below.
 
 #### The image
 
-[Dockerfile](../Dockerfile) builds from the `backend/` folder (`docker build -t tmx-hr-backend .`) in two stages. The builder installs everything and runs `nest build`. The production stage installs runtime dependencies only (`--prod`), copies `dist/` and `seed/` across, and runs as the `node` user. Its start command applies pending migrations, then starts the API:
+[Dockerfile](../Dockerfile) builds from the `backend/` folder (`docker build -t tmx-assessment-backend .`) in two stages. The builder installs everything and runs `nest build`. The production stage installs runtime dependencies only (`--prod`), copies `dist/` and `seed/` across, and runs as the `node` user. Its start command applies pending migrations, then starts the API:
 
 ```sh
 node_modules/.bin/prisma migrate deploy && exec node dist/main
@@ -109,11 +109,11 @@ Three files, for three situations.
 | [docker-compose.yml](../docker-compose.yml) | Already on the host, joined over an external network | Built from `backend/` | Checking the image before it ships |
 | [docker-compose.local.yml](../docker-compose.local.yml) | Its own, in the stack | Built from `backend/` | Running the whole thing on a laptop with nothing set up |
 
-- **[docker-compose-production.yml](../docker-compose-production.yml)** runs one service, `backend`, from the GHCR image. Postgres is the instance already on the server: the file joins its `postgres_network` and reads `DATABASE_URL` from `.env`. The network is `external: true`, so Compose attaches to it and never creates or removes it, and `docker compose down` here can't take the database with it. Uploads (`STORAGE_DIR`) live on a named volume, `tmx_hr_storage`, which survives redeploys. Only `docker compose down -v` deletes it, and with it every upload.
+- **[docker-compose-production.yml](../docker-compose-production.yml)** runs one service, `backend`, from the GHCR image. Postgres is the instance already on the server: the file joins its `postgres_network` and reads `DATABASE_URL` from `.env`. The network is `external: true`, so Compose attaches to it and never creates or removes it, and `docker compose down` here can't take the database with it. Uploads (`STORAGE_DIR`) live on a named volume, `tmx_assessment_storage`, which survives redeploys. Only `docker compose down -v` deletes it, and with it every upload.
 - **[docker-compose.yml](../docker-compose.yml)** is the same stack, except the image is built from the folder instead of pulled. It joins `postgres_network` too and reads `DATABASE_URL` from `.env`. It's for checking the image before it ships; development uses `pnpm start:dev`.
 - **[docker-compose.local.yml](../docker-compose.local.yml)** is self-contained: Postgres and the API, no external network, no `.env` needed. See [Everything in Docker](#everything-in-docker).
 
-The first two name the project `tmx-hr` and the third `tmx-hr-local`, so `--remove-orphans` never touches another project deployed from a folder that's also called `backend`, and the local stack and the production-shaped one can't recreate or remove each other's containers.
+The first two name the project `tmx-assessment` and the third `tmx-assessment-local`, so `--remove-orphans` never touches another project deployed from a folder that's also called `backend`, and the local stack and the production-shaped one can't recreate or remove each other's containers.
 
 #### Ports and health
 
@@ -122,10 +122,10 @@ The first two name the project `tmx-hr` and the third `tmx-hr-local`, so `--remo
 
 #### Server setup, once
 
-1. Clone the repo on the server. The deploy expects it at `~/tmx-hr`; set the repository variable `VPS_DEPLOY_PATH` if it's elsewhere. Only `backend/docker-compose-production.yml` and `backend/.env` are read from it. The app comes from the image.
+1. Clone the repo on the server. The deploy expects it at `~/tmx-assessment`; set the repository variable `VPS_DEPLOY_PATH` if it's elsewhere. Only `backend/docker-compose-production.yml` and `backend/.env` are read from it. The app comes from the image.
 2. Confirm the Postgres network is `postgres_network` (`docker network ls`) and find the Postgres container's name on it (`docker network inspect postgres_network`).
-3. Create a role and a database for TMX HR on that Postgres. See [database.md](database.md#deployed-environments). `migrate deploy` creates tables, not databases.
-4. Create `backend/.env` from [.env.example](../.env.example) with `NODE_ENV=production`, `PORT`, `FRONTEND_URL` set to the Vercel domain, `DATABASE_URL` using the container's name and port 5432 (for example `postgresql://tmx_hr:<password>@postgres_db:5432/tmx_hr`), `TRUST_PROXY=1`, `RESEND_API_KEY` and `EMAIL_FROM`.
+3. Create a role and a database for TMX Assessment on that Postgres. See [database.md](database.md#deployed-environments). `migrate deploy` creates tables, not databases.
+4. Create `backend/.env` from [.env.example](../.env.example) with `NODE_ENV=production`, `PORT`, `FRONTEND_URL` set to the Vercel domain, `DATABASE_URL` using the container's name and port 5432 (for example `postgresql://tmx_assessment:<password>@postgres_db:5432/tmx_assessment`), `TRUST_PROXY=1`, `RESEND_API_KEY` and `EMAIL_FROM`.
 5. Add these to the repository's settings on GitHub:
 
 | Kind | Name | Notes |
@@ -133,11 +133,11 @@ The first two name the project `tmx-hr` and the third `tmx-hr-local`, so `--remo
 | Secret | `VPS_STAGING_HOST` | Server hostname or IP |
 | Secret | `VPS_STAGING_USER` | SSH user. It must be in the `docker` group. |
 | Secret | `VPS_STAGING_KEY` | Private key, the full PEM including the header line |
-| Variable | `VPS_DEPLOY_PATH` | Optional. Defaults to `tmx-hr`, relative to the SSH user's home. |
+| Variable | `VPS_DEPLOY_PATH` | Optional. Defaults to `tmx-assessment`, relative to the SSH user's home. |
 
 - **These three names are what the workflow reads.** Renaming them means editing [deploy.yml](../../.github/workflows/deploy.yml) too.
 - **There is no port secret.** The SSH port is `22`, written into the workflow. A server on another port needs that line changed.
-- **`VPS_DEPLOY_PATH` is a repository variable, not a secret** (Settings → Secrets and variables → Actions → Variables), because a path isn't sensitive and a variable is readable in the run's log. The workflow reads `${{ vars.VPS_DEPLOY_PATH || 'tmx-hr' }}`: an unset variable is an empty string, so leaving it out gives `tmx-hr`.
+- **`VPS_DEPLOY_PATH` is a repository variable, not a secret** (Settings → Secrets and variables → Actions → Variables), because a path isn't sensitive and a variable is readable in the run's log. The workflow reads `${{ vars.VPS_DEPLOY_PATH || 'tmx-assessment' }}`: an unset variable is an empty string, so leaving it out gives `tmx-assessment`.
 - **`GITHUB_TOKEN` is provided automatically.** It pushes to GHCR and the server logs in with it, so no personal access token is involved. The workflow is `permissions: contents: read` at the top, which is the whole grant each job starts from, so `build-and-push` asks for `packages: write` and `deploy` asks for `packages: read`. Without that second line the server's `docker pull` fails with `denied` on an image the same run just pushed.
 - To gate deploys behind an approval, give the `deploy` job a `production` environment with a required reviewer.
 
@@ -201,8 +201,8 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 
 - **There's no migration step.** The image's start command runs `prisma migrate deploy` before the API listens, so the schema is in place by the time the container reports ready. Seeding is a command rather than a service for the same reason in reverse: it can only run after those migrations, and it would need this stack's uploads volume mounted to write each test's audio.
 - **Postgres is published on `127.0.0.1:5434`,** not 5432, which a Postgres already on the machine would be holding. Loopback only, so it isn't reachable from the network. It's there for `psql`, Prisma Studio and GUI clients; inside the stack the API reaches the database at `postgres:5432`.
-- **The API's host port is `TMX_HR_API_PORT`,** default 4000. The container always listens on 4000, so the two can't drift. Point the frontend's `API_URL` at whatever host port you choose; the frontend isn't part of this stack and still runs with `pnpm dev`.
-- **Its own project name (`tmx-hr-local`), network, volumes and container names** (`tmx_hr_local_pg`, `tmx_hr_local_be`). It never mentions `postgres_network`, so it can't disturb a database another stack on the machine is using, and neither stack's `--remove-orphans` can reach the other's containers.
+- **The API's host port is `TMX_ASSESSMENT_API_PORT`,** default 4000. The container always listens on 4000, so the two can't drift. Point the frontend's `API_URL` at whatever host port you choose; the frontend isn't part of this stack and still runs with `pnpm dev`.
+- **Its own project name (`tmx-assessment-local`), network, volumes and container names** (`tmx_assessment_local_pg`, `tmx_assessment_local_be`). It never mentions `postgres_network`, so it can't disturb a database another stack on the machine is using, and neither stack's `--remove-orphans` can reach the other's containers.
 - **`NODE_ENV` is `development`.** With `production` the API requires `RESEND_API_KEY` and sets `Secure` cookies, which a browser on plain `http://localhost` won't send back.
 - **A `.env` file is optional and layers on top.** `env_file` is marked `required: false`, so a missing file isn't an error, and anything the file does set (`RESEND_API_KEY`, `EMAIL_FROM`, `SESSION_TTL_DAYS`) applies. `NODE_ENV`, `DATABASE_URL`, `FRONTEND_URL`, `PORT` and `STORAGE_DIR` are set in the compose file itself and win over it, because Compose applies `environment` after `env_file`: the stack always talks to its own database. One thing to know: a `.env` holding a `RESEND_API_KEY` makes it send real email. Blank the key to have the links printed in `docker compose logs backend` instead.
 
@@ -218,7 +218,7 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 | Heap limit for liveness | 512 MiB | Catches a leak without restarting a healthy process. The container's memory limit is 512 MiB too; raise both together. | Build default |
 | Hosting | A Docker image on GHCR, run with Docker Compose on a Linux server, deployed by GitHub Actions over SSH | It matches a pipeline the maintainers already run, so there's one way to deploy. The frontend stays on Vercel. | Requested |
 | Production database | A Postgres already running on that server, joined over an external Docker network | One database server for everything on the host. The network is external to this stack, so a `docker compose down` here can't take it down. | Requested |
-| Uploaded files in production | A named Docker volume, `tmx_hr_storage`, mounted at `STORAGE_DIR` | Survives redeploys with nothing else to set up. A bucket behind `FileStorage` stays possible later. | Build default |
+| Uploaded files in production | A named Docker volume, `tmx_assessment_storage`, mounted at `STORAGE_DIR` | Survives redeploys with nothing else to set up. A bucket behind `FileStorage` stays possible later. | Build default |
 | Ports in Docker | `PORT` is both the container's port and the published host port | One number means one thing, and nothing in the app has to force a port in production. | Build default |
 | Container healthcheck | `/api/health/ready` | Docker doesn't restart unhealthy containers, so the status is for reading, and "can it serve" is the useful answer. | Build default |
 | Verifying a deploy | Compare the running container's image to the tag the run pushed, with `docker inspect` | Catches a deploy that kept the old container, without adding a version field to the health body. | Build default |
@@ -229,7 +229,7 @@ docker compose -f docker-compose.local.yml down    # -v also deletes the data
 | What CI runs on a PR | Backend build, lint, unit tests and e2e tests; frontend lint and build; a Docker build that isn't pushed | Everything that can fail before `main` fails in the PR, including a Dockerfile that no longer builds and a frontend that no longer compiles. | Build default |
 | Splitting CI from deploy | Two workflows: `ci.yml` checks, `deploy.yml` ships | They answer to different rules. Checks should run everywhere, including on a fork, with a read-only token and no secrets; deploys should run in one place, one at a time, and never be cancelled halfway. Keeping them in one file forced `if: github.event_name != 'pull_request'` onto every job. | Build default |
 | The database for tests in CI | A `postgres:17-alpine` service container per run, with a `pg_isready` health check | A real Postgres, thrown away with the runner, and nothing to clean up. The suites create rows behind a random prefix and delete only those, so an empty database is all they need. A `prisma dev` instance inside the job would be a second way to run the same tests. | Build default |
-| Deploying from a fork | Both deploy jobs carry `if: github.repository == 'TokenMinds-co/tmx-hr'` | A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. A fork that wants its own deploy edits one string. | Build default |
+| Deploying from a fork | Both deploy jobs carry `if: github.repository == 'TokenMinds-co/tmx-assessment'` | A fork has no server, no GHCR package and none of the secrets, so a deploy there could only fail with a confusing error. A fork that wants its own deploy edits one string. | Build default |
 | A compose stack for people with nothing set up | [docker-compose.local.yml](../docker-compose.local.yml): Postgres and the API, its own project name, network and volumes, no `.env` required | The other two files attach to an external `postgres_network` and define no database, so `docker compose up` fails immediately for anyone without that container. Postgres is published on 127.0.0.1:5434 so it can't collide with a Postgres already on 5432. | Build default |
 
 ## Open decisions

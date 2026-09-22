@@ -13,7 +13,10 @@ const ARGON2_OPTIONS = {
 export class PasswordService {
   // Verified against when the email is unknown, so a failed sign-in takes the
   // same time whether or not the account exists.
-  private readonly dummyHash = hash('tmx-hr-timing-equalizer', ARGON2_OPTIONS);
+  private readonly dummyHash = hash(
+    'tmx-assessment-timing-equalizer',
+    ARGON2_OPTIONS,
+  );
 
   hash(password: string): Promise<string> {
     return hash(password, ARGON2_OPTIONS);

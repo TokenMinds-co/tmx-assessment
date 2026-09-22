@@ -59,7 +59,7 @@ export function AcceptInviteForm({ token }: { token: string }) {
   return (
     <AuthCard
       title="Set up your account"
-      description="You’ve been invited to TMX HR. Choose a password to finish setting up your account."
+      description="You’ve been invited to TMX Assessment. Choose a password to finish setting up your account."
     >
       <form onSubmit={handleSubmit} noValidate>
         <FieldGroup className="gap-5">

@@ -19,7 +19,7 @@ Environment variables, `next.config.ts`, ports and TypeScript path aliases. shad
 | --- | --- | --- | --- |
 | `API_URL` | In production | No | The backend's origin with no trailing slash, such as `http://localhost:4000`. The `/api/*` rewrite forwards there, and server components call it directly. Development falls back to `http://localhost:4000`. Read by [lib/api/url.ts](../lib/api/url.ts). |
 | `NEXT_PUBLIC_APP_VERSION` | No | Yes | The version shown in the sidebar footer. Set in `next.config.ts` from `package.json`, so don't add it to `.env`. |
-| `NEXT_PUBLIC_COMPANY_NAME` | No | Yes | Your company's name, as candidates see it: the page titles, the wordmark's alt text and the start page. Defaults to `TMX HR`. Read by [lib/brand.ts](../lib/brand.ts). Keep it the same as the backend's `COMPANY_NAME`, which names the company in candidates' emails. Next.js inlines it at build time, so a change needs a rebuild. |
+| `NEXT_PUBLIC_COMPANY_NAME` | No | Yes | Your company's name, as candidates see it: the page titles, the wordmark's alt text and the start page. Defaults to `TMX Assessment`. Read by [lib/brand.ts](../lib/brand.ts). Keep it the same as the backend's `COMPANY_NAME`, which names the company in candidates' emails. Next.js inlines it at build time, so a change needs a rebuild. |
 
 ## How it works
 
@@ -46,7 +46,7 @@ Environment variables, `next.config.ts`, ports and TypeScript path aliases. shad
 | The backend's address | `API_URL`, a server-only variable | The browser never needs it: it calls `/api/*` on the frontend's origin | Build default |
 | When `API_URL` isn't set | `http://localhost:4000` in development; an error in production | Matches the backend's default port. A production build that silently pointed at `localhost` would only fail once deployed. | Build default |
 | Which env file | Copy `.env.example` to `.env` | The same step as in the backend. `.env.local` works too. | Build default |
-| The company name candidates see | Configuration, defaulting to `TMX HR` | It was hardcoded, so a fork would brand candidate pages with someone else's name. The default matches the wordmark. | Requested |
+| The company name candidates see | Configuration, defaulting to `TMX Assessment` | It was hardcoded, so a fork would brand candidate pages with someone else's name. The default matches the wordmark. | Requested |
 | Where the frontend reads it from | `NEXT_PUBLIC_COMPANY_NAME`, a build-time variable, not the `/take` API payload | The candidate page titles are static `metadata`, and the "link doesn't work" and "link expired" pages render when the API returned no payload at all, so there is nothing to read it from. | Build default |
 
 ## Open decisions

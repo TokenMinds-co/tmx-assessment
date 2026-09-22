@@ -1,6 +1,6 @@
-# TMX HR: Backend
+# TMX Assessment: Backend
 
-REST API for TMX HR, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
+REST API for TMX Assessment, built with NestJS 11 and TypeScript. For what the product does and why, see the [root README](../README.md).
 
 > **Status: authentication, assessments and the dashboard are built.** Staff sign in with email and password, and admins invite staff by email. Admins build tests; staff send them to candidates, who take them through an emailed link, and the server times and scores them. Five tests are prefilled, converted from the workbooks in [seed/workbooks/](seed/workbooks/). `GET /api/dashboard` answers the staff home page in one request. The API has interactive docs and health checks, and the frontend is wired to it. It deploys to a Linux server as a Docker container through GitHub Actions. Next is the recruitment pipeline.
 

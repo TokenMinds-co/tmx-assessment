@@ -1,13 +1,13 @@
 {
-  "name": "tmx-hr-backend",
+  "name": "tmx-assessment-backend",
   "version": "0.2.0",
-  "description": "NestJS API for TMX HR: staff authentication, assessments and candidate results, on Prisma and Postgres.",
+  "description": "NestJS API for TMX Assessment: staff authentication, assessments and candidate results, on Prisma and Postgres.",
   "author": "TokenMinds.co",
   "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TokenMinds-co/tmx-hr.git",
+    "url": "git+https://github.com/TokenMinds-co/tmx-assessment.git",
     "directory": "backend"
   },
   "engines": {
@@ -28,8 +28,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "postinstall": "prisma generate",
-    "db:start": "prisma dev --name tmx-hr --detach",
-    "db:stop": "prisma dev stop tmx-hr",
+    "db:start": "prisma dev --name tmx-assessment --detach",
+    "db:stop": "prisma dev stop tmx-assessment",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",

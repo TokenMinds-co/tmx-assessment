@@ -10,9 +10,9 @@ const DOCS_PATH = 'docs';
  */
 export function setupSwagger(app: INestApplication, prefix: string): string {
   const config = new DocumentBuilder()
-    .setTitle('TMX HR API')
+    .setTitle('TMX Assessment API')
     .setDescription(
-      'REST API for TMX HR. To try the protected endpoints on this page, sign in with `POST /api/auth/login` first. The browser then sends the session cookie with every request.',
+      'REST API for TMX Assessment. To try the protected endpoints on this page, sign in with `POST /api/auth/login` first. The browser then sends the session cookie with every request.',
     )
     .addCookieAuth(
       SESSION_COOKIE_NAME,
@@ -38,7 +38,7 @@ export function setupSwagger(app: INestApplication, prefix: string): string {
     {
       useGlobalPrefix: true,
       jsonDocumentUrl: `${DOCS_PATH}/json`,
-      customSiteTitle: 'TMX HR API docs',
+      customSiteTitle: 'TMX Assessment API docs',
     },
   );
   return `/${prefix}/${DOCS_PATH}`;

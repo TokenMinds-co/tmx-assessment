@@ -2,7 +2,7 @@ const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-export const SESSION_COOKIE_NAME = 'tmx_hr_session';
+export const SESSION_COOKIE_NAME = 'tmx_assessment_session';
 
 /**
  * A session ends this long after sign-in, however active the user is. The

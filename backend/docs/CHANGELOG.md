@@ -6,6 +6,13 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+### Changed
+
+- **The app is now called TMX Assessment.** The package is `tmx-assessment-backend`, `COMPANY_NAME` and `EMAIL_FROM` default to `TMX Assessment`, and the Swagger page, the boot log line and the email subjects say it too. See [configuration.md](configuration.md).
+- **The canonical assessment format is `tmx-assessment/1`** (was `tmx-hr.assessment/1`). Import rejects documents that still carry the old string, so JSON exported before this change needs its `format` field updated by hand. The seed files already use the new one. See [assessments.md](assessments.md).
+- **The session cookie is `tmx_assessment_session`** (was `tmx_hr_session`). Everyone signed in when this deploys is signed out once; nothing else changes. See [authentication.md](authentication.md).
+- **Compose projects, containers, volumes, networks and the Postgres role and database are renamed** from `tmx_hr*` to `tmx_assessment*`, the image is `tmx-assessment-backend`, and the local stack's host-port variable is `TMX_ASSESSMENT_API_PORT`. A deployed server keeps working on its existing `DATABASE_URL`, but the production uploads volume is now `tmx_assessment_storage`: rename or copy the old `tmx_hr_storage` volume before redeploying, or uploaded files will look as though they have gone. See [operations.md](operations.md).
+
 ## [0.2.0] - 2026-09-21
 
 ### Added
@@ -31,7 +38,7 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 - A startup log with the port, the environment, the API, health and docs URLs, and the CORS origins.
 - `CORS_ORIGINS`, for extra origins CORS allows. See [configuration](configuration.md).
 - Area doc: [operations](operations.md).
-- Assessments: test templates with sections, questions, score bands and four question types, scored by correct answers or by alignment with a role profile. Publishing checks, preview, duplicate, and JSON import and export in one canonical format, `tmx-hr.assessment/1`. See [assessments](assessments.md).
+- Assessments: test templates with sections, questions, score bands and four question types, scored by correct answers or by alignment with a role profile. Publishing checks, preview, duplicate, and JSON import and export in one canonical format, `tmx-assessment/1`. See [assessments](assessments.md).
 - Question CSV import and export for each test, with a dry run that reports problems by row and column, and a CSV template. See [assessments](assessments.md#question-csv).
 - Sending tests: one emailed link per send, to one or more tests, each frozen when sent. Resend, revoke, a paged list of sent links, and results with section scores, flags and answers. See [assessments](assessments.md#candidate-links).
 - The candidate API under `/api/take/:token`: see the tests, start one, save answers and submit, with the deadline kept by the server and 30 seconds' grace. See [assessments](assessments.md#candidate-links).
@@ -46,11 +53,11 @@ Notable changes to the backend, newest first. The format follows [Keep a Changel
 ### Changed
 
 - `AssessmentsModule` exports `AssessmentsService` and `AttemptsService`, and the two attempt statuses that count as over moved into `FINISHED_STATUSES` in [assessments.constants.ts](../src/assessments/assessments.constants.ts). The dashboard now counts by the same rules as the Sent tab instead of a second copy of them, so the two screens can't drift. See [assessments](assessments.md) and [dashboard](dashboard.md).
-- `COMPANY_NAME` sets the name candidates see in their assessment emails — the sender line, the subject and the name above the heading — instead of it being hardcoded, which would have had a fork emailing candidates under someone else's name. It defaults to `TMX HR`; the frontend's `NEXT_PUBLIC_COMPANY_NAME` is its twin. See [configuration](configuration.md) and [email](email.md).
+- `COMPANY_NAME` sets the name candidates see in their assessment emails — the sender line, the subject and the name above the heading — instead of it being hardcoded, which would have had a fork emailing candidates under someone else's name. It defaults to `TMX Assessment`; the frontend's `NEXT_PUBLIC_COMPANY_NAME` is its twin. See [configuration](configuration.md) and [email](email.md).
 - Example email addresses in the docs and the README are `example.com`, so nothing invites a reader to mail a real inbox.
 - CI and deploy are two workflows instead of one. They answer to different rules: checks should run everywhere, including on a fork, with a read-only token and no secrets, and deploys should run in one place, one at a time, and never be cancelled halfway. Both deploy jobs carry a repository guard, so a fork — which has no server, no package and none of the secrets — never tries to deploy, and the `deploy` job asks for `packages: read`, without which the server's `docker pull` fails on the image the same run just pushed. See [operations](operations.md#ci-and-deploy-are-two-workflows).
 - The source workbooks the prefilled tests were converted from live in `seed/workbooks/`, one file per test under the same slug as its JSON. [seed-files.spec.ts](../src/assessments/canonical/seed-files.spec.ts) checks each seed file against its workbook's question count, time and audio, so the two can't quietly disagree. `.dockerignore` leaves the folder out of the build context: the runtime never reads it. See [assessments](assessments.md).
-- The package is `tmx-hr-backend` and licensed MIT, with a description and a repository field, ready to be published as open source.
+- The package is `tmx-assessment-backend` and licensed MIT, with a description and a repository field, ready to be published as open source.
 - Documented that the seed must run on the machine the app runs on, because it writes question audio to that machine's `STORAGE_DIR`, with the command for the deployed container. See [database](database.md#seed-data) and [operations](operations.md#once-its-running).
 - `prisma` and `dotenv` are regular dependencies now, since the image runs `prisma migrate deploy` after a production-only install. `packageManager` pins pnpm 11.8.0 for corepack, CI and the image.
 - Docs: production uses a Postgres already running on the deployment server instead of Prisma Postgres. See [database](database.md#deployed-environments) and [operations](operations.md#deployment).

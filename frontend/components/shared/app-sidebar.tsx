@@ -47,7 +47,7 @@ export function AppSidebar() {
           className="size-9 shrink-0 rounded-lg"
         />
         <p className="min-w-0 flex-1 truncate text-base font-bold text-sidebar-primary group-data-[collapsible=icon]:sr-only">
-          TMX HR
+          TMX Assessment
         </p>
         {isMobile ? (
           <button
@@ -89,7 +89,7 @@ export function AppSidebar() {
         <SidebarFooter className="gap-2 px-2 pb-4">
           <SidebarSeparator className="mx-1.5 group-data-[collapsible=icon]:hidden" />
           <p className="px-3 text-xs text-sidebar-primary group-data-[collapsible=icon]:hidden">
-            TMX HR · v{APP_VERSION}
+            TMX Assessment · v{APP_VERSION}
           </p>
           <CollapseButton />
         </SidebarFooter>

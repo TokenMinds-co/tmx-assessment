@@ -21,20 +21,20 @@
 # outside Docker with `pnpm db:start` and `pnpm start:dev` (README.md).
 #
 # Its own project name, so `docker compose down` and `--remove-orphans` here
-# can never reach the `tmx-hr` stack the other two files define, or any other
+# can never reach the `tmx-assessment` stack the other two files define, or any other
 # project. The container names are unique for the same reason: two stacks
-# cannot both be called tmx_hr_be.
-name: tmx-hr-local
+# cannot both be called tmx_assessment_be.
+name: tmx-assessment-local
 
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: tmx_hr_local_pg
+    container_name: tmx_assessment_local_pg
     restart: unless-stopped
     environment:
-      POSTGRES_USER: tmx_hr
-      POSTGRES_PASSWORD: tmx_hr
-      POSTGRES_DB: tmx_hr
+      POSTGRES_USER: tmx_assessment
+      POSTGRES_PASSWORD: tmx_assessment
+      POSTGRES_DB: tmx_assessment
     ports:
       # 5434, not 5432: if you have Postgres on this machine at all, it holds
       # 5432, and a second one would fail to bind. Published for psql, Prisma
@@ -44,18 +44,18 @@ services:
       - "127.0.0.1:5434:5432"
     volumes:
       # The database files. `down` keeps them, `down -v` deletes them.
-      - tmx_hr_local_pgdata:/var/lib/postgresql/data
+      - tmx_assessment_local_pgdata:/var/lib/postgresql/data
     healthcheck:
       # What `depends_on: service_healthy` waits for. Postgres starts, stops
       # and restarts once while it initialises the data directory, so a plain
       # "container is running" check is not enough.
-      test: ["CMD-SHELL", "pg_isready -U tmx_hr -d tmx_hr"]
+      test: ["CMD-SHELL", "pg_isready -U tmx_assessment -d tmx_assessment"]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 10s
     networks:
-      - tmx_hr_local_network
+      - tmx_assessment_local_network
 
   backend:
     # Built from this folder, not pulled: a fork has no image on GHCR.
@@ -63,7 +63,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
-    container_name: tmx_hr_local_be
+    container_name: tmx_assessment_local_be
     restart: unless-stopped
     depends_on:
       postgres:
@@ -91,7 +91,7 @@ services:
       # `postgres` is the service name above; Docker's DNS resolves it on the
       # network below. 5432 is the port inside that network, not the 5434
       # published on the host.
-      DATABASE_URL: postgresql://tmx_hr:tmx_hr@postgres:5432/tmx_hr
+      DATABASE_URL: postgresql://tmx_assessment:tmx_assessment@postgres:5432/tmx_assessment
       # Where the frontend runs. CORS allows it and emailed links point at it.
       FRONTEND_URL: http://localhost:3000
       # Fixed, so the published port below always matches what the app binds.
@@ -100,12 +100,12 @@ services:
       STORAGE_DIR: /app/storage
     volumes:
       # Question audio and images, as in production.
-      - tmx_hr_local_storage:/app/storage
+      - tmx_assessment_local_storage:/app/storage
     ports:
-      # Host port only. Set TMX_HR_API_PORT if 4000 is taken; the container
+      # Host port only. Set TMX_ASSESSMENT_API_PORT if 4000 is taken; the container
       # side stays 4000, because PORT above is fixed. Remember to point the
       # frontend's API_URL at the port you choose.
-      - "${TMX_HR_API_PORT:-4000}:4000"
+      - "${TMX_ASSESSMENT_API_PORT:-4000}:4000"
     healthcheck:
       # 127.0.0.1, not localhost: localhost resolves to ::1 first in this
       # container and the app binds IPv4, so a localhost probe is refused.
@@ -124,7 +124,7 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - tmx_hr_local_network
+      - tmx_assessment_local_network
     logging:
       driver: "json-file"
       options:
@@ -132,14 +132,14 @@ services:
         max-file: "3"
 
 volumes:
-  tmx_hr_local_pgdata:
+  tmx_assessment_local_pgdata:
     driver: local
-  tmx_hr_local_storage:
+  tmx_assessment_local_storage:
     driver: local
 
 networks:
   # Created and removed with this stack. Nothing here is `external`, and this
   # file never touches `postgres_network`, so it cannot disturb a database
   # another stack on this machine is using.
-  tmx_hr_local_network:
+  tmx_assessment_local_network:
     driver: bridge

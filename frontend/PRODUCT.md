@@ -16,7 +16,7 @@ web
 
 ## Product Purpose
 
-TMX HR is an open-source recruitment app. Its built-in assessments let a team screen candidates on written, timed, scored tests before spending interview time on them.
+TMX Assessment is an open-source recruitment app. Its built-in assessments let a team screen candidates on written, timed, scored tests before spending interview time on them.
 
 Success is a screening step that runs itself: the tests go out in one email, the server keeps the clock and scores the answers, and staff open a result they can compare across candidates instead of an impression they have to defend.
 
@@ -48,10 +48,10 @@ Screening tests that belong to the team running them. The questions, the scoring
 
 ## Brand Commitments
 
-- The product name is **TMX HR**, and it is also the default company name candidates see.
+- The product name is **TMX Assessment**, and it is also the default company name candidates see.
 - The interface uses the violet TMX theme: the tokens in [app/globals.css](app/globals.css), the sidebar gradient, the gradient primary button, Inter for UI and Geist Mono. Every token and every customized component is listed in [docs/design-system.md](docs/design-system.md).
 - Brand assets are in [public/brand/](public/brand/) (wordmark and mark), plus [app/icon.png](app/icon.png) and [app/apple-icon.png](app/apple-icon.png).
-- **The name and those images are not covered by the app's MIT licence.** A fork sets `COMPANY_NAME` and `NEXT_PUBLIC_COMPANY_NAME` and replaces the images. So candidate-facing surfaces read the company name from `COMPANY_NAME` in [lib/brand.ts](lib/brand.ts) rather than writing "TMX HR" into the markup; any new candidate screen does the same.
+- **The name and those images are not covered by the app's MIT licence.** A fork sets `COMPANY_NAME` and `NEXT_PUBLIC_COMPANY_NAME` and replaces the images. So candidate-facing surfaces read the company name from `COMPANY_NAME` in [lib/brand.ts](lib/brand.ts) rather than writing "TMX Assessment" into the markup; any new candidate screen does the same.
 
 ## Evidence on Hand
 

@@ -4,7 +4,7 @@
  * See docs/api-client.md.
  */
 
-const NETWORK_ERROR = "Couldn’t reach TMX HR. Check your connection and try again.";
+const NETWORK_ERROR = "Couldn’t reach TMX Assessment. Check your connection and try again.";
 const RATE_LIMITED = "Too many attempts. Wait a few minutes, then try again.";
 const SERVER_ERROR = "Something went wrong on our side. Try again in a moment.";
 const UNKNOWN_ERROR = "Something went wrong. Try again.";

@@ -52,9 +52,9 @@ describe('mail templates', () => {
     });
     const changed = passwordChangedEmail({ name: 'Ada' });
 
-    expect(reset.subject).toBe('Reset your TMX HR password');
+    expect(reset.subject).toBe('Reset your TMX Assessment password');
     expect(reset.text).toContain('60 minutes');
-    expect(changed.subject).toBe('Your TMX HR password was changed');
+    expect(changed.subject).toBe('Your TMX Assessment password was changed');
     expect(changed.html).not.toContain('<a ');
   });
 });
@@ -93,7 +93,7 @@ describe('assessment invitation email', () => {
 
     expect(email.html).toContain('Good luck &lt;3');
     expect(email.html).toContain('>Acme</p>');
-    expect(email.html).not.toContain('TMX HR');
+    expect(email.html).not.toContain('TMX Assessment');
   });
 
   it('reads naturally for a single test', () => {

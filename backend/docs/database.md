@@ -24,7 +24,7 @@ The database engine, ORM, schema, migrations, seed data and transactions. The do
 ### Local setup
 
 ```bash
-pnpm db:start     # start the local Prisma Postgres instance "tmx-hr" in the background
+pnpm db:start     # start the local Prisma Postgres instance "tmx-assessment" in the background
                   # and print its postgres:// URL; put that URL in .env as DATABASE_URL
 pnpm db:migrate   # apply the migrations
 pnpm db:seed      # optional: load the prefilled tests and their audio
@@ -38,17 +38,17 @@ The instance keeps its data between restarts. It listens on ports 51216 to 51219
 
 The API runs in Docker on the server and joins the Postgres container's network, `postgres_network`. See [operations.md](operations.md#deployment).
 
-1. On that Postgres, create a role and a database for TMX HR, once:
+1. On that Postgres, create a role and a database for TMX Assessment, once:
 
    ```sql
-   CREATE ROLE tmx_hr LOGIN PASSWORD '<password>';
-   CREATE DATABASE tmx_hr OWNER tmx_hr;
+   CREATE ROLE tmx_assessment LOGIN PASSWORD '<password>';
+   CREATE DATABASE tmx_assessment OWNER tmx_assessment;
    ```
 
 2. Put its URL in `backend/.env` on the server, using the Postgres container's name on `postgres_network` and the container port `5432`:
 
    ```
-   DATABASE_URL=postgresql://tmx_hr:<password>@postgres_db:5432/tmx_hr
+   DATABASE_URL=postgresql://tmx_assessment:<password>@postgres_db:5432/tmx_assessment
    ```
 
 3. Migrations run on every start. The image's start command is `prisma migrate deploy && node dist/main`, so a container that can't migrate never serves, and nothing runs `pnpm db:deploy` by hand.

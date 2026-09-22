@@ -20,7 +20,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const baseUrl = `http://localhost:${port}`;
   logger.log(
-    `TMX HR API is running on port ${port} (${config.get('NODE_ENV', { infer: true })})`,
+    `TMX Assessment API is running on port ${port} (${config.get('NODE_ENV', { infer: true })})`,
   );
   logger.log(`API:    ${baseUrl}/api`);
   logger.log(`Health: ${baseUrl}/api/health/ready`);

@@ -8,7 +8,7 @@ describe('LocalDiskStorage', () => {
   let storage: LocalDiskStorage;
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'tmx-hr-storage-'));
+    root = await mkdtemp(join(tmpdir(), 'tmx-assessment-storage-'));
     storage = new LocalDiskStorage(root);
   });
 
