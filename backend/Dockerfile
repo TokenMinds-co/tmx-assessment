@@ -8,7 +8,7 @@
 # See docs/operations.md#deployment.
 
 # ---- Build stage ------------------------------------------------------------
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 # corepack runs the pnpm version that package.json's `packageManager` pins, so
 # the image, CI and developers all use the same one.
@@ -41,7 +41,7 @@ COPY . .
 RUN pnpm build
 
 # ---- Production stage -------------------------------------------------------
-FROM node:24-alpine AS production
+FROM node:26-alpine AS production
 
 RUN corepack enable pnpm
 
